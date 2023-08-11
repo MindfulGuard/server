@@ -1,2 +1,8 @@
 mypass-venv/
-src/__pycache__/
+mypass/__pycache__/
+.vscode/
+mypass/.vscode/
+.idea/
+mypass/.idead/
+__pycache__/
+mypass.egg-info/
