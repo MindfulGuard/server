@@ -1,0 +1,8 @@
+{
+    "data_not_valid":"не правильные данные",
+    "registration_not_allowed":"регистрация запрещена",
+    "registration_was_successful":"регистрация прошла успешно",
+    "service_is_not_available":"сервис не доступен",
+    "server_error":"ошибка сервера",
+    "user_already_exists":"пользователь уже существует"
+}

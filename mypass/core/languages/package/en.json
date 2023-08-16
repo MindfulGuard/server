@@ -1,0 +1,8 @@
+{
+    "data_not_valid":"the data is not valid",
+    "registration_not_allowed":"registration is not allowed",
+    "registration_was_successful":"registration was successful",
+    "service_is_not_available":"the service is not available",
+    "server_error":"server error",
+    "user_already_exists":"the user already exists"
+}

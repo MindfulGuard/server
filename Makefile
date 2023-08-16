@@ -1,4 +1,5 @@
 VENV = mypass-venv
+INFO = mypass.egg-info
 PIP-WIN = .\$(VENV)\Scripts\pip
 PIP-LINUX = ./$(VENV)/bin/pip
 VERSION = 3.10
@@ -7,6 +8,9 @@ REQUIREMENTS = requirements.txt
 
 ACTIVATE-VENV-MSG = TO RUN, ENTER THE COMMAND
 DEACTIVATE-VENV-MSG = TO DEACTIVATE, USE THE COMMAND "deactivate"
+
+PORT = 8080
+HOST = 0.0.0.0
 
 
 ifeq ($(OS),Windows_NT)
@@ -36,5 +40,9 @@ setup:
 pip-i:
 	pip install -e .
 
+run:
+	uvicorn mypass.__main__:app --host $(HOST) --port $(PORT)
+
 clean:
+	$(RM) $(INFO)
 	$(RM) $(VENV)
