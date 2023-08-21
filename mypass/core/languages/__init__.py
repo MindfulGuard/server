@@ -16,3 +16,11 @@ class Language:
         return self.__message.get("server_error")
     def user_already_exists(self)->dict[str,Any]:
         return self.__message.get("user_already_exists")
+    def user_not_found(self)->dict[str,Any]:
+        return self.__message.get("user_not_found")
+    def user_found(self)->dict[str,Any]:
+        return self.__message.get("user_found")
+    def session_token_has_been_deleted(self)->dict[str,Any]:
+        return self.__message.get("session_token_has_been_deleted")
+    def failed_to_delete_token(self)->dict[str,Any]:
+        return self.__message.get("failed_to_delete_token")

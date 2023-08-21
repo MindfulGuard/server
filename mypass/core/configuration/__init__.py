@@ -37,6 +37,9 @@ class Authentication:
         return self.__config.read_configuration(self.__block,'smtp')
     def get_blocked_domains(self)->list[str]:
         return self.__config.read_configuration(self.__block,'blocked_domains').split(',')
+    def get_token_expiration_default(self)->int:
+        """N(minutes)"""
+        return int(self.__config.read_configuration(self.__block,'token_expiration_default'))
 
 class Validation:
     def __init__(self,server_configuration:ServerConfiguration):

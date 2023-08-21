@@ -1,12 +1,49 @@
-from fastapi import  Request, Response
-from mypass.authentication import Authentication
+from typing import Annotated
+from fastapi import  Form, Header, Request, Response
 
-from mypass.core.models import SignInModel
-from mypass.performers.authentication import Auth
+from mypass.authentication import Authentication
 from mypass.settings import *
 
 
-@app.get(VERSION1+PATH_AUTH+"/sign_up")
-async def sign_up(body:SignInModel,request: Request,response:Response):
+@app.post(VERSION1+PATH_AUTH+"/sign_up")
+async def sign_up(email: Annotated[str, Form()],
+                  login: Annotated[str, Form()],
+                  secret_string:Annotated[bytes, Form()],
+                  request: Request,
+                  response:Response
+):
     auth = Authentication()
-    return await auth.sign_up(body,request,response)
+    return await auth.sign_up(email,login,secret_string,request,response)
+
+@app.post(VERSION1+PATH_AUTH+"/sign_in")
+async def sign_in(
+    email: Annotated[str, Form()],
+    secret_string:Annotated[bytes, Form()],
+    user_agent: Annotated[str, Header()],
+    request: Request,response:Response
+):
+    auth = Authentication()
+    return await auth.sign_in(email,secret_string,user_agent,request,response)
+
+@app.delete(VERSION1 + PATH_AUTH + "/sign_out")
+async def sign_out(
+    id: Annotated[str, Form()],
+    user_agent: Annotated[str, Header()],
+    request: Request,
+    response: Response,
+    token: str = Header(default=None, alias="Authorization")
+):
+    auth = Authentication()
+    await auth.update_token_info(token,user_agent,request)
+    return await auth.sign_out(token, id, response)
+
+@app.get(VERSION1 + PATH_AUTH + "/sessions")
+async def sessions(
+    user_agent: Annotated[str, Header()],
+    request: Request,
+    response: Response,
+    token: str = Header(default=None, alias="Authorization")
+):
+    auth = Authentication()
+    await auth.update_token_info(token,user_agent,request)
+    return await auth.get_tokens(token, response)

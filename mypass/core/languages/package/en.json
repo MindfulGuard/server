@@ -4,5 +4,9 @@
     "registration_was_successful":"registration was successful",
     "service_is_not_available":"the service is not available",
     "server_error":"server error",
-    "user_already_exists":"the user already exists"
+    "user_already_exists":"the user already exists",
+    "user_not_found":"user not found",
+    "user_found":"user found",
+    "session_token_has_been_deleted":"the session token has been deleted",
+    "failed_to_delete_token":"failed to delete token"
 }

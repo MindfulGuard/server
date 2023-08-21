@@ -18,7 +18,7 @@ class Files:
                     file_names_with_extension.append(entry.name)
         
         return file_names_with_extension
-    def get(self,key)->dict[str,Any]:
+    def get(self,key:str)->dict[str,Any]:
         """
         Return:
             {"en":"Message","ru":"Сообщение",...}

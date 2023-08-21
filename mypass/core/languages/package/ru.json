@@ -4,5 +4,9 @@
     "registration_was_successful":"регистрация прошла успешно",
     "service_is_not_available":"сервис не доступен",
     "server_error":"ошибка сервера",
-    "user_already_exists":"пользователь уже существует"
+    "user_already_exists":"пользователь уже существует",
+    "user_not_found":"пользователь не найден",
+    "user_found":"пользователь найден",
+    "session_token_has_been_deleted":"токен сеанса был удален",
+    "failed_to_delete_token":"не удалось удалить токен"
 }

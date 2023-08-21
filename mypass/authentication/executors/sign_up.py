@@ -1,12 +1,10 @@
 from mypass import utils
-from mypass.core import configuration
+from mypass.core import configuration, security
 from mypass.core.response_status_codes import *
 from mypass.database.postgresql import authentication
-from mypass.utils import arguments
-
 
 class SignUp:
-    async def execute(self,email:str,secret_string:bytes,login:bytes,ip:str):
+    async def execute(self,email:str,secret_string:bytes,login:str,ip:str):
         """
             Returns:
                 400 - not valid email\n
@@ -17,18 +15,15 @@ class SignUp:
         valid = utils.Validation()
         if self._permission() == False:
             return SERVICE_UNAVAILABLE
-        elif valid.validate(email) == False:
+        elif valid.validate(email,secret_string) == False:
             return BAD_REQUEST
-        elif await authentication.Authentication().sign_up(
+        return await authentication.Authentication().sign_up(
             email,
-            secret_string,
+            security.sha256b(secret_string),
             login,
             ip,
             'None'
-            ) == True:
-            return OK
-        else:
-            return CONFLICT
+            )
     def _permission(self)->bool:
         server_config = configuration.ServerConfiguration()
         return configuration.Authentication(server_config).get_registration()

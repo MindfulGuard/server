@@ -1,5 +1,8 @@
 import re
 import secrets
+import uuid
+
+from fastapi import Request
 
 import mypass.core.configuration as configuration
 
@@ -44,19 +47,43 @@ class Validation:
                 return True
         else:
             return False
-    def validate(self,email:str)->bool:
-        if self.__validate_email(email):
+    def __validate_secret_string(self,secret_string:bytes)->bool:
+        if len(secret_string) >128:
+            return False
+        return True
+    def validate_token(self,token:str):
+        if len(token)==128:
+            return True
+        return False
+    
+    def validate_is_uuid(self,uuid_str:str)->bool:
+        try:
+            uuid_obj = uuid.UUID(uuid_str)
+            return str(uuid_obj) == uuid_str
+        except ValueError:
+            return False
+
+    def validate(self,email:str,secret_string:bytes)->bool:
+        if self.__validate_email(email) and self.__validate_secret_string(secret_string):
             return True
         else:
             return False
+
+def get_client_ip(request: Request) -> str:
+    # Let's try to get the IP from the X-Real-IP header
+    client_ip = request.headers.get("x-real-ip")
     
-def generate_512_bit_token_string()->str:
-    token_bytes = secrets.token_bytes(64)
-    token_string = token_bytes.hex()
-    return token_string
+    if client_ip is not None:
+        return client_ip
+    
+    # If the header is not set, we use remote_addr directly
+    return request.client.host
 
 def arguments(*args)->bool:
     for i in args:
         if i == None:
             return False
     return True
+
+def minutes_to_seconds(minutes:int):
+    return minutes * 30

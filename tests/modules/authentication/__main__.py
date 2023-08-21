@@ -1,7 +1,10 @@
 import asyncio
 import unittest
 import uuid
-from mypass.authentication import *
+from mypass.authentication.executors.sign_in import SignIn
+from mypass.authentication.executors.sign_up import SignUp
+from mypass.database.postgresql import *
+from mypass.database.postgresql import authentication
 from tests.security import *
 
 class TestAuthMethods(unittest.TestCase):
@@ -14,7 +17,7 @@ class TestAuthMethods(unittest.TestCase):
 
         sign_up = SignUp()
         secure = Security()
-        result = await sign_up.execute(email,secure.encrypt(email,password,private_key),secure.encrypt('niclknamef',password,private_key),'192.168.1.1')
+        result = await sign_up.execute(email,secure.encrypt(email,password,private_key),'niclknamef','192.168.1.1')
         self.assertEqual(result, 1)
     def test_encryption(self):
         secure = Security()
@@ -41,7 +44,11 @@ class TestAuthMethods(unittest.TestCase):
         result = await sign_in.execute(email,secret_string,"Windows",'192.168.1.1')
         self.assertNotEqual(1,result)
         print(result)
-
     
+    async def test_get_tokens(self):
+        auth = authentication.Authentication()
+        await auth.get_tokens('fbac5ccc7f7b109a816c57d2e52dac6ec279a38abdd2f374b4cc8e402e6a033f')
+
+#AES-256
 test = TestAuthMethods()
-asyncio.run(test.test_sign_in())
+asyncio.run(test.test_get_tokens())
