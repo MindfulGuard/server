@@ -47,7 +47,7 @@ class Validation:
                 return True
         else:
             return False
-    def __validate_secret_string(self,secret_string:bytes)->bool:
+    def __validate_secret_string(self,secret_string:str)->bool:
         if len(secret_string) >128:
             return False
         return True
@@ -63,7 +63,7 @@ class Validation:
         except ValueError:
             return False
 
-    def validate(self,email:str,secret_string:bytes)->bool:
+    def validate(self,email:str,secret_string:str)->bool:
         if self.__validate_email(email) and self.__validate_secret_string(secret_string):
             return True
         else:

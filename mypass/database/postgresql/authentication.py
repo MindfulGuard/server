@@ -3,7 +3,7 @@ from mypass.core.response_status_codes import *
 
 class Authentication:
     def __init__(self):pass
-    async def sign_up(self,email:str,secret_string:bytes,login:str,reg_ip:str,avatar:str):
+    async def sign_up(self,email:str,secret_string:str,login:str,reg_ip:str,avatar:str):
         connection = None
         try:
             connection = await Connection().connect()
@@ -17,7 +17,7 @@ class Authentication:
             if connection:
                 await connection.close()
 
-    async def sign_in(self,email:str,secret_string:bytes,token:str,device:str,ip:str,expiration:int):
+    async def sign_in(self,email:str,secret_string:str,token:str,device:str,ip:str,expiration:int):
         connection = None
         try:
             connection = await Connection().connect()
@@ -96,6 +96,21 @@ class Authentication:
             return (value_list,OK)
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return ([],INTERNAL_SERVER_ERROR)
+        finally:
+            if connection:
+                await connection.close()
+
+    async def new_secret_string(self,token:str,old_secret_string:str,new_secret_string:str):
+        connection = None
+        try:
+            connection = await Connection().connect()
+            value = await connection.fetch('SELECT update_token_info($1,$2,$3);',old_secret_string,new_secret_string,token)
+            if value[0]['update_token_info']:
+                return OK
+            else:
+                return NOT_FOUND
+        except asyncpg.exceptions.ConnectionDoesNotExistError:
+            return INTERNAL_SERVER_ERROR
         finally:
             if connection:
                 await connection.close()

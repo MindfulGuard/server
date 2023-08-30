@@ -8,7 +8,7 @@ from mypass.settings import *
 @app.post(VERSION1+PATH_AUTH+"/sign_up")
 async def sign_up(email: Annotated[str, Form()],
                   login: Annotated[str, Form()],
-                  secret_string:Annotated[bytes, Form()],
+                  secret_string:Annotated[str, Form()],
                   request: Request,
                   response:Response
 ):
@@ -18,12 +18,13 @@ async def sign_up(email: Annotated[str, Form()],
 @app.post(VERSION1+PATH_AUTH+"/sign_in")
 async def sign_in(
     email: Annotated[str, Form()],
-    secret_string:Annotated[bytes, Form()],
+    secret_string:Annotated[str, Form()],
     user_agent: Annotated[str, Header()],
+    expiration:Annotated[int, Form()],
     request: Request,response:Response
 ):
     auth = Authentication()
-    return await auth.sign_in(email,secret_string,user_agent,request,response)
+    return await auth.sign_in(email,secret_string,user_agent,expiration,request,response)
 
 @app.delete(VERSION1 + PATH_AUTH + "/sign_out")
 async def sign_out(

@@ -13,7 +13,7 @@ from mypass.database.postgresql import authentication
 import mypass.utils as utils
 
 class Authentication():
-    async def sign_up(self,email: Annotated[str, Form()], login: Annotated[str, Form()],secret_string:Annotated[bytes, Form()],request: Request,response:Response):
+    async def sign_up(self,email: Annotated[str, Form()], login: Annotated[str, Form()],secret_string:Annotated[str, Form()],request: Request,response:Response):
         lang = Language()
         sign_up  = SignUp()
         client_ip:str = utils.get_client_ip(request)
@@ -30,11 +30,11 @@ class Authentication():
         else:
             return {"msg":lang.server_error()}#INTERNAL_SERVER_ERROR
 
-    async def sign_in(self,email: Annotated[str, Form()],secret_string:Annotated[bytes, Form()],user_agent: Annotated[str, Header()],request: Request,response:Response):
+    async def sign_in(self,email: Annotated[str, Form()],secret_string:Annotated[str, Form()],user_agent: Annotated[str, Header()],expiration:int,request: Request,response:Response):
         lang = Language()
         sign_in  = SignIn()
         client_ip:str = utils.get_client_ip(request)
-        exec = await sign_in.execute(email,secret_string,user_agent,client_ip)
+        exec = await sign_in.execute(email,secret_string,user_agent,client_ip,expiration)
         status_code:int = exec[0]
         response.status_code = status_code
         if status_code == BAD_REQUEST:
@@ -46,7 +46,6 @@ class Authentication():
         else:
             return {"msg":lang.server_error(),"token":None}#INTERNAL_SERVER_ERROR
 
-    #!it is necessary to add the output of messages and updates of the token information!
     async def sign_out(self,token:str,token_id:Annotated[str, Form()],response:Response):
         lang = Language()
         sign_out  = SignOut()
@@ -75,12 +74,4 @@ class Authentication():
         status_code = tks[1]
 
         response.status_code = status_code
-
-        if status_code == BAD_REQUEST:
-            return {"list":data}
-        elif status_code == OK:
-            return {"list":data}
-        elif status_code == NOT_FOUND:
-            return {"list":data}
-        else:
-            return {"list":data}#INTERNAL_SERVER_ERROR
+        return {"list":data}

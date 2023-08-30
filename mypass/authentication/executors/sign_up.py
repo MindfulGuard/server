@@ -3,8 +3,9 @@ from mypass.core import configuration, security
 from mypass.core.response_status_codes import *
 from mypass.database.postgresql import authentication
 
+#!need to rework the code, using SRP!
 class SignUp:
-    async def execute(self,email:str,secret_string:bytes,login:str,ip:str):
+    async def execute(self,email:str,secret_string:str,login:str,ip:str):
         """
             Returns:
                 400 - not valid email\n
@@ -19,7 +20,7 @@ class SignUp:
             return BAD_REQUEST
         return await authentication.Authentication().sign_up(
             email,
-            security.sha256b(secret_string),
+            security.sha256s(secret_string),
             login,
             ip,
             'None'

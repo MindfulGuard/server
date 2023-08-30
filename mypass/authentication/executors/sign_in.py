@@ -4,9 +4,9 @@ from mypass.core.response_status_codes import *
 import mypass.core.security as security
 from mypass.database.postgresql import authentication
 
-
+#!need to rework the code, using SRP!
 class SignIn:
-    async def execute(self,email:str,secret_string:bytes,device:str,ip:str):
+    async def execute(self,email:str,secret_string:str,device:str,ip:str,expiration:int):
         """
             Returns:
                 -1 - registration is not allowed\n
@@ -20,14 +20,9 @@ class SignIn:
         return (
             await authentication.Authentication().sign_in(
             email,
-            security.sha256b(secret_string),
+            security.sha256s(secret_string),
             security.sha256s(token),
             device,
             ip,
-            self.__get_expiration()
+            utils.minutes_to_seconds(expiration)
         ),token)
-    
-    def __get_expiration(self)->int:
-        cfg= ServerConfiguration()
-        exec = Authentication(cfg)
-        return utils.minutes_to_seconds(exec.get_token_expiration_default())

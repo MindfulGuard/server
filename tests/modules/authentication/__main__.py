@@ -17,8 +17,8 @@ class TestAuthMethods(unittest.TestCase):
 
         sign_up = SignUp()
         secure = Security()
-        result = await sign_up.execute(email,secure.encrypt(email,password,private_key),'niclknamef','192.168.1.1')
-        self.assertEqual(result, 1)
+        result = await sign_up.execute(email,str(secure.encrypt(email,password,private_key)),'FirstUser','192.168.1.1')
+        self.assertEqual(result, 200)
     def test_encryption(self):
         secure = Security()
 
@@ -37,12 +37,12 @@ class TestAuthMethods(unittest.TestCase):
         email:str = 'rfe@efmail.com'
         private_key:bytes = uuid.UUID("16fd2706-8baf-433b-82eb-8c7fada847da").bytes
         password:str = '12345'
-        secret_string = secure.encrypt(email,password,private_key)
+        secret_string = str(secure.encrypt(email,password,private_key))
 
         sign_in = SignIn()
 
-        result = await sign_in.execute(email,secret_string,"Windows",'192.168.1.1')
-        self.assertNotEqual(1,result)
+        result = await sign_in.execute(email,secret_string,"Windows",'192.168.1.1',60)
+        self.assertNotEqual(1,result[1])
         print(result)
     
     async def test_get_tokens(self):
@@ -51,4 +51,4 @@ class TestAuthMethods(unittest.TestCase):
 
 #AES-256
 test = TestAuthMethods()
-asyncio.run(test.test_get_tokens())
+asyncio.run(test.test_sign_in())
