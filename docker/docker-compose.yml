@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15.4
+    restart: always
+    environment:
+      POSTGRES_USER: "mypass"
+      POSTGRES_PASSWORD: "12345"
+    volumes:
+      - ./dumps/pgsql.sql:/docker-entrypoint-initdb.d/pgsql.sql
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+volumes:
+  pgdata:

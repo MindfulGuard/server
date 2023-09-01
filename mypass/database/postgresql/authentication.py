@@ -11,8 +11,11 @@ class Authentication:
             return OK
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return INTERNAL_SERVER_ERROR
-        except asyncpg.exceptions.UniqueViolationError:
+        except asyncpg.exceptions.UniqueViolationError as e:
+            print(e)
             return CONFLICT
+        except Exception as e:
+            print(e)
         finally:
             if connection:
                 await connection.close()

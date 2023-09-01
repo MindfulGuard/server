@@ -10,6 +10,6 @@ setup(
         'fastapi[all]'
     ],
     dependency_links = [
-        'lib/secure_remote_passwordpy/secure_remote_password'
+        'lib/secure_remote_passwordpy'
     ]
 )
