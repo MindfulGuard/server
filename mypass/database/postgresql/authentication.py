@@ -50,7 +50,7 @@ class Authentication:
         finally:
             if connection:
                 await connection.close()
-    
+     
     async def update_token_info(self,token,device,ip):
         connection = None
         try:
