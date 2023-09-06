@@ -16,7 +16,6 @@ class SignOut:
         """
         valid = utils.Validation()
         tokenf:str = get_authorization_token(token)
-        print(valid.validate_token(tokenf) == False or valid.validate_is_uuid(token_id) == False)
         if valid.validate_token(tokenf) == False or valid.validate_is_uuid(token_id) == False:
             return BAD_REQUEST
         return await authentication.Authentication().sign_out(

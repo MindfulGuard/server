@@ -3,7 +3,7 @@ from mypass.core import configuration, security
 from mypass.core.response_status_codes import *
 from mypass.database.postgresql import authentication
 
-#!need to rework the code, using SRP!
+
 class SignUp:
     async def execute(self,email:str,secret_string:str,login:str,ip:str):
         """
@@ -18,13 +18,14 @@ class SignUp:
             return SERVICE_UNAVAILABLE
         elif valid.validate(email,secret_string) == False:
             return BAD_REQUEST
-        return await authentication.Authentication().sign_up(
-            email,
-            security.sha256s(secret_string),
-            login,
-            ip,
-            'None'
-            )
+        else:
+            return await authentication.Authentication().sign_up(
+                email,
+                security.sha256s(secret_string),
+                login,
+                ip,
+                'None'
+                )
     def _permission(self)->bool:
         server_config = configuration.ServerConfiguration()
         return configuration.Authentication(server_config).get_registration()

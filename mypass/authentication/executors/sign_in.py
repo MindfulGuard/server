@@ -4,7 +4,7 @@ from mypass.core.response_status_codes import *
 import mypass.core.security as security
 from mypass.database.postgresql import authentication
 
-#!need to rework the code, using SRP!
+
 class SignIn:
     async def execute(self,email:str,secret_string:str,device:str,ip:str,expiration:int):
         """
@@ -16,8 +16,9 @@ class SignIn:
         valid = utils.Validation()
         token:str = security.generate_512_bit_token_string()
         if valid.validate(email,secret_string) == False:
-            return (BAD_REQUEST,None)
+            return (None,BAD_REQUEST)
         return (
+            token,
             await authentication.Authentication().sign_in(
             email,
             security.sha256s(secret_string),
@@ -25,4 +26,4 @@ class SignIn:
             device,
             ip,
             utils.minutes_to_seconds(expiration)
-        ),token)
+        ))

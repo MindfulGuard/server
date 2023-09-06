@@ -1,6 +1,7 @@
 from typing import Annotated
 from fastapi import Form, Header, Request, Response
 from mypass.authentication.executors import get_authorization_token
+from mypass.authentication.executors.config import Config
 from mypass.authentication.executors.get_tokens import GetTokens
 
 from mypass.authentication.executors.sign_in import SignIn
@@ -35,12 +36,13 @@ class Authentication():
         sign_in  = SignIn()
         client_ip:str = utils.get_client_ip(request)
         exec = await sign_in.execute(email,secret_string,user_agent,client_ip,expiration)
-        status_code:int = exec[0]
+        status_code:int = exec[1]
+        token:str|None = exec[0]
         response.status_code = status_code
         if status_code == BAD_REQUEST:
-            return {"msg":lang.data_not_valid(),"token":exec[1]}
+            return {"msg":lang.data_not_valid(),"token":token}
         elif status_code == OK:
-            return {"msg":lang.user_found(),"token":exec[1]}
+            return {"msg":lang.user_found(),"token":token}
         elif status_code == NOT_FOUND:
             return {"msg":lang.user_not_found(),"token":None}
         else:
@@ -59,7 +61,21 @@ class Authentication():
             return {"msg":lang.failed_to_delete_token()}
         else:
             return {"msg":lang.server_error()}#INTERNAL_SERVER_ERROR
-    
+        
+    def get_config(self,response:Response):
+        pbkdf2 = Config().execute().pbkdf2()
+        get_config  = pbkdf2[0]
+        status_code = pbkdf2[1]
+
+        response.status_code = status_code
+        if status_code == OK:
+            return {"pbkdf2":get_config}
+        elif status_code == NOT_FOUND:
+            return {"pbkdf2":None}
+        else:
+            response.status_code = INTERNAL_SERVER_ERROR
+            return {"pbkdf2":None}#INTERNAL_SERVER_ERROR
+        
     async def update_token_info(self,token:str,device:str,request:Request)->None:
         client_ip:str = utils.get_client_ip(request)
         auth =  authentication.Authentication()

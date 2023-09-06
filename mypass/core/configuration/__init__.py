@@ -40,6 +40,10 @@ class Authentication:
     def get_token_expiration_default(self)->int:
         """N(minutes)"""
         return int(self.__config.read_configuration(self.__block,'token_expiration_default'))
+    def get_iterations(self)->int:
+        return int(self.__config.read_configuration(self.__block,'iterations'))
+    def get_sha_client(self)->str:
+        return self.__config.read_configuration(self.__block,'sha_client')
 
 class Validation:
     def __init__(self,server_configuration:ServerConfiguration):

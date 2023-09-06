@@ -48,7 +48,7 @@ class Validation:
         else:
             return False
     def __validate_secret_string(self,secret_string:str)->bool:
-        if len(secret_string) >128:
+        if len(secret_string) >512:
             return False
         return True
     def validate_token(self,token:str):
