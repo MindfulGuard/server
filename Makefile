@@ -42,7 +42,8 @@ pip-i:
 
 run:
 	uvicorn mypass.__main__:app --host $(HOST) --port $(PORT)
-
+test:
+	pytest
 docker-dump:
 	docker exec -t docker-db-1 pg_dump -U mypass Mypass > docker/dumps/pgsql.sql
 
