@@ -17,6 +17,7 @@ HOST = 0.0.0.0
 CONTAINER_NAME = docker-db-1
 DATABASE_USERS = mypass
 DATABASE_NAME = mypass
+PATH-TO-DUMP = docker/dumps/pgsql.sql
 
 ifeq ($(OS),Windows_NT)
     RM = rmdir /s /q
@@ -51,7 +52,7 @@ run:
 test:
 	pytest
 docker-dump:
-	docker exec -t $(CONTAINER_NAME) pg_dump -U $(DATABASE_USERS) $(DATABASE_NAME) > docker/dumps/pgsql.sql
+	docker exec -t $(CONTAINER_NAME) pg_dump -U $(DATABASE_USERS) $(DATABASE_NAME) > $(PATH-TO-DUMP)
 
 clean:
 	$(RM) $(INFO)
