@@ -12,6 +12,10 @@ DEACTIVATE-VENV-MSG = TO DEACTIVATE, USE THE COMMAND "deactivate"
 PORT = 8080
 HOST = 0.0.0.0
 
+#docker
+CONTAINER_NAME = docker-db-1
+DATABASE_USERS = mypass
+DATABASE_NAME = mypass
 
 ifeq ($(OS),Windows_NT)
     RM = rmdir /s /q
@@ -45,7 +49,7 @@ run:
 test:
 	pytest
 docker-dump:
-	docker exec -t docker-db-1 pg_dump -U mypass Mypass > docker/dumps/pgsql.sql
+	docker exec -t $(CONTAINER_NAME) pg_dump -U $(DATABASE_USERS) $(DATABASE_NAME) > docker/dumps/pgsql.sql
 
 clean:
 	$(RM) $(INFO)

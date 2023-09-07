@@ -1,6 +1,4 @@
-import codecs
 import secrets
-import string
 from fastapi.testclient import TestClient
 from mypass.__main__ import app
 from mypass.settings import *
