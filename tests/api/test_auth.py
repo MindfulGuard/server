@@ -6,8 +6,8 @@ from tests.api.secure import *
 
 client = TestClient(app)
 
-EMAIL = "user8@femail.com"
-LOGIN = "user8"
+EMAIL = "user1@femail.com"
+LOGIN = "user1"
 PASSWORD = "12345"
 PRIVATE_KEY = '550e8400-e29b-41d4-a716-446655440000'
 
@@ -105,7 +105,7 @@ def get_tokens()->str:
     return response.json()["list"][0]["id"]
 
 
-def fdtest_sign_out():
+def test_sign_out():
     data = {
         "id": get_tokens(),
     }

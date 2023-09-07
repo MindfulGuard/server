@@ -1,9 +1,10 @@
-VENV = mypass-venv
-INFO = mypass.egg-info
+PROJECT-NAME = mypass
+VENV = $(PROJECT-NAME)-venv
+INFO = $(PROJECT-NAME).egg-info
 PIP-WIN = .\$(VENV)\Scripts\pip
 PIP-LINUX = ./$(VENV)/bin/pip
 VERSION = 3.10
-PATH-TO-SOURCE = mypass/
+PATH-TO-SOURCE = $(PROJECT-NAME)/
 REQUIREMENTS = requirements.txt
 
 ACTIVATE-VENV-MSG = TO RUN, ENTER THE COMMAND
@@ -22,7 +23,7 @@ ifeq ($(OS),Windows_NT)
 
 	SETUP-VENV = py -$(VERSION) -m venv $(VENV)
 	PIP-VENV = $(PIP-WIN) install -r $(REQUIREMENTS)
-	RUN-VENV = $(ACTIVATE-VENV-MSG) .\mypass-venv\Scripts\activate
+	RUN-VENV = $(ACTIVATE-VENV-MSG) .\$(VENV)\Scripts\activate
 
 	UPDATE-LIST = $(PIP-WIN) freeze > $(REQUIREMENTS)
 else
@@ -46,7 +47,7 @@ pip-i:
 	pip install -e .
 
 run:
-	uvicorn mypass.__main__:app --host $(HOST) --port $(PORT)
+	uvicorn $(PROJECT-NAME).__main__:app --host $(HOST) --port $(PORT)
 test:
 	pytest
 docker-dump:

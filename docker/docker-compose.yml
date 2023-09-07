@@ -4,9 +4,8 @@ services:
   db:
     image: postgres:15.4
     restart: always
-    environment:
-      POSTGRES_USER: "mypass"
-      POSTGRES_PASSWORD: "12345"
+    env_file:
+      - .env
     volumes:
       - ./dumps/pgsql.sql:/docker-entrypoint-initdb.d/pgsql.sql
       - pgdata:/var/lib/postgresql/data
