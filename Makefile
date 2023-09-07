@@ -39,6 +39,7 @@ setup:
 	$(SETUP-VENV)
 	@echo *****$(RUN-VENV)*****
 	@echo *****make pip-i*****
+	@echo *****docker-compose up -d*****
 	@echo *****$(DEACTIVATE-VENV-MSG)*****
 
 pip-i:

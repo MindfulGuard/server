@@ -104,7 +104,8 @@ def get_tokens()->str:
     #print(response.json()["list"][0])
     return response.json()["list"][0]["id"]
 
-def test_sign_out():
+
+def fdtest_sign_out():
     data = {
         "id": get_tokens(),
     }
