@@ -8,10 +8,10 @@ from tests.api.secure import *
 
 client = TestClient(app)
 
-EMAIL = "user2@femail.com"
-LOGIN = "user2"
+EMAIL = "user8@femail.com"
+LOGIN = "user8"
 PASSWORD = "12345"
-PRIVATE_KEY = '729f2d0b625124bcf0e60d42bd8f57a2'
+PRIVATE_KEY = '550e8400-e29b-41d4-a716-446655440000'
 
 def generate_random_bytes(length=16):
     # Генерируем случайные байты указанной длины
@@ -31,8 +31,8 @@ def encrypt_password():
     iterations:int = auth_config()["pbkdf2"]["iterations"]
     SHA:str = auth_config()["pbkdf2"]["client_SHA"]
     secure = Security(iterations,SHA)
-    
-    return (secure.encrypt(EMAIL,PASSWORD,bytes.fromhex(PRIVATE_KEY)))
+    prvaite_key = str(PRIVATE_KEY).replace("-", "")
+    return (secure.encrypt(EMAIL,PASSWORD,bytes.fromhex(prvaite_key)))
 
 
 def test_sign_up():
@@ -65,3 +65,57 @@ def test_sign_in():
     assert response.status_code == 200
 
     print("Response JSON:", response.json())
+
+def sign_in()->str:
+    data = {
+        "email": EMAIL,
+        "secret_string": encrypt_password(),
+        "expiration": 10
+    }
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Real-IP':'192.168.1.1',
+        'User-Agent':'python/win'
+    }
+    response = client.post(VERSION1+PATH_AUTH+"/sign_in", data=data,headers=headers)
+
+    print("Response JSON:", response.json())
+
+    return response.json()["token"]
+
+def test_get_tokens():
+    headers = {
+        'Authorization':'Bearer '+sign_in(),
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Real-IP':'192.168.1.1',
+        'User-Agent':'python/win'
+    }
+    response = client.request(method="GET",url=VERSION1+PATH_AUTH+"/sessions",headers=headers)
+
+    assert response.status_code == 200,response.json()
+
+def get_tokens()->str:
+    headers = {
+        'Authorization':'Bearer '+sign_in(),
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Real-IP':'192.168.1.1',
+        'User-Agent':'python/win'
+    }
+    response = client.request(method="GET",url=VERSION1+PATH_AUTH+"/sessions",headers=headers)
+
+    #print(response.json()["list"][0])
+    return response.json()["list"][0]["id"]
+
+def test_sign_out():
+    data = {
+        "id": get_tokens(),
+    }
+    headers = {
+        'Authorization':'Bearer '+sign_in(),
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Real-IP':'192.168.1.1',
+        'User-Agent':'python/win'
+    }
+    response = client.request(method="DELETE",url=VERSION1+PATH_AUTH+"/sign_out",data=data,headers=headers)
+    
+    assert response.status_code == 200,get_tokens()

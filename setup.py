@@ -2,14 +2,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='mypass',
-    version='0.1.0',
+    version='0.0.0',
     packages=find_packages(),
     install_requires=[
         'asyncpg',
         'pycryptodome',
-        'fastapi[all]'
+        'fastapi[all]',
+        'tomli',
+        'pytest'
     ],
-    dependency_links = [
-        'lib/secure_remote_passwordpy'
-    ]
 )

@@ -1,13 +1,14 @@
 import configparser
+import tomli
 
 
 class ServerConfiguration:
-    __PATH_TO_SERVER_CONFIGURATION: str = 'mypass/core/configuration/package/server_configuration.ini'
+    __PATH_TO_SERVER_CONFIGURATION: str = 'mypass/core/configuration/package/server_configuration.toml'
 
     def read_configuration(self, key: str, value: str) -> str:
-        cfg = configparser.ConfigParser()
-        cfg.read(self.__PATH_TO_SERVER_CONFIGURATION)
-        return cfg.get(key, value)
+        with open(self.__PATH_TO_SERVER_CONFIGURATION, "rb") as f:
+            cfg = tomli.load(f)
+        return cfg[key][value]
 
 class PgSql:
     def __init__(self,server_configuration:ServerConfiguration):
@@ -29,14 +30,11 @@ class Authentication:
         self.__block:str = 'authentication'
         self.__config:ServerConfiguration = server_configuration
     def get_registration(self)->bool:
-        match self.__config.read_configuration(self.__block,'registration').lower():
-            case 'true':return True
-            case 'false':return False
-            case _:return False
+        return bool(self.__config.read_configuration(self.__block,'registration'))
     def get_smtp(self)->str:
         return self.__config.read_configuration(self.__block,'smtp')
     def get_blocked_domains(self)->list[str]:
-        return self.__config.read_configuration(self.__block,'blocked_domains').split(',')
+        return list[str](self.__config.read_configuration(self.__block,'blocked_domains'))
     def get_token_expiration_default(self)->int:
         """N(minutes)"""
         return int(self.__config.read_configuration(self.__block,'token_expiration_default'))

@@ -1,6 +1,5 @@
 from mypass.database.postgresql.connection import *
 from mypass.core.response_status_codes import *
-
 class Authentication:
     def __init__(self):pass
     async def sign_up(self,email:str,secret_string:str,login:str,reg_ip:str,avatar:str):

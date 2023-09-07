@@ -1,0 +1,19 @@
+[pgsql]
+host="localhost"
+port="5432"
+database="mypass"
+user="mypass"
+password="12345"
+
+[authentication]
+registration=true
+smtp="email.example.com"
+blocked_domains = ["email.com","email2.com"]
+token_expiration_default = 60
+iterations = 10000
+sha_client = "sha256"
+
+[validation]
+token_length = 128
+login_length = 50
+password_length = 128
