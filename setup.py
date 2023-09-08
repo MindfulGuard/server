@@ -9,6 +9,7 @@ setup(
         'pycryptodome',
         'fastapi[all]',
         'tomli',
-        'pytest'
+        'pytest',
+        'cryptography'
     ],
 )

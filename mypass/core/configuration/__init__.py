@@ -49,4 +49,4 @@ class Validation:
     def get_login_length(self)->int:
         return int(self.__config.read_configuration(self.__block,'login_length'))
     def get_password_length(self)->int:
-        return int(self.__config.read_configuration(self.__block,'password_length'))
+        return int(self.__config.read_configuration(self.__block,'secret_string_length'))

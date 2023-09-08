@@ -1,4 +1,6 @@
+from hashlib import sha256
 import secrets
+import uuid
 from fastapi.testclient import TestClient
 from mypass.__main__ import app
 from mypass.settings import *
@@ -6,10 +8,10 @@ from tests.api.secure import *
 
 client = TestClient(app)
 
-EMAIL = "user1@femail.com"
-LOGIN = "user1"
+EMAIL = "user64@femail.com"
+LOGIN = "user64"
 PASSWORD = "12345"
-PRIVATE_KEY = '550e8400-e29b-41d4-a716-446655440000'
+SALT = uuid.uuid4().hex
 
 def generate_random_bytes(length=16):
     # Генерируем случайные байты указанной длины
@@ -25,13 +27,15 @@ def auth_config():
     response = client.get(VERSION1+PATH_AUTH+"/config")
     return response.json()
 
-def encrypt_password():
+def generate_aes256key():
     iterations:int = auth_config()["pbkdf2"]["iterations"]
     SHA:str = auth_config()["pbkdf2"]["client_SHA"]
-    secure = Security(iterations,SHA)
-    prvaite_key = str(PRIVATE_KEY).replace("-", "")
-    return (secure.encrypt(EMAIL,PASSWORD,bytes.fromhex(prvaite_key)))
+    secure = PbkdF2HMAC(iterations,SHA)
+    prvaite_key = str(SALT).replace("-", "")
+    return (secure.encrypt(PASSWORD,bytes.fromhex(prvaite_key)))
 
+def encrypt_password():
+    return sha256(bytes(PASSWORD,'utf-8')+generate_aes256key()).hexdigest()
 
 def test_sign_up():
     data = {
@@ -45,6 +49,7 @@ def test_sign_up():
     }
     response = client.post(VERSION1+PATH_AUTH+"/sign_up", data=data,headers=headers)
 
+    assert len(encrypt_password())==64
     assert response.status_code == 200
 
 def test_sign_in():

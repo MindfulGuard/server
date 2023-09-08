@@ -12,8 +12,9 @@ blocked_domains = ["email.com","email2.com"]
 token_expiration_default = 60
 iterations = 10000
 sha_client = "sha256"
+aes_length=64
 
 [validation]
 token_length = 128
 login_length = 50
-password_length = 128
+secret_string_length = 512
