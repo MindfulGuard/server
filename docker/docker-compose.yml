@@ -21,7 +21,7 @@ services:
       #client
       - "9090:9090"
     volumes:
-      - minio:/data
+      - ../minio-data:/data
     command: server /data --console-address ":9090"
 
 volumes:
