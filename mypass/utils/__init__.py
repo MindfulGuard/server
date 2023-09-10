@@ -51,13 +51,7 @@ class Validation:
             return str(uuid_obj) == uuid_str
         except ValueError:
             return False
-    """
-    def validate(self,email:str,secret_string:str)->bool:
-        if self.__validate_email(email) and self.__validate_secret_string(secret_string):
-            return True
-        else:
-            return False
-    """
+
 def get_client_ip(request: Request) -> str:
     # Let's try to get the IP from the X-Real-IP header
     client_ip = request.headers.get("x-real-ip")
