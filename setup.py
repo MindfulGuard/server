@@ -11,6 +11,6 @@ setup(
         'tomli',
         'pytest',
         'cryptography',
-        'minio'
+        'minio' 
     ],
 )
