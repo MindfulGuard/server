@@ -7,3 +7,4 @@ mypass/.idea/
 __pycache__/
 mypass.egg-info/
 .pytest_cache
+docker/data
