@@ -15,7 +15,7 @@ class SignIn:
         """
         valid = Validation()
         token:str = security.generate_512_bit_token_string()
-        if valid.validate(email,secret_string) == False:
+        if valid.validate_email(email) == False or valid.validate_secret_string(secret_string) == False:
             return (None,BAD_REQUEST)
         return (
             token,

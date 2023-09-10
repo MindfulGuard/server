@@ -1,4 +1,5 @@
 from hashlib import sha256
+import re
 import secrets
 import uuid
 from fastapi.testclient import TestClient
@@ -8,13 +9,12 @@ from tests.api.secure import *
 
 client = TestClient(app)
 
-EMAIL = "user645@femail.com"
-LOGIN = "user654"
-PASSWORD = "12345"
+EMAIL = "use13r4f23@tmail.com"
+LOGIN = "user3131f3"
+PASSWORD = "u2Hello%fmnrmfsfsfsd"
 SALT = uuid.uuid4().hex
 
 def generate_random_bytes(length=16):
-    # Генерируем случайные байты указанной длины
     random_bytes = secrets.token_bytes(length)
     
     return random_bytes
@@ -27,7 +27,17 @@ def auth_config():
     response = client.get(VERSION1+PATH_AUTH+"/config")
     return response.json()
 
-def generate_aes256key():
+def test_is_valid_password():
+    pattern:str = auth_config()["authentication_rule"]["password_rule"]
+    print(pattern)
+    assert re.match(pattern, PASSWORD) != None
+
+def is_valid_password(password)->bool:
+    pattern:str = auth_config()["authentication_rule"]["password_rule"]
+    print(pattern)
+    return re.match(pattern, password) is not None
+
+def generate_aes256key()->bytes:
     iterations:int = auth_config()["pbkdf2"]["iterations"]
     SHA:str = auth_config()["pbkdf2"]["SHA"]
     secure = PbkdF2HMAC(iterations,SHA)
@@ -35,6 +45,8 @@ def generate_aes256key():
     return (secure.encrypt(PASSWORD,bytes.fromhex(prvaite_key)))
 
 def encrypt_password():
+    if is_valid_password(PASSWORD) == False:
+        return b""
     return sha256(bytes(PASSWORD,'utf-8')+generate_aes256key()).hexdigest()
 
 def test_sign_up():

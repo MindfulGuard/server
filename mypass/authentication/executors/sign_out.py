@@ -15,10 +15,10 @@ class SignOut:
                 409 - the user already exists
         """
         valid = utils.Validation()
-        tokenf:str = get_authorization_token(token)
-        if valid.validate_token(tokenf) == False or valid.validate_is_uuid(token_id) == False:
+        get_token:str = get_authorization_token(token)
+        if valid.validate_token(get_token) == False or valid.validate_is_uuid(token_id) == False:
             return BAD_REQUEST
         return await authentication.Authentication().sign_out(
-            security.sha256s(tokenf),
+            security.sha256s(get_token),
             token_id,
         )

@@ -27,7 +27,7 @@ async def sign_in(
     return await auth.sign_in(email,secret_string,user_agent,expiration,request,response)
 
 @app.get(VERSION1+PATH_AUTH+"/config")
-def get_config_auth(response:Response):
+async def get_config_auth(response:Response):
     auth = Authentication()
     return auth.get_config(response)
 

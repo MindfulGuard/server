@@ -14,9 +14,10 @@ class SignUp:
                 409 - the user already exists
         """
         valid = utils.Validation()
-        if self._permission() == False:
+        print(valid.validate_email(email),valid.validate_secret_string(secret_string),valid.validate_login(login))
+        if self.__permission() == False:
             return SERVICE_UNAVAILABLE
-        elif valid.validate(email,secret_string) == False:
+        elif valid.validate_email(email) == False or valid.validate_secret_string(secret_string) == False or valid.validate_login(login)==False:
             return BAD_REQUEST
         else:
             return await authentication.Authentication().sign_up(
@@ -26,6 +27,6 @@ class SignUp:
                 ip,
                 'None'
                 )
-    def _permission(self)->bool:
+    def __permission(self)->bool:
         server_config = configuration.ServerConfiguration()
         return configuration.Authentication(server_config).get_registration()

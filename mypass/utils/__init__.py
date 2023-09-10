@@ -8,7 +8,7 @@ import mypass.core.configuration as configuration
 
 
 class Validation:
-    def __validate_login(self,login:str)->bool:
+    def validate_login(self,login:str)->bool:
         """
         Can only be present: hyphen, underscore, Latin characters only
         """
@@ -16,11 +16,10 @@ class Validation:
         length = configuration.Authentication(config).public().lengths().get_login_length()
         return bool(re.compile(r'^[A-Za-z0-9_-]{2,'+str(length)+'}$').match(login))
 
-    def __validate_email(self,email:str)->bool:
+    def validate_email(self,email:str)->bool:
         """
         2 ≤ email ≤ 320
         """
-        # Регулярное выражение для проверки адреса электронной почты
         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,320}$'# Maximum address length according to RFC 5321 standard
         
         if re.match(email_pattern, email):
@@ -35,10 +34,12 @@ class Validation:
                 return True
         else:
             return False
-    def __validate_secret_string(self,secret_string:str)->bool:
-        if len(secret_string) >512:
-            return False
-        return True
+        
+    def validate_secret_string(self,secret_string:str)->bool:
+        if len(secret_string) == 128 or len(secret_string) == 64 or len(secret_string) == 32:
+            return True
+        return False
+    
     def validate_token(self,token:str):
         if len(token)==128:
             return True
@@ -50,13 +51,13 @@ class Validation:
             return str(uuid_obj) == uuid_str
         except ValueError:
             return False
-
+    """
     def validate(self,email:str,secret_string:str)->bool:
         if self.__validate_email(email) and self.__validate_secret_string(secret_string):
             return True
         else:
             return False
-
+    """
 def get_client_ip(request: Request) -> str:
     # Let's try to get the IP from the X-Real-IP header
     client_ip = request.headers.get("x-real-ip")
