@@ -4,13 +4,18 @@ from mypass.core.response_status_codes import OK
 
 class Config:
     def execute(self):
-        return PrivateConfigs()
+        return ReadConfigs()
 
-class PrivateConfigs():
+class ReadConfigs():
+    def __init__(self):
+        self.__server_conf = ServerConfiguration()
+        self.__auth_conf = Authentication(self.__server_conf)
     def pbkdf2(self):
-        server_conf = ServerConfiguration()
-        auth_conf = Authentication(server_conf)
         return ({
-            "client_SHA":auth_conf.get_sha_client(),
-            "iterations":auth_conf.get_iterations()
+            "SHA":self.__auth_conf.public().configuration().get_sha_client(),
+            "iterations":self.__auth_conf.public().configuration().get_iterations()
+        },OK)
+    def password_rule(self):
+        return({
+            "password_rule":self.__auth_conf.public().configuration().get_password_rule()
         },OK)

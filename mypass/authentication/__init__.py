@@ -63,18 +63,22 @@ class Authentication():
             return {"msg":lang.server_error()}#INTERNAL_SERVER_ERROR
         
     def get_config(self,response:Response):
-        pbkdf2 = Config().execute().pbkdf2()
-        get_config  = pbkdf2[0]
+        config = Config().execute()
+        pbkdf2 = config.pbkdf2()
+        password_rule = config.password_rule()
+        get_password_rule = password_rule[0]
+        #get_password_rule = None
+        get_pbkdf2  = pbkdf2[0]
         status_code = pbkdf2[1]
 
         response.status_code = status_code
         if status_code == OK:
-            return {"pbkdf2":get_config}
+            return {"pbkdf2":get_pbkdf2,"authentication_rule":get_password_rule}
         elif status_code == NOT_FOUND:
-            return {"pbkdf2":None}
+            return {"pbkdf2":None,"authentication_rule":None}
         else:
             response.status_code = INTERNAL_SERVER_ERROR
-            return {"pbkdf2":None}#INTERNAL_SERVER_ERROR
+            return {"pbkdf2":None,"authentication_rule":None}#INTERNAL_SERVER_ERROR
         
     async def update_token_info(self,token:str,device:str,request:Request)->None:
         client_ip:str = utils.get_client_ip(request)
@@ -82,7 +86,6 @@ class Authentication():
         await auth.update_token_info(security.sha256s(get_authorization_token(token)),device,client_ip)
     
     async def get_tokens(self,token:str,response:Response):
-        lang = Language()
         auth =  GetTokens()
 
         tks = await auth.execute(get_authorization_token(token))

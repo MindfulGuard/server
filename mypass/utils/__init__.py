@@ -13,20 +13,8 @@ class Validation:
         Can only be present: hyphen, underscore, Latin characters only
         """
         config = configuration.ServerConfiguration()
-        length = configuration.Validation(config).get_login_length()
+        length = configuration.Authentication(config).public().lengths().get_login_length()
         return bool(re.compile(r'^[A-Za-z0-9_-]{2,'+str(length)+'}$').match(login))
-    def __validte_password(self,password:str)->bool:
-        """
-        (?=.*[A-Z]): At least one uppercase letter is required.\n
-        (?=.*[a-z]): At least one lowercase letter is required.\n
-        (?=.*\\d): At least one digit is required.\n
-        (?=.*[@$!%*?&]): At least one of the specified special characters is required: @, $, !, %, *, ?, &.\n
-        [ A-Za-z\\d@$!%*?&]{8,}: Only Latin characters (in any case), numbers and specified special characters are allowed. The password must be at least 8 characters long.
-        """
-
-        config = configuration.ServerConfiguration()
-        length = configuration.Validation(config).get_password_length()
-        return bool(re.compile(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,' + str(length) + '}$').match(password))
 
     def __validate_email(self,email:str)->bool:
         """

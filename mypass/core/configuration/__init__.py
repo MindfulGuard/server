@@ -1,13 +1,25 @@
+from typing import Any
 import tomli
 
+from mypass.core.configuration.nestings.authentication import Public
 
 class ServerConfiguration:
     __PATH_TO_SERVER_CONFIGURATION: str = 'mypass/core/configuration/package/server_configuration.toml'
-
-    def read_configuration(self, key: str, value: str) -> str:
+    def __init__(self):
         with open(self.__PATH_TO_SERVER_CONFIGURATION, "rb") as f:
-            cfg = tomli.load(f)
-        return cfg[key][value]
+            self.__cfg = tomli.load(f)
+    def read_configuration(self, block: str, key: str) -> str:
+        keys = block.split('.')  # Dividing the string into keys
+        current = self.__cfg
+
+        for k in keys:
+            if isinstance(current, dict) and k in current:
+                current = current[k]
+            else:
+                return ""  # If the key is not found, return an empty string
+
+        # Now current contains the value at the specified path
+        return current.get(key, "")
 
 class PgSql:
     def __init__(self,server_configuration:ServerConfiguration):
@@ -37,16 +49,5 @@ class Authentication:
     def get_token_expiration_default(self)->int:
         """N(minutes)"""
         return int(self.__config.read_configuration(self.__block,'token_expiration_default'))
-    def get_iterations(self)->int:
-        return int(self.__config.read_configuration(self.__block,'iterations'))
-    def get_sha_client(self)->str:
-        return self.__config.read_configuration(self.__block,'sha_client')
-
-class Validation:
-    def __init__(self,server_configuration:ServerConfiguration):
-        self.__block:str = 'validation'
-        self.__config:ServerConfiguration = server_configuration
-    def get_login_length(self)->int:
-        return int(self.__config.read_configuration(self.__block,'login_length'))
-    def get_password_length(self)->int:
-        return int(self.__config.read_configuration(self.__block,'secret_string_length'))
+    def public(self):
+        return Public(self.__block,self.__config)

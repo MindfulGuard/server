@@ -1,8 +1,8 @@
-from mypass import utils
 from mypass.core.configuration import *
 from mypass.core.response_status_codes import *
 import mypass.core.security as security
 from mypass.database.postgresql import authentication
+from mypass.utils import Validation, minutes_to_seconds
 
 
 class SignIn:
@@ -13,7 +13,7 @@ class SignIn:
                 1 - user not was successful\n
                 0 - the user already exists
         """
-        valid = utils.Validation()
+        valid = Validation()
         token:str = security.generate_512_bit_token_string()
         if valid.validate(email,secret_string) == False:
             return (None,BAD_REQUEST)
@@ -25,5 +25,5 @@ class SignIn:
             security.sha256s(token),
             device,
             ip,
-            utils.minutes_to_seconds(expiration)
+            minutes_to_seconds(expiration)
         ))

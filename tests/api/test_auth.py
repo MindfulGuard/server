@@ -8,8 +8,8 @@ from tests.api.secure import *
 
 client = TestClient(app)
 
-EMAIL = "user64@femail.com"
-LOGIN = "user64"
+EMAIL = "user645@femail.com"
+LOGIN = "user654"
 PASSWORD = "12345"
 SALT = uuid.uuid4().hex
 
@@ -29,7 +29,7 @@ def auth_config():
 
 def generate_aes256key():
     iterations:int = auth_config()["pbkdf2"]["iterations"]
-    SHA:str = auth_config()["pbkdf2"]["client_SHA"]
+    SHA:str = auth_config()["pbkdf2"]["SHA"]
     secure = PbkdF2HMAC(iterations,SHA)
     prvaite_key = str(SALT).replace("-", "")
     return (secure.encrypt(PASSWORD,bytes.fromhex(prvaite_key)))
