@@ -10,6 +10,7 @@ setup(
         'fastapi[all]',
         'tomli',
         'pytest',
-        'cryptography'
+        'cryptography',
+        'minio'
     ],
 )

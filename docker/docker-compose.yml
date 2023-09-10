@@ -1,16 +1,29 @@
 version: '3.9'
 
 services:
-  db:
+  postgresql:
     image: postgres:15.4
     restart: always
     env_file:
-      - .env
+      - .POSTGRESQL.env
     volumes:
       - ./dumps/pgsql.sql:/docker-entrypoint-initdb.d/pgsql.sql
       - pgdata:/var/lib/postgresql/data
     ports:
       - 5432:5432
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio
+    env_file:
+      - .MINIO.env
+    ports:
+      - "9000:9000"
+      #client
+      - "9090:9090"
+    volumes:
+      - minio:/data
+    command: server /data --console-address ":9090"
 
 volumes:
+  minio:
   pgdata:
