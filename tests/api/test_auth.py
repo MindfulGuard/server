@@ -4,13 +4,14 @@ import secrets
 import uuid
 from fastapi.testclient import TestClient
 from mypass.__main__ import app
-from mypass.settings import *
 from tests.api.secure import *
 
 client = TestClient(app)
 
-EMAIL = "use13r4f23@tmail.com"
-LOGIN = "user3131f3"
+AUTH_PATH_V1 = "/v1/auth"
+
+EMAIL = "use13r43f23@tmail.com"
+LOGIN = "user31331f3"
 PASSWORD = "u2Hello%fmnrmfsfsfsd"
 SALT = uuid.uuid4().hex
 
@@ -20,11 +21,11 @@ def generate_random_bytes(length=16):
     return random_bytes
 
 def test_auth_config():
-    response = client.get(VERSION1+PATH_AUTH+"/config")
+    response = client.get(AUTH_PATH_V1+"/config")
     assert response.status_code == 200
 
 def auth_config():
-    response = client.get(VERSION1+PATH_AUTH+"/config")
+    response = client.get(AUTH_PATH_V1+"/config")
     return response.json()
 
 def test_is_valid_password():
@@ -59,7 +60,7 @@ def test_sign_up():
         'Content-Type': 'application/x-www-form-urlencoded',
         'X-Real-IP':'192.168.1.1'
     }
-    response = client.post(VERSION1+PATH_AUTH+"/sign_up", data=data,headers=headers)
+    response = client.post(AUTH_PATH_V1+"/sign_up", data=data,headers=headers)
 
     assert len(encrypt_password())==64
     assert response.status_code == 200
@@ -75,7 +76,7 @@ def test_sign_in():
         'X-Real-IP':'192.168.1.1',
         'User-Agent':'python/win'
     }
-    response = client.post(VERSION1+PATH_AUTH+"/sign_in", data=data,headers=headers)
+    response = client.post(AUTH_PATH_V1+"/sign_in", data=data,headers=headers)
     
     assert response.status_code == 200
 
@@ -92,7 +93,7 @@ def sign_in()->str:
         'X-Real-IP':'192.168.1.1',
         'User-Agent':'python/win'
     }
-    response = client.post(VERSION1+PATH_AUTH+"/sign_in", data=data,headers=headers)
+    response = client.post(AUTH_PATH_V1+"/sign_in", data=data,headers=headers)
 
     print("Response JSON:", response.json())
 
@@ -105,7 +106,7 @@ def test_get_tokens():
         'X-Real-IP':'192.168.1.1',
         'User-Agent':'python/win'
     }
-    response = client.request(method="GET",url=VERSION1+PATH_AUTH+"/sessions",headers=headers)
+    response = client.request(method="GET",url=AUTH_PATH_V1+"/sessions",headers=headers)
 
     assert response.status_code == 200,response.json()
 
@@ -116,9 +117,8 @@ def get_tokens()->str:
         'X-Real-IP':'192.168.1.1',
         'User-Agent':'python/win'
     }
-    response = client.request(method="GET",url=VERSION1+PATH_AUTH+"/sessions",headers=headers)
+    response = client.request(method="GET",url=AUTH_PATH_V1+"/sessions",headers=headers)
 
-    #print(response.json()["list"][0])
     return response.json()["list"][0]["id"]
 
 
@@ -132,6 +132,6 @@ def test_sign_out():
         'X-Real-IP':'192.168.1.1',
         'User-Agent':'python/win'
     }
-    response = client.request(method="DELETE",url=VERSION1+PATH_AUTH+"/sign_out",data=data,headers=headers)
+    response = client.request(method="DELETE",url=AUTH_PATH_V1+"/sign_out",data=data,headers=headers)
     
     assert response.status_code == 200,get_tokens()

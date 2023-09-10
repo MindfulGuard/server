@@ -1,0 +1,1 @@
+from mypass.api.v1.auth import router as auth_router
