@@ -7,7 +7,7 @@ class Authentication:
         connection = None
         try:
             connection = await Connection().connect()
-            await connection.fetch('CALL sign_up($1, $2, $3, $4, $5, $6)', email, secret_string, login, reg_ip, avatar, True)
+            await connection.fetch('CALL sign_up($1, $2, $3, $4, $5)', email, secret_string, login, reg_ip, True)
             return OK
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return INTERNAL_SERVER_ERROR

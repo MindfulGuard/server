@@ -14,7 +14,7 @@ PORT = 8080
 HOST = 0.0.0.0
 
 #docker
-CONTAINER_NAME = docker-db-1
+CONTAINER_NAME = docker-postgresql-1
 DATABASE_USERS = mypass
 DATABASE_NAME = mypass
 PATH-TO-DUMP = docker/dumps/pgsql.sql

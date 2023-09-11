@@ -22,11 +22,11 @@ SET row_security = off;
 
 CREATE FUNCTION public.active_token(token character varying) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$DECLARE
-    record_exists BOOLEAN;
-BEGIN
-SELECT EXISTS (SELECT t_id FROM t_tokens WHERE t_token = $1 AND EXTRACT(EPOCH FROM current_timestamp)::BIGINT <= t_expiration) INTO record_exists;
-RETURN record_exists;
+    AS $_$DECLARE
+    record_exists BOOLEAN;
+BEGIN
+SELECT EXISTS (SELECT t_id FROM t_tokens WHERE t_token = $1 AND EXTRACT(EPOCH FROM current_timestamp)::BIGINT <= t_expiration) INTO record_exists;
+RETURN record_exists;
 END;$_$;
 
 
@@ -38,11 +38,11 @@ ALTER FUNCTION public.active_token(token character varying) OWNER TO mypass;
 
 CREATE PROCEDURE public.send_code(IN email character varying, IN code integer, IN expiration bigint)
     LANGUAGE plpgsql
-    AS $_$DECLARE
-user_id UUID;
-BEGIN
-SELECT u_id INTO user_id FROM u_users WHERE u_email = $1;
-INSERT INTO e_ecodes VALUES (gen_random_uuid(),user_id,$2,$3);
+    AS $_$DECLARE
+user_id UUID;
+BEGIN
+SELECT u_id INTO user_id FROM u_users WHERE u_email = $1;
+INSERT INTO e_ecodes VALUES (gen_random_uuid(),user_id,$2,$3);
 END$_$;
 
 
@@ -54,17 +54,17 @@ ALTER PROCEDURE public.send_code(IN email character varying, IN code integer, IN
 
 CREATE FUNCTION public.sign_in(email character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$DECLARE
-user_id UUID;
-timestmp BIGINT;
-BEGIN
-timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-SELECT u_id INTO user_id FROM u_users WHERE u_email = $1 AND u_secret_string=$2 AND u_confirm = TRUE;
-IF user_id IS NULL THEN
-	RETURN FALSE;
-END IF;
-INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
-RETURN TRUE;
+    AS $_$DECLARE
+user_id UUID;
+timestmp BIGINT;
+BEGIN
+timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+SELECT u_id INTO user_id FROM u_users WHERE u_email = $1 AND u_secret_string=$2 AND u_confirm = TRUE;
+IF user_id IS NULL THEN
+	RETURN FALSE;
+END IF;
+INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
+RETURN TRUE;
 END$_$;
 
 
@@ -76,42 +76,44 @@ ALTER FUNCTION public.sign_in(email character varying, secret_string character v
 
 CREATE FUNCTION public.sign_out(token character varying, token_id uuid) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$DECLARE
-    user_id UUID;
-    deletion_successful BOOLEAN;
-BEGIN
-    SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1;
-    
-    IF user_id IS NULL THEN
-        deletion_successful := FALSE;
-    ELSE
-        DELETE FROM t_tokens WHERE t_u_id = user_id AND t_id = $2;
-        IF FOUND THEN
-            deletion_successful := TRUE;
-        ELSE
-            deletion_successful := FALSE;
-        END IF;
-    END IF;
-    
-    RETURN deletion_successful;
-END;
+    AS $_$DECLARE
+    user_id UUID;
+    deletion_successful BOOLEAN;
+BEGIN
+    SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1;
+    
+    IF user_id IS NULL THEN
+        deletion_successful := FALSE;
+    ELSE
+        DELETE FROM t_tokens WHERE t_u_id = user_id AND t_id = $2;
+        IF FOUND THEN
+            deletion_successful := TRUE;
+        ELSE
+            deletion_successful := FALSE;
+        END IF;
+    END IF;
+    
+    RETURN deletion_successful;
+END;
 $_$;
 
 
 ALTER FUNCTION public.sign_out(token character varying, token_id uuid) OWNER TO mypass;
 
 --
--- Name: sign_up(character varying, character varying, character varying, inet, character varying, boolean); Type: PROCEDURE; Schema: public; Owner: mypass
+-- Name: sign_up(character varying, character varying, character varying, inet, boolean); Type: PROCEDURE; Schema: public; Owner: mypass
 --
 
-CREATE PROCEDURE public.sign_up(IN email character varying, IN secret_string character varying, IN login character varying, IN reg_ip inet, IN avatar character varying, IN confirm boolean)
+CREATE PROCEDURE public.sign_up(IN email character varying, IN secret_string character varying, IN login character varying, IN reg_ip inet, IN confirm boolean)
     LANGUAGE plpgsql
-    AS $_$BEGIN
-INSERT INTO u_users VALUES (gen_random_uuid(),$1,$3,$4,$5,$6,EXTRACT(EPOCH FROM current_timestamp)::bigint,$2);
+    AS $_$BEGIN
+
+INSERT INTO u_users VALUES (gen_random_uuid(),$1,$3,$4,$5,EXTRACT(EPOCH FROM current_timestamp)::bigint,$2);
+
 END$_$;
 
 
-ALTER PROCEDURE public.sign_up(IN email character varying, IN secret_string character varying, IN login character varying, IN reg_ip inet, IN avatar character varying, IN confirm boolean) OWNER TO mypass;
+ALTER PROCEDURE public.sign_up(IN email character varying, IN secret_string character varying, IN login character varying, IN reg_ip inet, IN confirm boolean) OWNER TO mypass;
 
 --
 -- Name: update_secret_string(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
@@ -119,12 +121,12 @@ ALTER PROCEDURE public.sign_up(IN email character varying, IN secret_string char
 
 CREATE FUNCTION public.update_secret_string(old_secret_string character varying, new_secret_string character varying, token character varying) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$BEGIN
-UPDATE u_users AS u_us
-SET u_secret_string = $2
-FROM t_tokens AS t_ts
-WHERE t_ts.t_u_id = u_us.u_id AND u_secret_string = $1 AND active_token($3) = TRUE;
-RETURN FOUND;
+    AS $_$BEGIN
+UPDATE u_users AS u_us
+SET u_secret_string = $2
+FROM t_tokens AS t_ts
+WHERE t_ts.t_u_id = u_us.u_id AND u_secret_string = $1 AND active_token($3) = TRUE;
+RETURN FOUND;
 END;$_$;
 
 
@@ -136,13 +138,13 @@ ALTER FUNCTION public.update_secret_string(old_secret_string character varying, 
 
 CREATE FUNCTION public.update_token_info(token character varying, device character varying, ip inet) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$BEGIN
-    UPDATE t_tokens
-    SET t_last_login = EXTRACT(EPOCH FROM current_timestamp)::BIGINT,
-        t_device = $2,
-		t_last_ip = $3
-    WHERE active_token($1) = TRUE;
-    RETURN FOUND;
+    AS $_$BEGIN
+    UPDATE t_tokens
+    SET t_last_login = EXTRACT(EPOCH FROM current_timestamp)::BIGINT,
+        t_device = $2,
+		t_last_ip = $3
+    WHERE active_token($1) = TRUE;
+    RETURN FOUND;
 END;$_$;
 
 
@@ -208,8 +210,7 @@ CREATE TABLE public.s_safes (
     s_id uuid NOT NULL,
     s_u_id uuid NOT NULL,
     s_name character varying(256) NOT NULL,
-    s_description character varying(256) NOT NULL,
-    s_icon character varying(512) NOT NULL
+    s_description character varying(256) NOT NULL
 );
 
 
@@ -242,7 +243,6 @@ CREATE TABLE public.u_users (
     u_email character varying(320) NOT NULL,
     u_login character varying(50) NOT NULL,
     u_reg_ip inet NOT NULL,
-    u_icon character varying(512) NOT NULL,
     u_confirm boolean NOT NULL,
     u_reg_time bigint NOT NULL,
     u_secret_string character varying(512) NOT NULL
@@ -279,7 +279,7 @@ COPY public.r_records (r_id, r_s_id, r_title, r_partition, r_notes, r_tags, r_la
 -- Data for Name: s_safes; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_icon) FROM stdin;
+COPY public.s_safes (s_id, s_u_id, s_name, s_description) FROM stdin;
 \.
 
 
@@ -295,7 +295,7 @@ COPY public.t_tokens (t_id, t_u_id, t_token, t_first_login, t_last_login, t_devi
 -- Data for Name: u_users; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.u_users (u_id, u_email, u_login, u_reg_ip, u_icon, u_confirm, u_reg_time, u_secret_string) FROM stdin;
+COPY public.u_users (u_id, u_email, u_login, u_reg_ip, u_confirm, u_reg_time, u_secret_string) FROM stdin;
 \.
 
 

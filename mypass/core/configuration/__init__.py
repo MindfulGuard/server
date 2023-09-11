@@ -1,4 +1,3 @@
-from typing import Any
 import tomli
 
 from mypass.core.configuration.nestings.authentication import Public

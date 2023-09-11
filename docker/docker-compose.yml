@@ -13,6 +13,7 @@ services:
       - 5432:5432
   minio:
     image: quay.io/minio/minio
+    restart: always
     container_name: minio
     env_file:
       - .MINIO.env
