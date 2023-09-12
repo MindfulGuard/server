@@ -33,6 +33,34 @@ END;$_$;
 ALTER FUNCTION public.active_token(token character varying) OWNER TO mypass;
 
 --
+-- Name: create_safe(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
+--
+
+CREATE FUNCTION public.create_safe(token character varying, name character varying, description character varying) RETURNS integer
+    LANGUAGE plpgsql
+    AS $_$
+declare
+    user_id UUID;
+    safe_id UUID;
+    timestmp BIGINT;
+begin
+timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+INSERT INTO s_safes VALUES (gen_random_uuid(),user_id,$2,$3,timestmp,timestmp) RETURNING s_id INTO safe_id;
+IF safe_id IS NULL THEN
+    RETURN -2;
+END IF;
+RETURN 0;
+end;
+$_$;
+
+
+ALTER FUNCTION public.create_safe(token character varying, name character varying, description character varying) OWNER TO mypass;
+
+--
 -- Name: send_code(character varying, integer, bigint); Type: PROCEDURE; Schema: public; Owner: mypass
 --
 
@@ -138,13 +166,20 @@ ALTER FUNCTION public.update_secret_string(old_secret_string character varying, 
 
 CREATE FUNCTION public.update_token_info(token character varying, device character varying, ip inet) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$BEGIN
-    UPDATE t_tokens
-    SET t_last_login = EXTRACT(EPOCH FROM current_timestamp)::BIGINT,
-        t_device = $2,
-		t_last_ip = $3
-    WHERE active_token($1) = TRUE;
-    RETURN FOUND;
+    AS $_$BEGIN
+
+    UPDATE t_tokens
+
+    SET t_last_login = EXTRACT(EPOCH FROM current_timestamp)::BIGINT,
+
+        t_device = $2,
+
+		t_last_ip = $3
+
+    WHERE active_token($1) = TRUE AND t_token = $1;
+
+    RETURN FOUND;
+
 END;$_$;
 
 
@@ -209,7 +244,9 @@ CREATE TABLE public.s_safes (
     s_id uuid NOT NULL,
     s_u_id uuid NOT NULL,
     s_name character varying(256) NOT NULL,
-    s_description character varying(300) NOT NULL
+    s_description character varying(500) NOT NULL,
+    created_at bigint NOT NULL,
+    updated_at bigint NOT NULL
 );
 
 
@@ -278,7 +315,7 @@ COPY public.r_records (r_id, r_s_id, r_title, r_partition, r_notes, r_tags, r_la
 -- Data for Name: s_safes; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.s_safes (s_id, s_u_id, s_name, s_description) FROM stdin;
+COPY public.s_safes (s_id, s_u_id, s_name, s_description, created_at, updated_at) FROM stdin;
 \.
 
 

@@ -24,3 +24,7 @@ class Language:
         return self.__message.get("session_token_has_been_deleted")
     def failed_to_delete_token(self)->dict[str,Any]:
         return self.__message.get("failed_to_delete_token")
+    def safe_was_successfully_created(self)->dict[str,Any]:
+        return self.__message.get("safe_was_successfully_created")
+    def unauthorized(self)->dict[str,Any]:
+        return self.__message.get("unauthorized")

@@ -8,5 +8,7 @@
     "user_not_found":"пользователь не найден",
     "user_found":"пользователь найден",
     "session_token_has_been_deleted":"токен сеанса был удален",
-    "failed_to_delete_token":"не удалось удалить токен"
+    "failed_to_delete_token":"не удалось удалить токен",
+    "safe_was_successfully_created":"сейф удачно создан",
+    "unauthorized":"не авторизован"
 }

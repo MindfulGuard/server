@@ -7,12 +7,14 @@ from mypass.__main__ import app
 from tests.api.secure import *
 
 client = TestClient(app)
+client_safe = TestClient(app)
 
 AUTH_PATH_V1 = "/v1/auth"
+SAFE_PATH_V1 = "/v1/safe"
 
-EMAIL = "use13r43f23@tmail.com"
-LOGIN = "user31331f3"
-PASSWORD = "u2Hello%fmnrmfsfsfsd"
+EMAIL = "use7fv5r5fg43tf23@tmail.com"
+LOGIN = "use5vrt51f331g6f3"
+PASSWORD = "u2Hv6t5ffdgso%fmnrmfsfsfsd"
 SALT = uuid.uuid4().hex
 
 def generate_random_bytes(length=16):
@@ -38,7 +40,7 @@ def is_valid_password(password)->bool:
     print(pattern)
     return re.match(pattern, password) is not None
 
-def generate_aes256key()->bytes:
+def generate_aes256key_abnd()->bytes:
     iterations:int = auth_config()["pbkdf2"]["iterations"]
     SHA:str = auth_config()["pbkdf2"]["SHA"]
     secure = PbkdF2HMAC(iterations,SHA)
@@ -48,7 +50,7 @@ def generate_aes256key()->bytes:
 def encrypt_password():
     if is_valid_password(PASSWORD) == False:
         return b""
-    return sha256(bytes(PASSWORD,'utf-8')+generate_aes256key()).hexdigest()
+    return sha256(bytes(EMAIL,'utf-8')+bytes(PASSWORD,'utf-8')+bytes(SALT,'utf-8')).hexdigest()
 
 def test_sign_up():
     data = {
@@ -69,7 +71,7 @@ def test_sign_in():
     data = {
         "email": EMAIL,
         "secret_string": encrypt_password(),
-        "expiration": 10
+        "expiration": 60
     }
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -86,7 +88,7 @@ def sign_in()->str:
     data = {
         "email": EMAIL,
         "secret_string": encrypt_password(),
-        "expiration": 10
+        "expiration": 60
     }
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -95,7 +97,7 @@ def sign_in()->str:
     }
     response = client.post(AUTH_PATH_V1+"/sign_in", data=data,headers=headers)
 
-    print("Response JSON:", response.json())
+    print("Response JSON:", response.json(),"\nEMAIL:",EMAIL,"\nSECRET_STRING:",encrypt_password())
 
     return response.json()["token"]
 
@@ -135,3 +137,29 @@ def test_sign_out():
     response = client.request(method="DELETE",url=AUTH_PATH_V1+"/sign_out",data=data,headers=headers)
     
     assert response.status_code == 200,get_tokens()
+
+def generate_aes256_key_from_password(password:bytes,salt:bytes):
+    key = hashlib.sha256(password+salt).digest()
+    return key
+
+def encrypt_AES256(text_bytes: str):
+    obj = AES_256()
+    salt = bytes(str(SALT).replace("-", ""),'utf-8')
+    password = bytes(PASSWORD,'utf-8')
+    return obj.encrypt_aes_256(generate_aes256_key_from_password(password,salt), text_bytes).hex()
+
+
+def test_create():
+    text = 'hello its my v72m40389m0v47358297m085v49v427m089v4325m7089v3452708078951 safe'
+    data = {
+        "name": "safe1",
+        "description": encrypt_AES256(text),
+    }
+    headers = {
+        'Authorization': 'Bearer ' + sign_in(),
+        'User-Agent': 'python/win',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Real-IP': '192.168.1.1'
+    }
+    response = client_safe.post(SAFE_PATH_V1 + "/create", data=data, headers=headers)
+    assert response.status_code == 200, sign_in()

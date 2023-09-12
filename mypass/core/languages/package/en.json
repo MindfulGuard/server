@@ -8,5 +8,7 @@
     "user_not_found":"user not found",
     "user_found":"user found",
     "session_token_has_been_deleted":"the session token has been deleted",
-    "failed_to_delete_token":"failed to delete token"
+    "failed_to_delete_token":"failed to delete token",
+    "safe_was_successfully_created":"the safe was successfully created",
+    "unauthorized":"unauthorized"
 }

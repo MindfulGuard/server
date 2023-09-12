@@ -51,7 +51,6 @@ class Validation:
             return str(uuid_obj) == uuid_str
         except ValueError:
             return False
-
 def get_client_ip(request: Request) -> str:
     # Let's try to get the IP from the X-Real-IP header
     client_ip = request.headers.get("x-real-ip")
@@ -68,5 +67,5 @@ def arguments(*args)->bool:
             return False
     return True
 
-def minutes_to_seconds(minutes:int):
-    return minutes * 30
+def minutes_to_seconds(minutes:int)->int:
+    return minutes * 60
