@@ -5,25 +5,25 @@ from mypass.authentication import Authentication
 router = APIRouter()
 
 @router.post("/sign_up")
-async def sign_up(email: Annotated[str, Form()],
-                  login: Annotated[str, Form()],
+async def sign_up(login: Annotated[str, Form()],
                   secret_string:Annotated[str, Form()],
                   request: Request,
                   response:Response
 ):
     auth = Authentication()
-    return await auth.sign_up(email,login,secret_string,request,response)
+    return await auth.sign_up(login,secret_string,request,response)
 
 @router.post("/sign_in")
 async def sign_in(
-    email: Annotated[str, Form()],
+    login: Annotated[str, Form()],
     secret_string:Annotated[str, Form()],
     expiration:Annotated[int, Form()],
     user_agent: Annotated[str, Header()],
-    request: Request,response:Response
+    request: Request,
+    response:Response
 ):
     auth = Authentication()
-    return await auth.sign_in(email,secret_string,user_agent,expiration,request,response)
+    return await auth.sign_in(login,secret_string,user_agent,expiration,request,response)
 
 @router.get("/config")
 async def get_config_auth(response:Response):

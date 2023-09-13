@@ -12,7 +12,6 @@ client_safe = TestClient(app)
 AUTH_PATH_V1 = "/v1/auth"
 SAFE_PATH_V1 = "/v1/safe"
 
-EMAIL = "use7fv5r5fg43tf23@tmail.com"
 LOGIN = "use5vrt51f331g6f3"
 PASSWORD = "u2Hv6t5ffdgso%fmnrmfsfsfsd"
 SALT = uuid.uuid4().hex
@@ -50,11 +49,10 @@ def generate_aes256key_abnd()->bytes:
 def encrypt_password():
     if is_valid_password(PASSWORD) == False:
         return b""
-    return sha256(bytes(EMAIL,'utf-8')+bytes(PASSWORD,'utf-8')+bytes(SALT,'utf-8')).hexdigest()
+    return sha256(bytes(LOGIN,'utf-8')+bytes(PASSWORD,'utf-8')+bytes(SALT,'utf-8')).hexdigest()
 
 def test_sign_up():
     data = {
-        "email": EMAIL,
         "login": LOGIN,
         "secret_string": encrypt_password()
     }
@@ -69,7 +67,7 @@ def test_sign_up():
 
 def test_sign_in():
     data = {
-        "email": EMAIL,
+        "login": LOGIN,
         "secret_string": encrypt_password(),
         "expiration": 60
     }
@@ -86,7 +84,7 @@ def test_sign_in():
 
 def sign_in()->str:
     data = {
-        "email": EMAIL,
+        "login": LOGIN,
         "secret_string": encrypt_password(),
         "expiration": 60
     }
@@ -97,7 +95,7 @@ def sign_in()->str:
     }
     response = client.post(AUTH_PATH_V1+"/sign_in", data=data,headers=headers)
 
-    print("Response JSON:", response.json(),"\nEMAIL:",EMAIL,"\nSECRET_STRING:",encrypt_password())
+    print("Response JSON:", response.json(),"\nLOGIN:",LOGIN,"\nSECRET_STRING:",encrypt_password())
 
     return response.json()["token"]
 

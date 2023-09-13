@@ -3,12 +3,19 @@ from mypass.core.response_status_codes import *
 
 class Authentication:
     def __init__(self):pass
-    async def sign_up(self,email:str,secret_string:str,login:str,reg_ip:str,avatar:str):
+    async def sign_up(self,login:str,secret_string:str,reg_ip:str,secret_code:str,reserves:list[int]):
         connection = None
         try:
             connection = await Connection().connect()
-            await connection.fetch('CALL sign_up($1, $2, $3, $4, $5)', email, secret_string, login, reg_ip, True)
-            return OK
+            value:int = await connection.fetchval('SELECT sign_up($1, $2, $3, $4, $5,$6)',login, secret_string, reg_ip, True, secret_code,reserves)#needs to be changed to False
+            if value == 0 or value == 1 or value == 2:
+                return OK
+            elif value == -1:
+                return CONFLICT
+            elif value == -2 or value == -3 or value == -3:
+                return NOT_FOUND
+            else:
+                return INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.UniqueViolationError as e:
@@ -17,12 +24,41 @@ class Authentication:
         finally:
             if connection:
                 await connection.close()
-
-    async def sign_in(self,email:str,secret_string:str,token:str,device:str,ip:str,expiration:int):
+    
+    async def get_secret_code(self,login:str,secret_string:str,confirm:bool):
         connection = None
         try:
             connection = await Connection().connect()
-            value = await connection.fetch('SELECT sign_in($1,$2,$3,$4,$5,$6)',email,secret_string,token,device,ip,expiration)
+            value = await connection.fetch('''
+            SELECT c_secret_code, c_reserves
+            FROM c_codes 
+            JOIN u_users ON u_users.u_id = c_codes.c_u_id 
+            WHERE u_users.u_login = $1
+            AND u_users.u_secret_string = $2
+            AND u_users.u_confirm = $3
+            ''',login, secret_string,confirm)
+
+            value_list = []
+            if value == None:
+                return (value_list,NOT_FOUND)
+            for record in value:
+                value_dict = {
+                    'secret_code': record['c_secret_code'],
+                    'reserves':record['c_reserves']
+                }
+                value_list.append(value_dict)
+            return (value_list,OK)
+        except asyncpg.exceptions.ConnectionDoesNotExistError:
+            return (None,INTERNAL_SERVER_ERROR)
+        finally:
+            if connection:
+                await connection.close()
+    
+    async def sign_in(self,login:str,secret_string:str,token:str,device:str,ip:str,expiration:int):
+        connection = None
+        try:
+            connection = await Connection().connect()
+            value = await connection.fetch('SELECT sign_in($1,$2,$3,$4,$5,$6)',login,secret_string,token,device,ip,expiration)
             if value[0]['sign_in']:
                 return OK
             else:
