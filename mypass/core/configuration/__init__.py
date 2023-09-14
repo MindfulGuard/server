@@ -1,6 +1,6 @@
 import tomli
 
-from mypass.core.configuration.nestings.authentication import Public
+from mypass.core.configuration.nestings.authentication import Totp, Public
 from mypass.core.configuration.nestings.safe import Lengths
 
 class ServerConfiguration:
@@ -51,6 +51,8 @@ class Authentication:
         return int(self.__config.read_configuration(self.__block,'token_expiration_default'))
     def public(self):
         return Public(self.__block,self.__config)
+    def totp(self):
+        return Totp(self.__block,self.__config)
 
 class Safe:
     def __init__(self,server_configuration:ServerConfiguration):

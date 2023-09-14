@@ -36,3 +36,12 @@ class Lengths:
         return self.__config.read_configuration(self.__block,'login_length')
     def get_secret_string_length(self)->int:
         return self.__config.read_configuration(self.__block,'secret_string_length')
+    def get_reserve_codes_length(self)->int:
+        return self.__config.read_configuration(self.__block,'reserve_codes_length')
+
+class Totp:
+    def __init__(self,root_block:str,server_configuration):
+        self.__block:str = concatenate_with_dot(root_block,"totp")
+        self.__config = server_configuration
+    def lengths(self):
+        return Lengths(self.__block,self.__config)

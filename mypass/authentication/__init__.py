@@ -14,33 +14,36 @@ from mypass.database.postgresql import authentication
 import mypass.utils as utils
 
 class Authentication():
-    async def sign_up(self,email: Annotated[str, Form()], login: Annotated[str, Form()],secret_string:Annotated[str, Form()],request: Request,response:Response):
+    async def sign_up(self,login: str,secret_string:str,request: Request,response:Response):
         lang = Language()
         sign_up  = SignUp()
         client_ip:str = utils.get_client_ip(request)
-        exec = await sign_up.execute(email,secret_string,login,client_ip)
-        response.status_code = exec
-        if exec == SERVICE_UNAVAILABLE:
-            return {"msg":lang.service_is_not_available()}
-        elif exec == BAD_REQUEST or utils.arguments(email,secret_string,login) == False:
-            return {"msg":lang.data_not_valid()}
-        elif exec == OK:
-            return {"msg":lang.registration_was_successful()}
-        elif exec == CONFLICT:
-            return {"msg":lang.user_already_exists()}
+        exec = await sign_up.execute(login,secret_string,client_ip)
+        secret_code = exec[0]
+        reserve_codes = exec[1]
+        status_cod = exec[2]
+        response.status_code = status_cod
+        if status_cod == SERVICE_UNAVAILABLE:
+            return {"msg":lang.service_is_not_available(),"secret_code":None,"reserve_codes":None}
+        elif status_cod == BAD_REQUEST or utils.arguments(secret_string,login) == False:
+            return {"msg":lang.data_not_valid(),"secret_code":None,"reserve_codes":None}
+        elif status_cod == OK:
+            return {"msg":lang.registration_was_successful(),"secret_code":secret_code,"reserve_codes":reserve_codes}
+        elif status_cod == CONFLICT:
+            return {"msg":lang.user_already_exists(),"secret_code":None,"reserve_codes":None}
         else:
-            return {"msg":lang.server_error()}#INTERNAL_SERVER_ERROR
+            return {"msg":lang.server_error(),"secret_code":None,"reserve_codes":None}#INTERNAL_SERVER_ERROR
 
-    async def sign_in(self,email: Annotated[str, Form()],secret_string:Annotated[str, Form()],user_agent: Annotated[str, Header()],expiration:int,request: Request,response:Response):
+    async def sign_in(self,login:str,secret_string:str,code:str,type:str,user_agent: str,expiration:int,request: Request,response:Response):
         lang = Language()
         sign_in  = SignIn()
         client_ip:str = utils.get_client_ip(request)
-        exec = await sign_in.execute(email,secret_string,user_agent,client_ip,expiration)
+        exec = await sign_in.execute(login,secret_string,code,type,user_agent,client_ip,expiration)
         status_code:int = exec[1]
         token:str|None = exec[0]
         response.status_code = status_code
         if status_code == BAD_REQUEST:
-            return {"msg":lang.data_not_valid(),"token":token}
+            return {"msg":lang.data_not_valid(),"token":None}
         elif status_code == OK:
             return {"msg":lang.user_found(),"token":token}
         elif status_code == NOT_FOUND:

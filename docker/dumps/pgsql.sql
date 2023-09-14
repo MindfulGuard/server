@@ -77,26 +77,33 @@ END$_$;
 ALTER PROCEDURE public.send_code(IN email character varying, IN code integer, IN expiration bigint) OWNER TO mypass;
 
 --
--- Name: sign_in(character varying, character varying, character varying, character varying, inet, bigint); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: sign_in(character varying, character varying, character varying, character varying, inet, bigint, boolean); Type: FUNCTION; Schema: public; Owner: mypass
 --
 
-CREATE FUNCTION public.sign_in(email character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint) RETURNS boolean
+CREATE FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint, is_verified_code boolean) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$DECLARE
-user_id UUID;
-timestmp BIGINT;
-BEGIN
-timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-SELECT u_id INTO user_id FROM u_users WHERE u_email = $1 AND u_secret_string=$2 AND u_confirm = TRUE;
-IF user_id IS NULL THEN
-	RETURN FALSE;
-END IF;
-INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
-RETURN TRUE;
+    AS $_$DECLARE
+user_id UUID;
+user_confirm BOOLEAN;
+timestmp BIGINT;
+BEGIN
+timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+SELECT u_id,u_confirm INTO user_id, user_confirm FROM u_users WHERE u_login = $1 AND u_secret_string=$2;
+IF $7 IS TRUE THEN
+    IF user_id IS NULL THEN
+        RETURN FALSE;
+    END IF;
+    IF user_confirm IS FALSE THEN
+        UPDATE u_users SET u_confirm = $7 WHERE u_id = user_id;
+    END IF;
+    INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
+    RETURN TRUE;
+END IF;
+RETURN FALSE;
 END$_$;
 
 
-ALTER FUNCTION public.sign_in(email character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint) OWNER TO mypass;
+ALTER FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint, is_verified_code boolean) OWNER TO mypass;
 
 --
 -- Name: sign_out(character varying, uuid); Type: FUNCTION; Schema: public; Owner: mypass
@@ -129,19 +136,56 @@ $_$;
 ALTER FUNCTION public.sign_out(token character varying, token_id uuid) OWNER TO mypass;
 
 --
--- Name: sign_up(character varying, character varying, character varying, inet, boolean); Type: PROCEDURE; Schema: public; Owner: mypass
+-- Name: sign_up(character varying, character varying, inet, boolean, character varying, integer[]); Type: FUNCTION; Schema: public; Owner: mypass
 --
 
-CREATE PROCEDURE public.sign_up(IN email character varying, IN secret_string character varying, IN login character varying, IN reg_ip inet, IN confirm boolean)
+CREATE FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, reserves integer[]) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$BEGIN
-
-INSERT INTO u_users VALUES (gen_random_uuid(),$1,$3,$4,$5,EXTRACT(EPOCH FROM current_timestamp)::bigint,$2);
-
-END$_$;
+    AS $_$
+declare
+    user_id UUID;
+    code_id UUID;
+
+    user_id_insert UUID;
+    code_id_insert UUID;
+    current_timeu BIGINT;
+BEGIN
+current_timeu := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+SELECT u_id INTO user_id FROM u_users WHERE u_login = $1 AND u_secret_string = $2 AND u_confirm = FALSE;
+
+IF user_id IS NULL THEN
+    INSERT INTO u_users VALUES (gen_random_uuid (),$1,$3,$4,current_timeu,$2) RETURNING u_id INTO user_id_insert;
+    IF user_id_insert IS NULL THEN
+        RETURN -1;
+    END IF;
+    INSERT INTO c_codes VALUES (gen_random_uuid(),user_id_insert,$5,$6,current_timeu) RETURNING c_id INTO code_id_insert;
+    IF code_id_insert IS NULL THEN
+        RETURN -2;
+    END IF;
+    RETURN 0;
+END IF;
+
+SELECT c_id INTO code_id FROM c_codes WHERE c_u_id = user_id;
+IF code_id IS NULL THEN
+    INSERT INTO c_codes VALUES (gen_random_uuid(),user_id,$5,$6,current_timeu) RETURNING c_id INTO code_id_insert;
+    IF code_id_insert IS NULL THEN
+        RETURN -3;
+    END IF;
+    RETURN 1;
+END IF;
+
+UPDATE c_codes SET c_secret_code = $5,c_reserves = $6,c_created_at = current_timeu WHERE c_u_id = user_id RETURNING c_codes.c_id INTO code_id;
+IF code_id IS NULL THEN
+    RETURN -4;
+END IF;
+RETURN 2;
+
+END
+$_$;
 
 
-ALTER PROCEDURE public.sign_up(IN email character varying, IN secret_string character varying, IN login character varying, IN reg_ip inet, IN confirm boolean) OWNER TO mypass;
+ALTER FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, reserves integer[]) OWNER TO mypass;
 
 --
 -- Name: update_secret_string(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
@@ -203,18 +247,19 @@ CREATE TABLE public.a_accesses (
 ALTER TABLE public.a_accesses OWNER TO mypass;
 
 --
--- Name: e_ecodes; Type: TABLE; Schema: public; Owner: mypass
+-- Name: c_codes; Type: TABLE; Schema: public; Owner: mypass
 --
 
-CREATE TABLE public.e_ecodes (
-    e_id uuid NOT NULL,
-    e_u_id uuid NOT NULL,
-    e_code integer NOT NULL,
-    e_expiration bigint NOT NULL
+CREATE TABLE public.c_codes (
+    c_id uuid NOT NULL,
+    c_u_id uuid NOT NULL,
+    c_secret_code character varying(32) NOT NULL,
+    c_reserves integer[] NOT NULL,
+    c_created_at bigint NOT NULL
 );
 
 
-ALTER TABLE public.e_ecodes OWNER TO mypass;
+ALTER TABLE public.c_codes OWNER TO mypass;
 
 --
 -- Name: r_records; Type: TABLE; Schema: public; Owner: mypass
@@ -245,8 +290,8 @@ CREATE TABLE public.s_safes (
     s_u_id uuid NOT NULL,
     s_name character varying(256) NOT NULL,
     s_description character varying(500) NOT NULL,
-    created_at bigint NOT NULL,
-    updated_at bigint NOT NULL
+    s_created_at bigint NOT NULL,
+    s_updated_at bigint NOT NULL
 );
 
 
@@ -276,8 +321,7 @@ ALTER TABLE public.t_tokens OWNER TO mypass;
 
 CREATE TABLE public.u_users (
     u_id uuid NOT NULL,
-    u_email character varying(320) NOT NULL,
-    u_login character varying(50) NOT NULL,
+    u_login character varying(64) NOT NULL,
     u_reg_ip inet NOT NULL,
     u_confirm boolean NOT NULL,
     u_reg_time bigint NOT NULL,
@@ -296,10 +340,10 @@ COPY public.a_accesses (a_id, a_u_id, a_s_id) FROM stdin;
 
 
 --
--- Data for Name: e_ecodes; Type: TABLE DATA; Schema: public; Owner: mypass
+-- Data for Name: c_codes; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.e_ecodes (e_id, e_u_id, e_code, e_expiration) FROM stdin;
+COPY public.c_codes (c_id, c_u_id, c_secret_code, c_reserves, c_created_at) FROM stdin;
 \.
 
 
@@ -315,7 +359,7 @@ COPY public.r_records (r_id, r_s_id, r_title, r_partition, r_notes, r_tags, r_la
 -- Data for Name: s_safes; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.s_safes (s_id, s_u_id, s_name, s_description, created_at, updated_at) FROM stdin;
+COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_updated_at) FROM stdin;
 \.
 
 
@@ -331,7 +375,7 @@ COPY public.t_tokens (t_id, t_u_id, t_token, t_first_login, t_last_login, t_devi
 -- Data for Name: u_users; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.u_users (u_id, u_email, u_login, u_reg_ip, u_confirm, u_reg_time, u_secret_string) FROM stdin;
+COPY public.u_users (u_id, u_login, u_reg_ip, u_confirm, u_reg_time, u_secret_string) FROM stdin;
 \.
 
 
@@ -344,11 +388,19 @@ ALTER TABLE ONLY public.a_accesses
 
 
 --
--- Name: e_ecodes e_ecodes_pkey; Type: CONSTRAINT; Schema: public; Owner: mypass
+-- Name: c_codes c_codes_pk; Type: CONSTRAINT; Schema: public; Owner: mypass
 --
 
-ALTER TABLE ONLY public.e_ecodes
-    ADD CONSTRAINT e_ecodes_pkey PRIMARY KEY (e_id);
+ALTER TABLE ONLY public.c_codes
+    ADD CONSTRAINT c_codes_pk UNIQUE (c_u_id);
+
+
+--
+-- Name: c_codes e_ecodes_pkey; Type: CONSTRAINT; Schema: public; Owner: mypass
+--
+
+ALTER TABLE ONLY public.c_codes
+    ADD CONSTRAINT e_ecodes_pkey PRIMARY KEY (c_id);
 
 
 --
@@ -384,19 +436,19 @@ ALTER TABLE ONLY public.t_tokens
 
 
 --
+-- Name: u_users u_users_pk; Type: CONSTRAINT; Schema: public; Owner: mypass
+--
+
+ALTER TABLE ONLY public.u_users
+    ADD CONSTRAINT u_users_pk UNIQUE (u_login);
+
+
+--
 -- Name: u_users u_users_pkey; Type: CONSTRAINT; Schema: public; Owner: mypass
 --
 
 ALTER TABLE ONLY public.u_users
     ADD CONSTRAINT u_users_pkey PRIMARY KEY (u_id);
-
-
---
--- Name: u_users u_users_u_email_key; Type: CONSTRAINT; Schema: public; Owner: mypass
---
-
-ALTER TABLE ONLY public.u_users
-    ADD CONSTRAINT u_users_u_email_key UNIQUE (u_email);
 
 
 --

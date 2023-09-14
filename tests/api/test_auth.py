@@ -12,7 +12,6 @@ client_safe = TestClient(app)
 AUTH_PATH_V1 = "/v1/auth"
 SAFE_PATH_V1 = "/v1/safe"
 
-EMAIL = "use7fv5r5fg43tf23@tmail.com"
 LOGIN = "use5vrt51f331g6f3"
 PASSWORD = "u2Hv6t5ffdgso%fmnrmfsfsfsd"
 SALT = uuid.uuid4().hex
@@ -50,11 +49,11 @@ def generate_aes256key_abnd()->bytes:
 def encrypt_password():
     if is_valid_password(PASSWORD) == False:
         return b""
-    return sha256(bytes(EMAIL,'utf-8')+bytes(PASSWORD,'utf-8')+bytes(SALT,'utf-8')).hexdigest()
+    return sha256(bytes(LOGIN,'utf-8')+bytes(PASSWORD,'utf-8')+bytes(SALT,'utf-8')).hexdigest()
+
 
 def test_sign_up():
     data = {
-        "email": EMAIL,
         "login": LOGIN,
         "secret_string": encrypt_password()
     }
@@ -67,9 +66,23 @@ def test_sign_up():
     assert len(encrypt_password())==64
     assert response.status_code == 200
 
+def sign_up():
+    data = {
+        "login": LOGIN,
+        "secret_string": encrypt_password()
+    }
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Real-IP':'192.168.1.1'
+    }
+    response = client.post(AUTH_PATH_V1+"/sign_up", data=data,headers=headers)
+    print("SECRET_CODE:",response.json()['secret_code'])
+    return response.json()['secret_code']
+
 def test_sign_in():
     data = {
-        "email": EMAIL,
+        "login": LOGIN,
+        "code":sign_up(),
         "secret_string": encrypt_password(),
         "expiration": 60
     }
@@ -78,7 +91,7 @@ def test_sign_in():
         'X-Real-IP':'192.168.1.1',
         'User-Agent':'python/win'
     }
-    response = client.post(AUTH_PATH_V1+"/sign_in", data=data,headers=headers)
+    response = client.post(AUTH_PATH_V1+"/sign_in?type=basic", data=data,headers=headers)
     
     assert response.status_code == 200
 
@@ -86,7 +99,7 @@ def test_sign_in():
 
 def sign_in()->str:
     data = {
-        "email": EMAIL,
+        "login": LOGIN,
         "secret_string": encrypt_password(),
         "expiration": 60
     }
@@ -97,7 +110,7 @@ def sign_in()->str:
     }
     response = client.post(AUTH_PATH_V1+"/sign_in", data=data,headers=headers)
 
-    print("Response JSON:", response.json(),"\nEMAIL:",EMAIL,"\nSECRET_STRING:",encrypt_password())
+    print("Response JSON:", response.json(),"\nLOGIN:",LOGIN,"\nSECRET_STRING:",encrypt_password())
 
     return response.json()["token"]
 
