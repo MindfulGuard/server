@@ -38,7 +38,8 @@ class Authentication:
             ''',login, secret_string)
 
             value_list = []
-            if value == None:
+            print("VALUE:",value)
+            if len(value) == 0:
                 return (value_list,NOT_FOUND)
             for record in value:
                 value_dict = {

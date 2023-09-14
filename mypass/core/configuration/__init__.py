@@ -42,10 +42,6 @@ class Authentication:
         self.__config:ServerConfiguration = server_configuration
     def get_registration(self)->bool:
         return bool(self.__config.read_configuration(self.__block,'registration'))
-    def get_smtp(self)->str:
-        return self.__config.read_configuration(self.__block,'smtp')
-    def get_blocked_domains(self)->list[str]:
-        return list[str](self.__config.read_configuration(self.__block,'blocked_domains'))
     def get_token_expiration_default(self)->int:
         """N(minutes)"""
         return int(self.__config.read_configuration(self.__block,'token_expiration_default'))

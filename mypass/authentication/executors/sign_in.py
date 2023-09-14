@@ -41,6 +41,8 @@ class SignIn:
 
     async def __basic_confirm(self,login:str,secret_string:str,code:str):
         get_secret_code = await authentication.Authentication().get_secret_code(login,secret_string)
+        if get_secret_code[1] != OK:
+            return False
         print("SECRET_CODE:",get_secret_code[0][0]['secret_code'])
         secret_code:str = get_secret_code[0][0]['secret_code']
         totp = secure_totp.Totp(secret_code)
@@ -50,8 +52,9 @@ class SignIn:
         icode:int = int(code)
         auth = authentication.Authentication()
         get_secret_code = await auth.get_secret_code(login,secret_string)
+        if get_secret_code[1] !=OK:
+            return False
         reserve_codes:list[int] = list[int](get_secret_code[0][0]['reserves'])
-
         if icode in reserve_codes:
             print("RESERVE_CODES:",reserve_codes)
             reserve_codes.remove(icode)
