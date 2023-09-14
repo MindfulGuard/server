@@ -3,6 +3,8 @@ import pyotp
 
 
 class Totp:
+    def __init__(self,secret_code:str):
+        self.__secret_code = secret_code
     def generate_secret_code(self)->str:
         return pyotp.random_base32()
     
@@ -12,6 +14,10 @@ class Totp:
             arr.append(random.randint(100000,999999))
         return arr
     
-    def get(self,secret_code:str)->int:
-        totp = pyotp.TOTP(secret_code)
-        return int(totp.now())
+    def get(self)->str:
+        totp = pyotp.TOTP(self.__secret_code)
+        return totp.now()
+    
+    def verify(self,code:str)->bool:
+        totp = pyotp.TOTP(self.__secret_code)
+        return totp.verify(code)

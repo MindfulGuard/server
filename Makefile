@@ -51,7 +51,7 @@ run:
 	uvicorn $(PROJECT-NAME).__main__:app --host $(HOST) --port $(PORT)
 test:
 	pytest
-docker-dump:
+database-dump:
 	docker exec -t $(CONTAINER_NAME) pg_dump -U $(DATABASE_USERS) $(DATABASE_NAME) > $(PATH-TO-DUMP)
 
 clean:

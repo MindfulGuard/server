@@ -77,26 +77,33 @@ END$_$;
 ALTER PROCEDURE public.send_code(IN email character varying, IN code integer, IN expiration bigint) OWNER TO mypass;
 
 --
--- Name: sign_in(character varying, character varying, character varying, character varying, inet, bigint); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: sign_in(character varying, character varying, character varying, character varying, inet, bigint, boolean); Type: FUNCTION; Schema: public; Owner: mypass
 --
 
-CREATE FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint) RETURNS boolean
+CREATE FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint, is_verified_code boolean) RETURNS boolean
     LANGUAGE plpgsql
     AS $_$DECLARE
 user_id UUID;
+user_confirm BOOLEAN;
 timestmp BIGINT;
 BEGIN
 timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-SELECT u_id INTO user_id FROM u_users WHERE u_login = $1 AND u_secret_string=$2 AND u_confirm = TRUE;
-IF user_id IS NULL THEN
-	RETURN FALSE;
+SELECT u_id,u_confirm INTO user_id, user_confirm FROM u_users WHERE u_login = $1 AND u_secret_string=$2;
+IF $7 IS TRUE THEN
+    IF user_id IS NULL THEN
+        RETURN FALSE;
+    END IF;
+    IF user_confirm IS FALSE THEN
+        UPDATE u_users SET u_confirm = $7 WHERE u_id = user_id;
+    END IF;
+    INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
+    RETURN TRUE;
 END IF;
-INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
-RETURN TRUE;
+RETURN FALSE;
 END$_$;
 
 
-ALTER FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint) OWNER TO mypass;
+ALTER FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint, is_verified_code boolean) OWNER TO mypass;
 
 --
 -- Name: sign_out(character varying, uuid); Type: FUNCTION; Schema: public; Owner: mypass
@@ -353,7 +360,6 @@ COPY public.r_records (r_id, r_s_id, r_title, r_partition, r_notes, r_tags, r_la
 --
 
 COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_updated_at) FROM stdin;
-1a5206a9-566b-46ff-aed6-552b0a6a8ee7	d66228e1-62b3-42e7-8011-3f55065e9bdf	safe1	63ef04244a72f021557e8b6df3c54e973747c53bf8e6ec1f16ccfd2b51dd51caa5f802fd7262a54dbd3930f05c107cd607c48b4fa04c5b0cec2e84d911f5fa0ef98550e0500874460502383ba5	1694626830	1694626830
 \.
 
 
@@ -362,10 +368,6 @@ COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_update
 --
 
 COPY public.t_tokens (t_id, t_u_id, t_token, t_first_login, t_last_login, t_device, t_last_ip, t_expiration) FROM stdin;
-a55dca73-b199-4324-9049-9d6abf309d87	d66228e1-62b3-42e7-8011-3f55065e9bdf	c3dca6323b4dc8ccae9d3d997cd849ce08b0b239900aabd9ee96dd4c45c21c07	1694626829	1694626829	python/win	192.168.1.1	1694630429
-643d4acd-62aa-4b05-9f45-52746a44b067	d66228e1-62b3-42e7-8011-3f55065e9bdf	2b80b37c0da8efe298e70f68c0f68662487fc057260e34d02d3d68a9f538ff00	1694626830	1694626830	python/win	192.168.1.1	1694630430
-d77f19c5-c025-4fcb-a37e-1fca95cff5a0	d66228e1-62b3-42e7-8011-3f55065e9bdf	1af34bdfde746082680756c3c3d6bfd2a3b082e29979eb388a271fedf61666a0	1694626830	1694626830	python/win	192.168.1.1	1694630430
-101f88cc-2b9f-44c8-a62b-34df2d5541aa	d66228e1-62b3-42e7-8011-3f55065e9bdf	f98011afcc37e944bcdfdd6ce3df2d90dba487185c25c19fede5a9c50002869a	1694626830	1694626830	python/win	192.168.1.1	1694630430
 \.
 
 

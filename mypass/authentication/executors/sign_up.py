@@ -20,9 +20,9 @@ class SignUp:
             return (None,None,SERVICE_UNAVAILABLE)
         elif valid.validate_secret_string(secret_string) == False or valid.validate_login(login)==False:
             return (None,None,BAD_REQUEST)
-        totp = Totp()
+        totp = Totp("")
         secret_code = totp.generate_secret_code()
-        reserve_codes = totp.generate_reserve_codes(5)
+        reserve_codes = totp.generate_reserve_codes(self.__get_reserve_codes_length())
         return (secret_code,reserve_codes, await authentication.Authentication().sign_up(
             login,
             security.sha256s(secret_string),
@@ -33,3 +33,7 @@ class SignUp:
     def __permission(self)->bool:
         server_config = configuration.ServerConfiguration()
         return configuration.Authentication(server_config).get_registration()
+    
+    def __get_reserve_codes_length(self)->int:
+        server_config = configuration.ServerConfiguration()
+        return configuration.Authentication(server_config).totp().lengths().get_reserve_codes_length()

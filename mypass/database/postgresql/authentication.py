@@ -7,12 +7,12 @@ class Authentication:
         connection = None
         try:
             connection = await Connection().connect()
-            value:int = await connection.fetchval('SELECT sign_up($1, $2, $3, $4, $5,$6)',login, secret_string, reg_ip, True, secret_code,reserves)#needs to be changed to False
+            value:int = await connection.fetchval('SELECT sign_up($1, $2, $3, $4, $5,$6)',login, secret_string, reg_ip, False, secret_code,reserves)#needs to be changed to False
             if value == 0 or value == 1 or value == 2:
                 return OK
             elif value == -1:
                 return CONFLICT
-            elif value == -2 or value == -3 or value == -3:
+            elif value == -2 or value == -3 or value == -4:
                 return NOT_FOUND
             else:
                 return INTERNAL_SERVER_ERROR
@@ -25,7 +25,7 @@ class Authentication:
             if connection:
                 await connection.close()
     
-    async def get_secret_code(self,login:str,secret_string:str,confirm:bool):
+    async def get_secret_code(self,login:str,secret_string:str):
         connection = None
         try:
             connection = await Connection().connect()
@@ -35,8 +35,7 @@ class Authentication:
             JOIN u_users ON u_users.u_id = c_codes.c_u_id 
             WHERE u_users.u_login = $1
             AND u_users.u_secret_string = $2
-            AND u_users.u_confirm = $3
-            ''',login, secret_string,confirm)
+            ''',login, secret_string)
 
             value_list = []
             if value == None:
@@ -49,16 +48,40 @@ class Authentication:
                 value_list.append(value_dict)
             return (value_list,OK)
         except asyncpg.exceptions.ConnectionDoesNotExistError:
-            return (None,INTERNAL_SERVER_ERROR)
+            return ([],INTERNAL_SERVER_ERROR)
+        finally:
+            if connection:
+                await connection.close()
+
+    async def update_reserve_codes(self, login: str, secret_string: str, reserve_codes: list[int]):
+        connection = None
+        try:
+            connection = await Connection().connect()
+            result = await connection.fetch(
+                '''
+                UPDATE c_codes SET c_reserves = $3
+                WHERE c_u_id =(
+                    SELECT u_id FROM u_users
+                    WHERE u_login = $1 AND u_users.u_secret_string = $2
+                    )
+                RETURNING c_id;
+                ''', login, secret_string, reserve_codes)
+
+            if result:
+                return OK
+            else:
+                return NOT_FOUND
+        except asyncpg.exceptions.ConnectionDoesNotExistError:
+            return INTERNAL_SERVER_ERROR
         finally:
             if connection:
                 await connection.close()
     
-    async def sign_in(self,login:str,secret_string:str,token:str,device:str,ip:str,expiration:int):
+    async def sign_in(self,login:str,secret_string:str,token:str,device:str,ip:str,expiration:int,is_verified_code:bool):
         connection = None
         try:
             connection = await Connection().connect()
-            value = await connection.fetch('SELECT sign_in($1,$2,$3,$4,$5,$6)',login,secret_string,token,device,ip,expiration)
+            value = await connection.fetch('SELECT sign_in($1,$2,$3,$4,$5,$6,$7)',login,secret_string,token,device,ip,expiration,is_verified_code)
             if value[0]['sign_in']:
                 return OK
             else:
@@ -137,17 +160,4 @@ class Authentication:
             if connection:
                 await connection.close()
 
-    async def new_secret_string(self,token:str,old_secret_string:str,new_secret_string:str):
-        connection = None
-        try:
-            connection = await Connection().connect()
-            value = await connection.fetch('SELECT update_token_info($1,$2,$3);',old_secret_string,new_secret_string,token)
-            if value[0]['update_token_info']:
-                return OK
-            else:
-                return NOT_FOUND
-        except asyncpg.exceptions.ConnectionDoesNotExistError:
-            return INTERNAL_SERVER_ERROR
-        finally:
-            if connection:
-                await connection.close()
+    async def new_secret_string(self,token:str,old_secret_string:str,new_secret_string:str):...

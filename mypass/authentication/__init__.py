@@ -14,7 +14,7 @@ from mypass.database.postgresql import authentication
 import mypass.utils as utils
 
 class Authentication():
-    async def sign_up(self,login: Annotated[str, Form()],secret_string:Annotated[str, Form()],request: Request,response:Response):
+    async def sign_up(self,login: str,secret_string:str,request: Request,response:Response):
         lang = Language()
         sign_up  = SignUp()
         client_ip:str = utils.get_client_ip(request)
@@ -34,16 +34,16 @@ class Authentication():
         else:
             return {"msg":lang.server_error(),"secret_code":None,"reserve_codes":None}#INTERNAL_SERVER_ERROR
 
-    async def sign_in(self,login:str,secret_string:str,user_agent: str,expiration:int,request: Request,response:Response):
+    async def sign_in(self,login:str,secret_string:str,code:str,type:str,user_agent: str,expiration:int,request: Request,response:Response):
         lang = Language()
         sign_in  = SignIn()
         client_ip:str = utils.get_client_ip(request)
-        exec = await sign_in.execute(login,secret_string,user_agent,client_ip,expiration)
+        exec = await sign_in.execute(login,secret_string,code,type,user_agent,client_ip,expiration)
         status_code:int = exec[1]
         token:str|None = exec[0]
         response.status_code = status_code
         if status_code == BAD_REQUEST:
-            return {"msg":lang.data_not_valid(),"token":token}
+            return {"msg":lang.data_not_valid(),"token":None}
         elif status_code == OK:
             return {"msg":lang.user_found(),"token":token}
         elif status_code == NOT_FOUND:

@@ -51,6 +51,7 @@ def encrypt_password():
         return b""
     return sha256(bytes(LOGIN,'utf-8')+bytes(PASSWORD,'utf-8')+bytes(SALT,'utf-8')).hexdigest()
 
+
 def test_sign_up():
     data = {
         "login": LOGIN,
@@ -65,9 +66,23 @@ def test_sign_up():
     assert len(encrypt_password())==64
     assert response.status_code == 200
 
+def sign_up():
+    data = {
+        "login": LOGIN,
+        "secret_string": encrypt_password()
+    }
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Real-IP':'192.168.1.1'
+    }
+    response = client.post(AUTH_PATH_V1+"/sign_up", data=data,headers=headers)
+    print("SECRET_CODE:",response.json()['secret_code'])
+    return response.json()['secret_code']
+
 def test_sign_in():
     data = {
         "login": LOGIN,
+        "code":sign_up(),
         "secret_string": encrypt_password(),
         "expiration": 60
     }
@@ -76,7 +91,7 @@ def test_sign_in():
         'X-Real-IP':'192.168.1.1',
         'User-Agent':'python/win'
     }
-    response = client.post(AUTH_PATH_V1+"/sign_in", data=data,headers=headers)
+    response = client.post(AUTH_PATH_V1+"/sign_in?type=basic", data=data,headers=headers)
     
     assert response.status_code == 200
 

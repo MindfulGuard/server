@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import  APIRouter, Form, Header, Request, Response
+from fastapi import  APIRouter, Form, Header, Query, Request, Response
 from mypass.authentication import Authentication
 
 router = APIRouter()
@@ -17,13 +17,15 @@ async def sign_up(login: Annotated[str, Form()],
 async def sign_in(
     login: Annotated[str, Form()],
     secret_string:Annotated[str, Form()],
+    code:Annotated[str, Form()],
     expiration:Annotated[int, Form()],
     user_agent: Annotated[str, Header()],
     request: Request,
-    response:Response
+    response:Response,
+    type:str  = Query(min_length=5, max_length=7)
 ):
     auth = Authentication()
-    return await auth.sign_in(login,secret_string,user_agent,expiration,request,response)
+    return await auth.sign_in(login,secret_string,code,type,user_agent,expiration,request,response)
 
 @router.get("/config")
 async def get_config_auth(response:Response):

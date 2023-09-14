@@ -7,11 +7,10 @@ password="12345"
 
 [authentication]
 registration=true
-smtp="email.example.com"
-blocked_domains = ["email.com","email2.com"]
-token_expiration_default = 60
 
-    [authentication.TOTP]#!add account verification using TOTP (optional) and add 2FA TOTP!
+    [authentication.totp]#!add account verification using TOTP (optional) and add 2FA TOTP!
+        [authentication.totp.lengths]
+        reserve_codes_length = 6
 
     [authentication.lengths]
     aes_length=64
