@@ -1,5 +1,5 @@
 {
-    "data_not_valid":"не правильные данные",
+    "data_not_valid":"неправильные данные",
     "registration_not_allowed":"регистрация запрещена",
     "registration_was_successful":"регистрация прошла успешно",
     "service_is_not_available":"сервис не доступен",
@@ -10,5 +10,7 @@
     "session_token_has_been_deleted":"токен сеанса был удален",
     "failed_to_delete_token":"не удалось удалить токен",
     "safe_was_successfully_created":"сейф удачно создан",
-    "unauthorized":"не авторизован"
+    "unauthorized":"не авторизован",
+    "safe_was_successfully_updated":"сейф успешно обновлен",
+    "failed_to_update_safe":"не удалось обновить сейф"
 }

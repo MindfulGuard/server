@@ -10,5 +10,7 @@
     "session_token_has_been_deleted":"the session token has been deleted",
     "failed_to_delete_token":"failed to delete token",
     "safe_was_successfully_created":"the safe was successfully created",
-    "unauthorized":"unauthorized"
+    "unauthorized":"unauthorized",
+    "safe_was_successfully_updated":"the safe was successfully updated",
+    "failed_to_update_safe":"failed to update the safe"
 }

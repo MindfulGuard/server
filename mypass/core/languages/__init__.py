@@ -28,3 +28,7 @@ class Language:
         return self.__message.get("safe_was_successfully_created")
     def unauthorized(self)->dict[str,Any]:
         return self.__message.get("unauthorized")
+    def safe_was_successfully_updated(self)->dict[str,Any]:
+        return self.__message.get("safe_was_successfully_updated")
+    def failed_to_update_safe(self)->dict[str,Any]:
+        return self.__message.get("failed_to_update_safe")

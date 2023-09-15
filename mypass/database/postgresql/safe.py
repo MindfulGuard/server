@@ -27,6 +27,7 @@ class Safe:
                 await connection.close()
     
     async def get(self, token: str):
+        connection = None
         try:
             connection = await Connection().connect()
             is_auth = await Authentication().is_auth(connection,token)
@@ -60,4 +61,25 @@ class Safe:
             return (value_list, OK)
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return (None, INTERNAL_SERVER_ERROR)
+        finally:
+            if connection:
+                await connection.close()
     
+    async def update(self,token,id,name,description):
+        connection = None
+        try:
+            connection = await Connection().connect()
+            value:int = await connection.fetchval('SELECT update_safe($1,$2,$3,$4)',token,id,name,description)
+            if value == 0:
+                return OK
+            elif value == -1:
+                return UNAUTHORIZED
+            elif value == -2:
+                return INTERNAL_SERVER_ERROR
+            else:
+                return INTERNAL_SERVER_ERROR
+        except asyncpg.exceptions.ConnectionDoesNotExistError:
+            return INTERNAL_SERVER_ERROR
+        finally:
+            if connection:
+                await connection.close()
