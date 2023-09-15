@@ -38,7 +38,7 @@ class Safe:
         elif status_code == NOT_FOUND:
             return {"msg":[]}
         elif status_code == OK:
-            return {"list":get[0],"quantity":len(get[0])}
+            return {"list":get[0],"quantity":len(get[0])}#!the code analyzer may swear, but errors should not occur!
         else:
             return {"msg":lang.server_error()}
         
