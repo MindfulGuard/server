@@ -1,6 +1,6 @@
 from mypass.authentication.executors import get_authorization_token
 from mypass.core.configuration import Safe, ServerConfiguration
-from mypass.core.response_status_codes import BAD_REQUEST
+from mypass.core.response_status_codes import *
 from mypass.core.security import sha256s
 import mypass.database.postgresql.safe as pgsql_safe
 from mypass.utils import Validation

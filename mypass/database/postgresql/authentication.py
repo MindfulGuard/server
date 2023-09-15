@@ -40,7 +40,7 @@ class Authentication:
             value_list = []
             print("VALUE:",value)
             if len(value) == 0:
-                return (value_list,NOT_FOUND)
+                return (value_list,UNAUTHORIZED)
             for record in value:
                 value_dict = {
                     'secret_code': record['c_secret_code'],
@@ -117,7 +117,7 @@ class Authentication:
             if value[0]['update_token_info']:
                 return OK
             else:
-                return NOT_FOUND
+                return UNAUTHORIZED
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return INTERNAL_SERVER_ERROR
         finally:
@@ -140,7 +140,7 @@ class Authentication:
             
             value_list = []
             if records == None:
-                return (value_list,NOT_FOUND)
+                return (value_list,UNAUTHORIZED)
             for record in records:
                 value_dict = {
                     'id': record['t_id'],
