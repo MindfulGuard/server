@@ -58,5 +58,6 @@ class Safe:
                 return (None, NOT_FOUND)
 
             return (value_list, OK)
-        except asyncpg.exceptions.ConnectionDoesNotExistError as e:
+        except asyncpg.exceptions.ConnectionDoesNotExistError:
             return (None, INTERNAL_SERVER_ERROR)
+    
