@@ -1,4 +1,5 @@
 import asyncpg
+from mypass.database.postgresql.authentication import Authentication
 from mypass.database.postgresql.connection import Connection
 from mypass.core.response_status_codes import *
 
@@ -25,22 +26,24 @@ class Safe:
             if connection:
                 await connection.close()
     
-    async def get(self,token:str):
-        connection = None
+    async def get(self, token: str):
         try:
             connection = await Connection().connect()
+            is_auth = await Authentication().is_auth(connection,token)
+
+            if not is_auth:
+                return (None, UNAUTHORIZED)
+
             records = await connection.fetch('''
-            SELECT s_id, s_name,s_description,s_created_at,s_updated_at
-            FROM s_safes
-            JOIN t_tokens
-            ON t_tokens.t_u_id = s_safes.s_u_id
-            WHERE t_tokens.t_token = $1
-            AND active_token($1) = TRUE
-            ''',token)
+                SELECT s_id, s_name, s_description, s_created_at, s_updated_at
+                FROM s_safes
+                JOIN t_tokens
+                ON t_tokens.t_u_id = s_safes.s_u_id
+                WHERE t_tokens.t_token = $1
+                AND active_token($1) = True
+            ''', token)
 
             value_list = []
-            if len(records) == 0:
-                return (None,UNAUTHORIZED)
             for record in records:
                 value_dict = {
                     'id': record['s_id'],
@@ -51,9 +54,9 @@ class Safe:
                 }
                 value_list.append(value_dict)
 
-            return (value_list,OK)
-        except asyncpg.exceptions.ConnectionDoesNotExistError:
-            return (None,INTERNAL_SERVER_ERROR)
-        finally:
-            if connection:
-                await connection.close()
+            if not value_list:
+                return (None, NOT_FOUND)
+
+            return (value_list, OK)
+        except asyncpg.exceptions.ConnectionDoesNotExistError as e:
+            return (None, INTERNAL_SERVER_ERROR)

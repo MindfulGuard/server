@@ -162,3 +162,9 @@ class Authentication:
                 await connection.close()
 
     async def new_secret_string(self,token:str,old_secret_string:str,new_secret_string:str):...
+
+    async def is_auth(self,connection,token:str):
+        is_auth:bool = await connection.fetchval('''
+            SELECT active_token($1);
+        ''', token)
+        return is_auth

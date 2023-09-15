@@ -34,6 +34,8 @@ class Safe:
             return {"msg":lang.data_not_valid()}
         elif status_code == UNAUTHORIZED:
             return {"msg":lang.unauthorized()}
+        elif status_code == NOT_FOUND:
+            return {"msg":None}
         elif status_code == OK:
             return {"list":get[0]}
         else:
