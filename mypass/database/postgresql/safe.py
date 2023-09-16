@@ -83,3 +83,22 @@ class Safe:
         finally:
             if connection:
                 await connection.close()
+
+    async def delete(self,token,id):
+        connection = None
+        try:
+            connection = await Connection().connect()
+            value:int = await connection.fetchval('SELECT delete_safe($1,$2)',token,id)
+            if value == 0:
+                return OK
+            elif value == -1:
+                return UNAUTHORIZED
+            elif value == -2:
+                return NOT_FOUND
+            else:
+                return INTERNAL_SERVER_ERROR
+        except asyncpg.exceptions.ConnectionDoesNotExistError:
+            return INTERNAL_SERVER_ERROR
+        finally:
+            if connection:
+                await connection.close()

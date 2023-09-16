@@ -61,6 +61,40 @@ $_$;
 ALTER FUNCTION public.create_safe(token character varying, name character varying, description character varying) OWNER TO mypass;
 
 --
+-- Name: delete_safe(character varying, uuid); Type: FUNCTION; Schema: public; Owner: mypass
+--
+
+CREATE FUNCTION public.delete_safe(token character varying, id uuid) RETURNS integer
+    LANGUAGE plpgsql
+    AS $_$
+declare
+    user_id UUID;
+    safe_id UUID;
+begin
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+
+DELETE FROM r_records WHERE r_s_id = $2 AND r_u_id = user_id;
+
+DELETE FROM s_safes WHERE s_u_id = user_id AND s_id = $2 RETURNING s_id INTO safe_id;
+
+IF safe_id IS NULL THEN
+    RETURN -2;
+END IF;
+
+RETURN 0;
+
+end;
+$_$;
+
+
+ALTER FUNCTION public.delete_safe(token character varying, id uuid) OWNER TO mypass;
+
+--
 -- Name: send_code(character varying, integer, bigint); Type: PROCEDURE; Schema: public; Owner: mypass
 --
 
@@ -188,6 +222,38 @@ $_$;
 ALTER FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, reserves integer[]) OWNER TO mypass;
 
 --
+-- Name: update_safe(character varying, uuid, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
+--
+
+CREATE FUNCTION public.update_safe(token character varying, safe_id uuid, name character varying, description character varying) RETURNS integer
+    LANGUAGE plpgsql
+    AS $_$
+DECLARE
+    safe_id UUID;
+BEGIN
+    IF active_token($1) IS FALSE THEN
+        RETURN -1;
+    END IF;
+
+    UPDATE s_safes SET s_name = $3, s_description = $4,s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::bigint
+    WHERE s_u_id =(
+        SELECT t_u_id FROM t_tokens
+        WHERE t_token = $1
+                    )
+    AND s_id = $2
+    RETURNING s_id INTO safe_id;
+
+    IF safe_id IS NULL THEN
+        RETURN -2;
+    END IF;
+    RETURN 0;
+END
+$_$;
+
+
+ALTER FUNCTION public.update_safe(token character varying, safe_id uuid, name character varying, description character varying) OWNER TO mypass;
+
+--
 -- Name: update_secret_string(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
 --
 
@@ -268,6 +334,7 @@ ALTER TABLE public.c_codes OWNER TO mypass;
 CREATE TABLE public.r_records (
     r_id uuid NOT NULL,
     r_s_id uuid NOT NULL,
+    r_u_id uuid NOT NULL,
     r_title character varying(512),
     r_partition character varying(1024),
     r_notes character varying(512),
@@ -351,7 +418,7 @@ COPY public.c_codes (c_id, c_u_id, c_secret_code, c_reserves, c_created_at) FROM
 -- Data for Name: r_records; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.r_records (r_id, r_s_id, r_title, r_partition, r_notes, r_tags, r_last_change, r_created, r_category, r_favourite) FROM stdin;
+COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_partition, r_notes, r_tags, r_last_change, r_created, r_category, r_favourite) FROM stdin;
 \.
 
 
@@ -473,6 +540,14 @@ ALTER TABLE ONLY public.a_accesses
 
 ALTER TABLE ONLY public.r_records
     ADD CONSTRAINT r_login_r_s_id_fkey FOREIGN KEY (r_s_id) REFERENCES public.s_safes(s_id);
+
+
+--
+-- Name: r_records r_records_u_users_u_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: mypass
+--
+
+ALTER TABLE ONLY public.r_records
+    ADD CONSTRAINT r_records_u_users_u_id_fk FOREIGN KEY (r_u_id) REFERENCES public.u_users(u_id);
 
 
 --

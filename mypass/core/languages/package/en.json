@@ -12,5 +12,8 @@
     "safe_was_successfully_created":"the safe was successfully created",
     "unauthorized":"unauthorized",
     "safe_was_successfully_updated":"the safe was successfully updated",
-    "failed_to_update_safe":"failed to update the safe"
+    "failed_to_update_safe":"failed to update the safe",
+    "successful_login":"successful login",
+    "safe_has_been_successfully_deleted":"the safe has been successfully deleted",
+    "failed_to_delete_the_safe":"failed to delete the safe"
 }

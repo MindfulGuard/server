@@ -12,5 +12,8 @@
     "safe_was_successfully_created":"сейф удачно создан",
     "unauthorized":"не авторизован",
     "safe_was_successfully_updated":"сейф успешно обновлен",
-    "failed_to_update_safe":"не удалось обновить сейф"
+    "failed_to_update_safe":"не удалось обновить сейф",
+    "successful_login":"удачный вход в систему",
+    "safe_has_been_successfully_deleted":"сейф был успешно удален",
+    "failed_to_delete_the_safe":"не удалось удалить сейф"
 }

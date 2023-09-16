@@ -45,7 +45,7 @@ class Authentication():
         if status_code == BAD_REQUEST:
             return {"msg":lang.data_not_valid(),"token":None}
         elif status_code == OK:
-            return {"msg":lang.user_found(),"token":token}
+            return {"msg":lang.successful_login(),"token":token}
         elif status_code == NOT_FOUND:
             return {"msg":lang.user_not_found(),"token":None}
         else:

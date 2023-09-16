@@ -47,3 +47,16 @@ async def update_safe(
     safe = Safe()
     await auth.update_token_info(token,user_agent,request)
     return await safe.update(token,id,name,description,response)
+
+@router.delete("/delete")
+async def delete_safe(
+    id:Annotated[str, Form()],
+    user_agent: Annotated[str, Header()],
+    request: Request,
+    response: Response,
+    token: str = Header(default=None, alias="Authorization"),
+    ):
+    auth = Authentication()
+    safe = Safe()
+    await auth.update_token_info(token,user_agent,request)
+    return await safe.delete(token,id,response)
