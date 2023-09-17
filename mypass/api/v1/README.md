@@ -32,7 +32,7 @@
           "ru": "регистрация прошла успешно"
       },
       "secret_code": "base32 string for TOTP client",
-      "reserve_codes": [
+      "backup_codes": [
           111111,
           222222,
           333333,
@@ -44,7 +44,7 @@
   - ### Request
   
   ```http
-  POST /v1/auth/sign_in?type=basic|reserve
+  POST /v1/auth/sign_in?type=basic|backup
   ```
   
   - Headers
