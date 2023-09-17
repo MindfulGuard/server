@@ -1,7 +1,6 @@
 from typing import Annotated
 from fastapi import Form, Header, Request, Response
 from mypass.authentication.executors import get_authorization_token
-from mypass.authentication.executors.config import Config
 from mypass.authentication.executors.get_tokens import GetTokens
 
 from mypass.authentication.executors.sign_in import SignIn
@@ -13,7 +12,7 @@ from mypass.core.response_status_codes import *
 from mypass.database.postgresql import authentication
 import mypass.utils as utils
 
-class Authentication():
+class Authentication:
     async def sign_up(self,login: str,secret_string:str,request: Request,response:Response):
         lang = Language()
         sign_up  = SignUp()
@@ -64,24 +63,6 @@ class Authentication():
             return {"msg":lang.failed_to_delete_token()}
         else:
             return {"msg":lang.server_error()}#INTERNAL_SERVER_ERROR
-        
-    def get_config(self,response:Response):
-        config = Config().execute()
-        pbkdf2 = config.pbkdf2()
-        password_rule = config.password_rule()
-        get_password_rule = password_rule[0]
-        #get_password_rule = None
-        get_pbkdf2  = pbkdf2[0]
-        status_code = pbkdf2[1]
-
-        response.status_code = status_code
-        if status_code == OK:
-            return {"pbkdf2":get_pbkdf2,"authentication_rule":get_password_rule}
-        elif status_code == NOT_FOUND:
-            return {"pbkdf2":None,"authentication_rule":None}
-        else:
-            response.status_code = INTERNAL_SERVER_ERROR
-            return {"pbkdf2":None,"authentication_rule":None}#INTERNAL_SERVER_ERROR
         
     async def update_token_info(self,token:str,device:str,request:Request)->None:
         client_ip:str = utils.get_client_ip(request)

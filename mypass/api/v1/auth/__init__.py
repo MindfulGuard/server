@@ -27,11 +27,6 @@ async def sign_in(
     auth = Authentication()
     return await auth.sign_in(login,secret_string,code,type,user_agent,expiration,request,response)
 
-@router.get("/config")
-async def get_config_auth(response:Response):
-    auth = Authentication()
-    return auth.get_config(response)
-
 @router.delete("/sign_out")
 async def sign_out(
     id: Annotated[str, Form()],

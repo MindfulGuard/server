@@ -21,10 +21,21 @@ class Configuration:
         self.__config = server_configuration
     def get_password_rule(self)->str:
         return self.__config.read_configuration(self.__block,'password_rule')
+    def get_aes_mode(self)->str:
+        return self.__config.read_configuration(self.__block,'aes_mode')
+    def pbkdf2(self):
+        return PBKDF2(self.__block,self.__config)
+
+class PBKDF2:
+    def __init__(self,root_block:str,server_configuration):
+        self.__block:str = concatenate_with_dot(root_block,"PBKDF2")
+        self.__config = server_configuration
     def get_iterations(self)->int:
         return int(self.__config.read_configuration(self.__block,'iterations'))
-    def get_sha_client(self)->str:
-        return self.__config.read_configuration(self.__block,'sha_client')
+    def get_sha(self)->str:
+        return self.__config.read_configuration(self.__block,'sha')
+    def lengths(self):
+        return Lengths(self.__block,self.__config)
 
 class Lengths:
     def __init__(self,root_block:str,server_configuration):
@@ -38,6 +49,8 @@ class Lengths:
         return self.__config.read_configuration(self.__block,'secret_string_length')
     def get_reserve_codes_length(self)->int:
         return self.__config.read_configuration(self.__block,'reserve_codes_length')
+    def get_key_length(self)->int:
+        return self.__config.read_configuration(self.__block,'key_length')
 
 class Totp:
     def __init__(self,root_block:str,server_configuration):
