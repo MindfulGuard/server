@@ -20,7 +20,7 @@
   | Parameters | Type | Description |
   | - | - | - |
   | login | string | the length is set in the configuration | |
-  | secret_string | string | length 128, sha256(login &#124; password &#124; private_string) | |
+  | secret_string | string | length 128, [secret_string](#secret_string) | |
   
   - ### Response
   
