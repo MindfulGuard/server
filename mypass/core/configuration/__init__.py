@@ -2,6 +2,7 @@ import tomli
 
 from mypass.core.configuration.nestings.authentication import Totp, Public
 from mypass.core.configuration.nestings.safe import Lengths
+import mypass.core.configuration.nestings.encrypt as encrypt
 
 class ServerConfiguration:
     __PATH_TO_SERVER_CONFIGURATION: str = 'mypass/core/configuration/package/server_configuration.toml'
@@ -56,3 +57,11 @@ class Safe:
         self.__config:ServerConfiguration = server_configuration
     def lengths(self):
         return Lengths(self.__block,self.__config)
+    
+class Encrypt:
+    def __init__(self,server_configuration:ServerConfiguration):
+        self.__block:str = 'encrypt'
+        self.__config:ServerConfiguration = server_configuration
+    def public(self):
+        return encrypt.Public(self.__block,self.__config)
+    
