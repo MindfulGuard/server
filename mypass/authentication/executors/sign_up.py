@@ -22,13 +22,13 @@ class SignUp:
             return (None,None,BAD_REQUEST)
         totp = Totp("")
         secret_code = totp.generate_secret_code()
-        reserve_codes = totp.generate_reserve_codes(self.__get_reserve_codes_length())
-        return (secret_code,reserve_codes, await authentication.Authentication().sign_up(
+        backup_codes = totp.generate_backup_codes(self.__get_reserve_codes_length())
+        return (secret_code,backup_codes, await authentication.Authentication().sign_up(
             login,
             security.sha256s(secret_string),
             ip,
             secret_code,
-            reserve_codes
+            backup_codes
         ))
     def __permission(self)->bool:
         server_config = configuration.ServerConfiguration()

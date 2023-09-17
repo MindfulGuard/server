@@ -3,11 +3,11 @@ from mypass.core.response_status_codes import *
 
 class Authentication:
     def __init__(self):pass
-    async def sign_up(self,login:str,secret_string:str,reg_ip:str,secret_code:str,reserves:list[int]):
+    async def sign_up(self,login:str,secret_string:str,reg_ip:str,secret_code:str,backup_codes:list[int]):
         connection = None
         try:
             connection = await Connection().connect()
-            value:int = await connection.fetchval('SELECT sign_up($1, $2, $3, $4, $5,$6)',login, secret_string, reg_ip, False, secret_code,reserves)#needs to be changed to False
+            value:int = await connection.fetchval('SELECT sign_up($1, $2, $3, $4, $5,$6)',login, secret_string, reg_ip, False, secret_code,backup_codes)#needs to be changed to False
             if value == 0 or value == 1 or value == 2:
                 return OK
             elif value == -1:
@@ -30,7 +30,7 @@ class Authentication:
         try:
             connection = await Connection().connect()
             value = await connection.fetch('''
-            SELECT c_secret_code, c_reserves
+            SELECT c_secret_code, c_backup_codes
             FROM c_codes 
             JOIN u_users ON u_users.u_id = c_codes.c_u_id 
             WHERE u_users.u_login = $1
@@ -44,7 +44,7 @@ class Authentication:
             for record in value:
                 value_dict = {
                     'secret_code': record['c_secret_code'],
-                    'reserves':record['c_reserves']
+                    'backup_codes':record['c_backup_codes']
                 }
                 value_list.append(value_dict)
             return (value_list,OK)
@@ -60,7 +60,7 @@ class Authentication:
             connection = await Connection().connect()
             result = await connection.fetch(
                 '''
-                UPDATE c_codes SET c_reserves = $3
+                UPDATE c_codes SET c_backup_codes = $3
                 WHERE c_u_id =(
                     SELECT u_id FROM u_users
                     WHERE u_login = $1 AND u_users.u_secret_string = $2

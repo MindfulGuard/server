@@ -27,15 +27,15 @@ class Authentication:
         status_cod = exec[2]
         response.status_code = status_cod
         if status_cod == SERVICE_UNAVAILABLE:
-            return {"msg":lang.service_is_not_available(),"secret_code":None,"reserve_codes":None}
+            return {"msg":lang.service_is_not_available(),"secret_code":None,"backup_codes":None}
         elif status_cod == BAD_REQUEST or utils.arguments(secret_string,login) == False:
-            return {"msg":lang.data_not_valid(),"secret_code":None,"reserve_codes":None}
+            return {"msg":lang.data_not_valid(),"secret_code":None,"backup_codes":None}
         elif status_cod == OK:
-            return {"msg":lang.registration_was_successful(),"secret_code":secret_code,"reserve_codes":reserve_codes}
+            return {"msg":lang.registration_was_successful(),"secret_code":secret_code,"backup_codes":reserve_codes}
         elif status_cod == CONFLICT:
-            return {"msg":lang.user_already_exists(),"secret_code":None,"reserve_codes":None}
+            return {"msg":lang.user_already_exists(),"secret_code":None,"backup_codes":None}
         else:
-            return {"msg":lang.server_error(),"secret_code":None,"reserve_codes":None}#INTERNAL_SERVER_ERROR
+            return {"msg":lang.server_error(),"secret_code":None,"backup_codes":None}#INTERNAL_SERVER_ERROR
 
     async def sign_in(self,login:str,
                       secret_string:str,

@@ -5,19 +5,21 @@ import mypass.core.security.totp as secure_totp
 from mypass.database.postgresql import authentication
 from mypass.utils import Validation, minutes_to_seconds
 
-TYPE_RESERVE = "reserve"
+TYPE_BACKUP = "backup"
 TYPE_BASIC = "basic"
 
 class SignIn:
     async def execute(self,
                       login:str,
                       secret_string:str,
-                      code:str,type:str,
-                      device:str,ip:str,
+                      code:str,
+                      type:str,
+                      device:str,
+                      ip:str,
                       expiration:int):
         valid = Validation()
         token:str = security.generate_512_bit_token_string()
-        if valid.validate_login(login) == False or valid.validate_secret_string(secret_string) == False or expiration <1:
+        if valid.validate_login(login) == False or valid.validate_secret_string(secret_string) == False or expiration <1 or valid.validate_TOTP_code(code) == False:
             return (None,BAD_REQUEST)
         return (
             token,
@@ -34,7 +36,7 @@ class SignIn:
     async def __confirm(self,login:str,secret_string:str,code:str,type:str):
         if type == TYPE_BASIC:
             return await self.__basic_confirm(login,secret_string,code)
-        elif type == TYPE_RESERVE:
+        elif type == TYPE_BACKUP:
             return await self.__reserve_confirm(login,secret_string,code)
         return False
 
@@ -53,7 +55,7 @@ class SignIn:
         get_secret_code = await auth.get_secret_code(login,secret_string)
         if get_secret_code[1] !=OK:
             return False
-        reserve_codes:list[int] = list[int](get_secret_code[0][0]['reserves'])
+        reserve_codes:list[int] = list[int](get_secret_code[0][0]['backup_codes'])
         if icode in reserve_codes:
             print("RESERVE_CODES:",reserve_codes)
             reserve_codes.remove(icode)

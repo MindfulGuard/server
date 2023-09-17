@@ -8,7 +8,7 @@ class Totp:
     def generate_secret_code(self)->str:
         return pyotp.random_base32()
     
-    def generate_reserve_codes(self,length:int)->list[int]:
+    def generate_backup_codes(self,length:int)->list[int]:
         arr:list[int] = []
         for _ in range(1,length):
             arr.append(random.randint(100000,999999))
