@@ -59,7 +59,7 @@
   | Parameters | Type | Description |
   | - | - | - |
   | login | string | the length is set in the configuration | |
-  | secret_string | string | length 128, [secret_string](#-secret_string) | |
+  | secret_string | string | length 128, [secret_string](#secret_string) | |
   | expiration | int64 | 1 < expiration < sizeof(int64) | |
   | code | string | the code consists of a 6-digit number, the code can be obtained in the TOTP client or from a backup code | |
   
