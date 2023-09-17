@@ -76,7 +76,7 @@
   }
   ```
 # Variables
-- secret_string
+secret_string
 ```c
 secret_string = sha256(login|password|private_string)
 ```
