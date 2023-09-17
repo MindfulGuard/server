@@ -96,4 +96,4 @@ class Authentication():
         status_code = tks[1]
 
         response.status_code = status_code
-        return {"list":data}
+        return {"list":data,"count":len(data)}

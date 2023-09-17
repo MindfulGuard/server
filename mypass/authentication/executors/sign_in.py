@@ -46,7 +46,7 @@ class SignIn:
         print("SECRET_CODE:",get_secret_code[0][0]['secret_code'])
         secret_code:str = get_secret_code[0][0]['secret_code']
         totp = secure_totp.Totp(secret_code)
-        return totp.verify(secret_code)
+        return totp.verify(code)
     
     async def __reserve_confirm(self,login:str,secret_string:str,code:str):
         icode:int = int(code)
