@@ -9,7 +9,11 @@ from mypass.safe.executors.update import Update
 
 class Safe:
     def __init__(self):...
-    async def create(self,token:str,name:str,description:str,response:Response):
+    async def create(self,
+                     token:str,
+                     name:str,
+                     description:str,
+                     response:Response):
         lang = Language()
         obj_create = Create()
         status_code = await obj_create.execute(token,name,description)
@@ -43,7 +47,10 @@ class Safe:
         else:
             return {"msg":lang.server_error()}
         
-    async def update(self,token:str,id:str,name:str,description:str,response:Response):
+    async def update(self,token:str,
+                     id:str,name:str,
+                     description:str,
+                     response:Response):
         lang = Language()
         obj_update = Update()
         update = await obj_update.execute(token,id,name,description)

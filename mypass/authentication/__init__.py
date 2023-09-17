@@ -13,7 +13,11 @@ from mypass.database.postgresql import authentication
 import mypass.utils as utils
 
 class Authentication:
-    async def sign_up(self,login: str,secret_string:str,request: Request,response:Response):
+    async def sign_up(self,
+                      login:str,
+                      secret_string:str,
+                      request: Request,
+                      response:Response):
         lang = Language()
         sign_up  = SignUp()
         client_ip:str = utils.get_client_ip(request)
@@ -33,7 +37,12 @@ class Authentication:
         else:
             return {"msg":lang.server_error(),"secret_code":None,"reserve_codes":None}#INTERNAL_SERVER_ERROR
 
-    async def sign_in(self,login:str,secret_string:str,code:str,type:str,user_agent: str,expiration:int,request: Request,response:Response):
+    async def sign_in(self,login:str,
+                      secret_string:str,
+                      code:str,type:str,
+                      user_agent: str,
+                      expiration:int,request:Request,
+                      response:Response):
         lang = Language()
         sign_in  = SignIn()
         client_ip:str = utils.get_client_ip(request)
@@ -50,7 +59,10 @@ class Authentication:
         else:
             return {"msg":lang.server_error(),"token":None}#INTERNAL_SERVER_ERROR
 
-    async def sign_out(self,token:str,token_id:Annotated[str, Form()],response:Response):
+    async def sign_out(self,
+                       token:str,
+                       token_id,
+                       response:Response):
         lang = Language()
         sign_out  = SignOut()
         status_code = await sign_out.execute(token,token_id)
@@ -64,7 +76,10 @@ class Authentication:
         else:
             return {"msg":lang.server_error()}#INTERNAL_SERVER_ERROR
         
-    async def update_token_info(self,token:str,device:str,request:Request)->None:
+    async def update_token_info(self,
+                                token:str,
+                                device:str,
+                                request:Request)->None:
         client_ip:str = utils.get_client_ip(request)
         auth =  authentication.Authentication()
         await auth.update_token_info(security.sha256s(get_authorization_token(token)),device,client_ip)

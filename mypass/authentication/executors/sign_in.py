@@ -9,13 +9,12 @@ TYPE_RESERVE = "reserve"
 TYPE_BASIC = "basic"
 
 class SignIn:
-    async def execute(self,login:str,secret_string:str,code:str,type:str,device:str,ip:str,expiration:int):
-        """
-            Returns:
-                -1 - registration is not allowed\n
-                1 - user not was successful\n
-                0 - the user already exists
-        """
+    async def execute(self,
+                      login:str,
+                      secret_string:str,
+                      code:str,type:str,
+                      device:str,ip:str,
+                      expiration:int):
         valid = Validation()
         token:str = security.generate_512_bit_token_string()
         if valid.validate_login(login) == False or valid.validate_secret_string(secret_string) == False or expiration <1:
@@ -32,7 +31,7 @@ class SignIn:
             await self.__confirm(login,security.sha256s(secret_string),code,type)
         ))
     
-    async def __confirm(self,login:str,secret_string:str,code:str,type:str):        
+    async def __confirm(self,login:str,secret_string:str,code:str,type:str):
         if type == TYPE_BASIC:
             return await self.__basic_confirm(login,secret_string,code)
         elif type == TYPE_RESERVE:
