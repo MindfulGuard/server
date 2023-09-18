@@ -344,6 +344,15 @@
     }
     ```
 
+## • Safe
+
+- ## Create
+  - ### Request
+  
+  ```http
+  POST /v1/safe/create
+  ```
+
 # Variables
 ### secret_string
 ```c
