@@ -41,14 +41,15 @@ class Safe:
         elif status_code == UNAUTHORIZED:
             return {"msg":lang.unauthorized()}
         elif status_code == NOT_FOUND:
-            return {"msg":[]}
+            return {"msg":[],"count":0}
         elif status_code == OK:
             return {"list":get[0],"count":len(get[0])}#!the code analyzer may swear, but errors should not occur!
         else:
             return {"msg":lang.server_error()}
         
     async def update(self,token:str,
-                     id:str,name:str,
+                     id:str,
+                     name:str,
                      description:str,
                      response:Response):
         lang = Language()
@@ -84,4 +85,4 @@ class Safe:
         elif status_code == NOT_FOUND:
             return {"msg":lang.failed_to_delete_the_safe()}
         else:
-            return {"msg":lang.failed_to_update_safe()}
+            return {"msg":lang.server_error()}
