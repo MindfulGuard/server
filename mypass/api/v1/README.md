@@ -21,24 +21,71 @@
   | - | - | - |
   | login | string | the length is set in the configuration | |
   | secret_string | string | [secret_string](#secret_string) | |
+
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#&#47;v1&#47;auth&#47;sign_up__200) | | |
+  | [Service Unavailable](#&#47;v1&#47;auth&#47;sign_up__503) | | |
+  | [BAD REQUEST](#&#47;v1&#47;auth&#47;sign_up__400) | | |
+  | [CONFLICT](#&#47;v1&#47;auth&#47;sign_up__409) | | |
+
+    /v1/auth/sign_up__200
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "registration was successful",
+            "ru": "регистрация прошла успешно"
+        },
+        "secret_code": "base32 string for TOTP client",
+        "backup_codes": [
+            111111,
+            222222,
+            333333,
+        ]
+    }
+    ```
+    
+    /v1/auth/sign_up__503
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "the service is not available",
+            "ru": "сервис не доступен"
+        },
+        "secret_code": null,
+        "backup_codes": null
+    }
+    ```
+    
+    /v1/auth/sign_up__400
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "the data is not valid",
+            "ru": "неправильные данные"
+        },
+        "secret_code": null,
+        "backup_codes": null
+    }
   
-  - ### Response
-  
-  ```json
-  {
-    "msg": {
-          "de": null,
-          "en": "registration was successful",
-          "ru": "регистрация прошла успешно"
-      },
-      "secret_code": "base32 string for TOTP client",
-      "backup_codes": [
-          111111,
-          222222,
-          333333,
-      ]
-  }
-  ```
+    ```
+    /v1/auth/sign_up__409
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "the user already exists",
+            "ru": "пользователь уже существует"
+        },
+        "secret_code": null,
+        "backup_codes": null
+    }
+    ```
 
 - ## Sign in
   - ### Request
