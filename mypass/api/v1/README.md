@@ -75,6 +75,52 @@
       "token": "b888...128bytes"
   }
   ```
+- ## Sessions
+  - ### Request
+  
+  ```http
+  GET /v1/auth/sessions
+  ```
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/x-www-form-urlencoded |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description |
+  | - | - | - |
+  
+  - ### Response
+  
+  ```json
+  {
+    "list":[
+      {
+        "id": "25275093-aa91-4937-941c-1934e0174d2e",
+        "first_login": 1695004570,
+        "last_login": 1695004570,
+        "device": "Chromium/100.0.0 or <Сlient name>/<Version>",
+        "last_ip": "127.0.0.1",
+        "expiration": 1695004570
+      },
+      {
+        "id": "188da897-a032-4747-bbc7-99c078dd539b",
+        "first_login": 1695004574,
+        "last_login": 1695004576,
+        "device": "Chromium/100.0.0 or <Сlient name>/<Version>",
+        "last_ip": "127.0.0.1",
+        "expiration": 1695004572
+      }
+    ],
+    "count":2
+  }
+  ```
+
 # Variables
 ### secret_string
 ```c
