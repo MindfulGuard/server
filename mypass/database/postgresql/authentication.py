@@ -97,12 +97,16 @@ class Authentication:
         connection = None
         try:
             connection = await Connection().connect()
-            value = await connection.fetch('SELECT sign_out($1,$2);',token,token_id)
+            value = await connection.fetchval('SELECT sign_out($1,$2);',token,token_id)
             
-            if value[0]['sign_out']:
+            if value == 0:
                 return OK
-            else:
+            elif value == -1:
+                return UNAUTHORIZED
+            elif value == -2:
                 return NOT_FOUND
+            else:
+                return INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return INTERNAL_SERVER_ERROR
         finally:
@@ -128,6 +132,10 @@ class Authentication:
         connection = None
         try:
             connection = await Connection().connect()
+            is_auth = await self.is_auth(connection,token)
+            value_list = []
+            if is_auth == False:
+                return (value_list,UNAUTHORIZED)
             records = await connection.fetch('''
                 SELECT t_id, t_first_login, t_last_login, t_device, t_last_ip, t_expiration
                 FROM t_tokens
@@ -138,9 +146,8 @@ class Authentication:
                 );
                 ''', token)
             
-            value_list = []
-            if records == None:
-                return (value_list,UNAUTHORIZED)
+            #if records == None:
+                #return (value_list,UNAUTHORIZED)
             for record in records:
                 value_dict = {
                     'id': record['t_id'],

@@ -7,13 +7,6 @@ from mypass.database.postgresql import authentication
 
 class SignOut:
     async def execute(self,token:str,token_id:str):
-        """
-            Returns:
-                400 - not valid email\n
-                503 - registration is not allowed\n
-                200 - registration was successful\n
-                409 - the user already exists
-        """
         valid = utils.Validation()
         get_token:str = get_authorization_token(token)
         if valid.validate_token(get_token) == False or valid.validate_is_uuid(token_id) == False:

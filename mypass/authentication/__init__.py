@@ -69,6 +69,8 @@ class Authentication:
         response.status_code = status_code
         if status_code == BAD_REQUEST:
             return {"msg":lang.data_not_valid()}
+        elif status_code == UNAUTHORIZED:
+            return {"msg":lang.unauthorized()}
         elif status_code == OK:
             return {"msg":lang.session_token_has_been_deleted()}
         elif status_code == NOT_FOUND:
