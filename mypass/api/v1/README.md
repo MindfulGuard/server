@@ -26,10 +26,10 @@
 
   | Status code | Description |
   | - | - |
-  | [OK](sign_up__200) | | |
-  | [Service Unavailable](sign_up__503) | | |
-  | [BAD REQUEST](sign_up__400) | | |
-  | [CONFLICT](sign_up__409) | | |
+  | [OK](#sign_up__200) | | |
+  | [Service Unavailable](#sign_up__503) | | |
+  | [BAD REQUEST](#sign_up__400) | | |
+  | [CONFLICT](#sign_up__409) | | |
 
     sign_up__200
     ```json
