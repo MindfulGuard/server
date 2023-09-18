@@ -26,12 +26,12 @@
 
   | Status code | Description |
   | - | - |
-  | [OK](#&#47;v1&#47;auth&#47;sign_up__200) | | |
-  | [Service Unavailable](#&#47;v1&#47;auth&#47;sign_up__503) | | |
-  | [BAD REQUEST](#&#47;v1&#47;auth&#47;sign_up__400) | | |
-  | [CONFLICT](#&#47;v1&#47;auth&#47;sign_up__409) | | |
+  | [OK](sign_up__200) | | |
+  | [Service Unavailable](sign_up__503) | | |
+  | [BAD REQUEST](sign_up__400) | | |
+  | [CONFLICT](sign_up__409) | | |
 
-    /v1/auth/sign_up__200
+    sign_up__200
     ```json
     {
       "msg": {
@@ -48,7 +48,7 @@
     }
     ```
     
-    /v1/auth/sign_up__503
+    sign_up__503
     ```json
     {
       "msg": {
@@ -61,7 +61,7 @@
     }
     ```
     
-    /v1/auth/sign_up__400
+    sign_up__400
     ```json
     {
       "msg": {
@@ -74,7 +74,7 @@
     }
   
     ```
-    /v1/auth/sign_up__409
+    sign_up__409
     ```json
     {
       "msg": {
