@@ -540,7 +540,6 @@
   | - | - |
   | [OK](#update__200) | | |
   | [BAD REQUEST](#update__400) | | |
-  | [NOT_FOUND](#update__404) | | |
   | [UNAUTHORIZED](#update__401) | | |
   | [INTERNAL_SERVER_ERROR](#update__500) | | |
 
