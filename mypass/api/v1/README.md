@@ -110,18 +110,23 @@
   | expiration | int64 | 1 < expiration < sizeof(int64) | |
   | code | string | the code consists of a 6-digit number, the code can be obtained in the TOTP client or from a backup code | |
   
-  - ### Response
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#sign_in__200) | | |
   
-  ```json
-  {
-      "msg": {
-          "de": null,
-          "en": "successful login",
-          "ru": "удачный вход в систему"
-      },
-      "token": "b888...128bytes"
-  }
-  ```
+    ##### sign_in__200
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "successful login",
+            "ru": "удачный вход в систему"
+        },
+        "token": "b888...128bytes"
+    }
+    ```
 - ## Sessions
   - ### Request
   
