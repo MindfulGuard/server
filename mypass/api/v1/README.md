@@ -121,6 +121,39 @@
   }
   ```
 
+- ## Sign out
+  - ### Request
+  
+  ```http
+  DELETE /v1/auth/sign_out
+  ```
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/x-www-form-urlencoded |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description |
+  | - | - | - |
+  | id | string | uuid v4 | |
+  
+  - ### Response
+  
+  ```json
+  {
+    "msg": {
+      "de": null,
+      "en": "the session token has been deleted",
+      "ru": "токен сеанса был удален"
+    }
+  }
+  ```
+
 # Variables
 ### secret_string
 ```c
