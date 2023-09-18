@@ -344,6 +344,337 @@
     }
     ```
 
+## • Safe
+
+- ## Create
+  - ### Request
+  
+  ```http
+  POST /v1/safe/create
+  ```
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/x-www-form-urlencoded |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description |
+  | - | - | - |
+  | name | string | the length is specified in the configuration | |
+  | description | string | the length is specified in the configuration | |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#create__200) | | |
+  | [BAD REQUEST](#create__400) | | |
+  | [UNAUTHORIZED](#create__401) | | |
+  | [INTERNAL_SERVER_ERROR](#create__500) | | |
+
+    ##### create__200
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "the safe was successfully created",
+            "ru": "сейф удачно создан"
+        },
+    }
+    ```
+    
+    ##### create__401
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "unauthorized",
+            "ru": "не авторизован"
+        },
+    }
+    ```
+
+    ##### create__400
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "the data is not valid",
+            "ru": "неправильные данные"
+        },
+    }
+    ```
+
+    ##### create__500
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "server error",
+            "ru": "ошибка сервера"
+        },
+    }
+    ```
+    
+- ## Get
+  - ### Request
+  
+  ```http
+  GET /v1/safe/get
+  ```
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/x-www-form-urlencoded |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description |
+  | - | - | - |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#get__200) | list[N].discription, watch text encryption | |
+  | [BAD REQUEST](#get__400) | | |
+  | [NOT_FOUND](#get__404) | | |
+  | [UNAUTHORIZED](#get__401) | | |
+  | [INTERNAL_SERVER_ERROR](#get__500) | | |
+
+    ##### get__200
+    ```json
+    {
+      "list": [
+            {
+                "id": "00538bc9-dedc-401a-ab1a-a4a024906784",
+                "name": "hello_user2 mew",
+                "description": "Encrypted string",
+                "created_at": 1695044525,
+                "updated_at": 1695044525
+            },
+            {
+                "id": "77ab76fe-47dd-4bac-9d12-d9fc2c93de0c",
+                "name": "hello_user3 mew",
+                "description": "Encrypted string",
+                "created_at": 1695044539,
+                "updated_at": 1695044539
+            }
+        ],
+        "count": 2
+    }
+    ```
+
+    ##### get__404
+    ```json
+    {
+      "msg": [],
+      "count": 0
+    }
+    ```
+
+    ##### get__400
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "the data is not valid",
+            "ru": "неправильные данные"
+        }
+    }
+    ```
+
+    ##### get__401
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "unauthorized",
+            "ru": "не авторизован"
+        }
+    }
+    ```
+
+    ##### get__500
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "server error",
+            "ru": "ошибка сервера"
+        },
+    }
+    ```
+- ## Update
+  - ### Request
+  
+  ```http
+  PUT /v1/safe/update
+  ```
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/x-www-form-urlencoded |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description |
+  | - | - | - |
+  | id | string | uuid v4 | |
+  | name | string | the length is specified in the configuration | |
+  | description | string | the length is specified in the configuration | |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#update__200) | | |
+  | [BAD REQUEST](#update__400) | | |
+  | [NOT_FOUND](#update__404) | | |
+  | [UNAUTHORIZED](#update__401) | | |
+  | [INTERNAL_SERVER_ERROR](#update__500) | | |
+
+    ##### update__200
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "the safe was successfully updated",
+            "ru": "сейф успешно обновлен"
+        },
+    }
+    ```
+
+    ##### update__400
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "the data is not valid",
+            "ru": "неправильные данные"
+        }
+    }
+    ```
+
+    ##### update__401
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "unauthorized",
+            "ru": "не авторизован"
+        }
+    }
+    ```
+
+    ##### update__500
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "failed to update the safe",
+            "ru": "не удалось обновить сейф"
+        }
+    }
+    ```
+
+- ## Delete
+  - ### Request
+  
+  ```http
+  DELETE /v1/safe/delete
+  ```
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/x-www-form-urlencoded |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description |
+  | - | - | - |
+  | id | string | uuid v4 | |
+  | name | string | the length is specified in the configuration | |
+  | description | string | the length is specified in the configuration | |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#delete__200) | | |
+  | [BAD REQUEST](#delete__400) | | |
+  | [NOT FOUND](#delete__404) | | |
+  | [UNAUTHORIZED](#delete__401) | | |
+  | [INTERNAL_SERVER_ERROR](#delete__500) | | |
+
+    ##### delete__200
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "the safe has been successfully deleted",
+            "ru": "сейф был успешно удален"
+        }
+    }
+    ```
+
+    ##### delete__400
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "the data is not valid",
+            "ru": "неправильные данные"
+        }
+    }
+    ```
+
+    ##### delete__404
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "failed to delete the safe",
+            "ru": "не удалось удалить сейф"
+        }
+    }
+    ```
+
+    ##### delete__401
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "unauthorized",
+            "ru": "не авторизован"
+        }
+    }
+    ```
+
+    ##### delete__500
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "server error",
+            "ru": "ошибка сервера"
+        },
+    }
+    ```
+
 # Variables
 ### secret_string
 ```c
