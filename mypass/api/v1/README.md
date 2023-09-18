@@ -279,17 +279,70 @@
   | - | - | - |
   | id | string | uuid v4 | |
   
-  - ### Response
-  
-  ```json
-  {
-    "msg": {
-      "de": null,
-      "en": "the session token has been deleted",
-      "ru": "токен сеанса был удален"
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#sign_out__200) | | |
+  | [BAD REQUEST](#sign_out__400) | | |
+  | [UNAUTHORIZED](#sign_out__401) | | |
+  | [NOT_FOUND](#sign_out__404) | | |
+  | [INTERNAL_SERVER_ERROR](#sign_out__500) | | |
+
+    ##### sign_out__200
+    ```json
+    {
+      "msg": {
+        "de": null,
+        "en": "the session token has been deleted",
+        "ru": "токен сеанса был удален"
+      }
     }
-  }
-  ```
+    ```
+    
+    ##### sign_out__400
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "the data is not valid",
+            "ru": "неправильные данные"
+        },
+    }
+    ```
+
+    ##### sign_out__401
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "unauthorized",
+            "ru": "не авторизован"
+        },
+    }
+    ```
+
+    ##### sign_out__404
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "failed to delete token",
+            "ru": "не удалось удалить токен"
+        },
+    }
+    ```
+
+    ##### sign_out__500
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "server error",
+            "ru": "ошибка сервера"
+        },
+    }
+    ```
 
 # Variables
 ### secret_string
