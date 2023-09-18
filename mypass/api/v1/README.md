@@ -31,7 +31,7 @@
   | [BAD REQUEST](#sign_up__400) | | |
   | [CONFLICT](#sign_up__409) | | |
 
-    sign_up__200
+    ##### sign_up__200
     ```json
     {
       "msg": {
@@ -48,7 +48,7 @@
     }
     ```
     
-    sign_up__503
+    ##### sign_up__503
     ```json
     {
       "msg": {
@@ -61,7 +61,7 @@
     }
     ```
     
-    sign_up__400
+    ##### sign_up__400
     ```json
     {
       "msg": {
@@ -74,7 +74,7 @@
     }
   
     ```
-    sign_up__409
+    ##### sign_up__409
     ```json
     {
       "msg": {
