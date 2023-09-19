@@ -696,7 +696,7 @@
 
   | Status code | Description |
   | - | - |
-  | [OK](#create__200) | | |
+  | [OK](#configuration__200) | | |
 
     ##### configuration__200
     ```json
