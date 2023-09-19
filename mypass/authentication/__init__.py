@@ -8,17 +8,21 @@ from mypass.authentication.executors.sign_out import SignOut
 from mypass.authentication.executors.sign_up import SignUp
 from mypass.core import security
 from mypass.core.languages import Language
+from mypass.core.languages.responses import Responses
 from mypass.core.response_status_codes import *
 from mypass.database.postgresql import authentication
 import mypass.utils as utils
 
 class Authentication:
+    def __init__(self):
+        self.__lang = Language()
+        self.__json_responses = Responses(self.__lang)
     async def sign_up(self,
                       login:str,
                       secret_string:str,
                       request: Request,
                       response:Response):
-        lang = Language()
+
         sign_up  = SignUp()
         client_ip:str = utils.get_client_ip(request)
         exec = await sign_up.execute(login,secret_string,client_ip)
@@ -27,15 +31,15 @@ class Authentication:
         status_cod = exec[2]
         response.status_code = status_cod
         if status_cod == SERVICE_UNAVAILABLE:
-            return {"msg":lang.service_is_not_available(),"secret_code":None,"backup_codes":None}
+            return self.__json_responses.service_is_not_available()
         elif status_cod == BAD_REQUEST or utils.arguments(secret_string,login) == False:
-            return {"msg":lang.data_not_valid(),"secret_code":None,"backup_codes":None}
+            return self.__json_responses.data_not_valid()
         elif status_cod == OK:
-            return {"msg":lang.registration_was_successful(),"secret_code":secret_code,"backup_codes":reserve_codes}
+            return {"msg":self.__lang.registration_was_successful(),"secret_code":secret_code,"backup_codes":reserve_codes}
         elif status_cod == CONFLICT:
-            return {"msg":lang.user_already_exists(),"secret_code":None,"backup_codes":None}
+            return {"msg":self.__lang.user_already_exists()}
         else:
-            return {"msg":lang.server_error(),"secret_code":None,"backup_codes":None}#INTERNAL_SERVER_ERROR
+            return self.__json_responses.server_error()
 
     async def sign_in(self,login:str,
                       secret_string:str,
@@ -43,7 +47,6 @@ class Authentication:
                       user_agent: str,
                       expiration:int,request:Request,
                       response:Response):
-        lang = Language()
         sign_in  = SignIn()
         client_ip:str = utils.get_client_ip(request)
         exec = await sign_in.execute(login,secret_string,code,type,user_agent,client_ip,expiration)
@@ -51,32 +54,31 @@ class Authentication:
         token:str|None = exec[0]
         response.status_code = status_code
         if status_code == BAD_REQUEST:
-            return {"msg":lang.data_not_valid(),"token":None}
+            return self.__json_responses.data_not_valid()
         elif status_code == OK:
-            return {"msg":lang.successful_login(),"token":token}
+            return {"msg":self.__lang.successful_login(),"token":token}
         elif status_code == NOT_FOUND:
-            return {"msg":lang.user_not_found(),"token":None}
+            return {"msg":self.__lang.user_not_found()}
         else:
-            return {"msg":lang.server_error(),"token":None}#INTERNAL_SERVER_ERROR
+            return self.__json_responses.server_error()#INTERNAL_SERVER_ERROR
 
     async def sign_out(self,
                        token:str,
                        token_id,
                        response:Response):
-        lang = Language()
         sign_out  = SignOut()
         status_code = await sign_out.execute(token,token_id)
         response.status_code = status_code
         if status_code == BAD_REQUEST:
-            return {"msg":lang.data_not_valid()}
+            return self.__json_responses.data_not_valid()
         elif status_code == UNAUTHORIZED:
-            return {"msg":lang.unauthorized()}
+            return self.__json_responses.unauthorized()
         elif status_code == OK:
-            return {"msg":lang.session_token_has_been_deleted()}
+            return {"msg":self.__lang.session_token_has_been_deleted()}
         elif status_code == NOT_FOUND:
-            return {"msg":lang.failed_to_delete_token()}
+            return {"msg":self.__lang.failed_to_delete_token()}
         else:
-            return {"msg":lang.server_error()}#INTERNAL_SERVER_ERROR
+            return self.__json_responses.server_error()#INTERNAL_SERVER_ERROR
         
     async def update_token_info(self,
                                 token:str,
@@ -94,4 +96,12 @@ class Authentication:
         status_code = tks[1]
 
         response.status_code = status_code
-        return {"list":data,"count":len(data)}
+
+        if status_code == OK:
+            return {"list":data,"count":len(data)}
+        elif status_code == BAD_REQUEST:
+            return self.__json_responses.data_not_valid()
+        elif status_code == UNAUTHORIZED:
+            return self.__json_responses.unauthorized()
+        else:
+            return self.__json_responses.server_error()
