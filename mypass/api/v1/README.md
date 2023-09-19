@@ -17,10 +17,10 @@
   
   - Body
   
-  | Parameters | Type | Description |
-  | - | - | - |
-  | login | string | the length is set in the configuration | |
-  | secret_string | string | [secret_string](#secret_string) | |
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | login | string | the length is set in the configuration | &#10007; | |
+  | secret_string | string | [secret_string](#secret_string) | &#10003; | |
 
   - ### Responses
 
@@ -78,12 +78,12 @@
   
   - Body
   
-  | Parameters | Type | Description |
-  | - | - | - |
-  | login | string | the length is set in the configuration | |
-  | secret_string | string | [secret_string](#secret_string) | |
-  | expiration | int64 | 1 < expiration < sizeof(int64) | |
-  | code | string | the code consists of a 6-digit number, the code can be obtained in the TOTP client or from a backup code | |
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | login | string | the length is set in the configuration | &#10007; | |
+  | secret_string | string | [secret_string](#secret_string) | &#10003; | |
+  | expiration | int64 | 1 < expiration < sizeof(int64) | &#10007; | |
+  | code | string | the code consists of a 6-digit number, the code can be obtained in the TOTP client or from a backup code | &#10007; | |
   
   - ### Responses
 
@@ -134,8 +134,8 @@
   
   - Body
   
-  | Parameters | Type | Description |
-  | - | - | - |
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
   
   - ### Responses
 
@@ -188,9 +188,9 @@
   
   - Body
   
-  | Parameters | Type | Description |
-  | - | - | - |
-  | id | string | uuid v4 | |
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | id | string | uuid v4 | &#10007; | |
   
   - ### Responses
 
@@ -242,10 +242,10 @@
   
   - Body
   
-  | Parameters | Type | Description |
-  | - | - | - |
-  | name | string | the length is specified in the configuration | |
-  | description | string | the length is specified in the configuration | |
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | name | string | the length is specified in the configuration | &#10007; | |
+  | description | string | the length is specified in the configuration | &#10003; | |
   
   - ### Responses
 
@@ -294,8 +294,8 @@
   
   - Body
   
-  | Parameters | Type | Description |
-  | - | - | - |
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
   
   - ### Responses
 
@@ -354,11 +354,11 @@
   
   - Body
   
-  | Parameters | Type | Description |
-  | - | - | - |
-  | id | string | uuid v4 | |
-  | name | string | the length is specified in the configuration | |
-  | description | string | the length is specified in the configuration | |
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | id | string | uuid v4 | &#10007; | |
+  | name | string | the length is specified in the configuration | &#10007; | |
+  | description | string | the length is specified in the configuration | &#10003; | |
   
   - ### Responses
 
@@ -407,11 +407,9 @@
   
   - Body
   
-  | Parameters | Type | Description |
-  | - | - | - |
-  | id | string | uuid v4 | |
-  | name | string | the length is specified in the configuration | |
-  | description | string | the length is specified in the configuration | |
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | id | string | uuid v4 | &#10007; | |
   
   - ### Responses
 
@@ -421,7 +419,7 @@
   | [BAD REQUEST](#400) | | |
   | [NOT FOUND](#delete__404) | | |
   | [UNAUTHORIZED](#401) | | |
-  | [INTERNAL_SERVER_ERROR](#delete__500) | | |
+  | [INTERNAL_SERVER_ERROR](#500) | | |
 
     ##### delete__200
     ```json
@@ -442,17 +440,6 @@
             "en": "failed to delete the safe",
             "ru": "не удалось удалить сейф"
         }
-    }
-    ```
-
-    ##### delete__500
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "server error",
-            "ru": "ошибка сервера"
-        },
     }
     ```
 
