@@ -245,7 +245,7 @@
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
   | name | string | the length is specified in the configuration | &#10007; | |
-  | description | string | the length is specified in the configuration | &#10003; | |
+  | description | string | the length is specified in the configuration | [&#10003;](#Text) | |
   
   - ### Responses
 
@@ -358,7 +358,7 @@
   | - | - | - | - |
   | id | string | uuid v4 | &#10007; | |
   | name | string | the length is specified in the configuration | &#10007; | |
-  | description | string | the length is specified in the configuration | &#10003; | |
+  | description | string | the length is specified in the configuration | [&#10003;](#Text) | |
   
   - ### Responses
 
@@ -476,7 +476,7 @@
                 "iterations": 10000
             },
             "aes256": {
-                "mode": "CBC"
+                "mode": "GCM"
             },
             "password_rule": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[\\W]).{8,64}$"
         },
@@ -537,9 +537,26 @@
   }
   ```
 
-# Variables
+# Encryption
+## **The "Encryption" section explains how the client should encrypt the data.**
+
+- #### uuid  = UUIDv4 (stored only on the client)
+- #### password = @mV3?fsf43vvewqf (must match a [regular expression "authentication.password_rule"](#configuration__200))
+
 ### secret_string
-```c
-length 128
-sha256(login|password|private_string)
+```python
+length = 128
+sha256(login|password|uuid)
+```
+
+- #### iterations = 100000 ([can be obtained from the response "authentication.pbkdf2.iterations"](#configuration__200))
+- #### begin = <BEGIN> ([can be obtained from the response "text.encrypted.begin"](#configuration__200))
+- #### end = </END> ([can be obtained from the response "text.encrypted.end"](#configuration__200))
+- #### mode = "" ([can be obtained from the response "authentication.aes256.mode"](#configuration__200))
+
+## Text
+```python
+private_key = PBKDF2(password, salt = uuid, iterations, length = 64)[:32]
+ciphertext = aes256_encrypt(begin+text+end, private_key, mode) return iv(16 bytes)+cyphertext+tag(16 bytes).hex.to_string() = "e60c203ae89b8ec4cc3d4917..."
+aes256_decrypt(ciphertext.fromhex, private_key, mode)
 ```
