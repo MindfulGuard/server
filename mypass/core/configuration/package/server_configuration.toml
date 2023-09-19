@@ -32,8 +32,3 @@ registration=true
     [safe.lengths]
     name_length = 256
     description_length = 500
-
-[encrypt]
-    [encrypt.public.configuration.text]
-    begin = "<BEGIN>"
-    end = "</END>"
