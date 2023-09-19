@@ -27,10 +27,10 @@
   | Status code | Description |
   | - | - |
   | [OK](#sign_up__200) | | |
-  | [Service Unavailable](#sign_up__503) | | |
-  | [BAD REQUEST](#sign_up__400) | | |
+  | [Service Unavailable](#503) | | |
+  | [BAD REQUEST](#400) | | |
   | [CONFLICT](#sign_up__409) | | |
-  | [INTERNAL_SERVER_ERROR](#sign_up__500) | | |
+  | [INTERNAL_SERVER_ERROR](#500) | | |
 
     ##### sign_up__200
     ```json
@@ -49,32 +49,6 @@
     }
     ```
     
-    ##### sign_up__503
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "the service is not available",
-            "ru": "сервис не доступен"
-        },
-        "secret_code": null,
-        "backup_codes": null
-    }
-    ```
-    
-    ##### sign_up__400
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "the data is not valid",
-            "ru": "неправильные данные"
-        },
-        "secret_code": null,
-        "backup_codes": null
-    }
-  
-    ```
     ##### sign_up__409
     ```json
     {
@@ -85,19 +59,6 @@
         },
         "secret_code": null,
         "backup_codes": null
-    }
-    ```
-    
-    ##### sign_up__500
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "server error",
-            "ru": "ошибка сервера"
-      },
-      "secret_code": null,
-      "backup_codes": null
     }
     ```
 
@@ -129,9 +90,9 @@
   | Status code | Description |
   | - | - |
   | [OK](#sign_in__200) | | |
-  | [BAD REQUEST](#sign_in__400) | | |
-  | [NOT_FOUND](#sign_in__400) | | |
-  | [INTERNAL_SERVER_ERROR](#sign_in__500) | | |
+  | [BAD REQUEST](#400) | | |
+  | [NOT_FOUND](#sign_in__404) | | |
+  | [INTERNAL_SERVER_ERROR](#500) | | |
   
     ##### sign_in__200
     ```json
@@ -144,17 +105,6 @@
         "token": "b888...128bytes"
     }
     ```
-    ##### sign_in__400
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "the data is not valid",
-            "ru": "неправильные данные"
-        },
-        "token": null
-    }
-    ```
     
     ##### sign_in__404
     ```json
@@ -163,20 +113,7 @@
             "de": null,
             "en": "user not found",
             "ru": "пользователь не найден"
-        },
-        "token": null
-    }
-    ```
-
-    ##### sign_in__500
-    ```json
-    {
-        "msg": {
-            "de": null,
-            "en": "server error",
-            "ru": "ошибка сервера"
-        },
-        "token": null
+        }
     }
     ```
     
@@ -205,9 +142,9 @@
   | Status code | Description |
   | - | - |
   | [OK](#sessions__200) | | |
-  | [BAD REQUEST](#sessions__400) | | |
-  | [UNAUTHORIZED](#sessions__401) | | |
-  | [INTERNAL_SERVER_ERROR](#sessions__500) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
+  | [INTERNAL_SERVER_ERROR](#500) | | |
 
     ##### sessions__200
     ```json
@@ -231,30 +168,6 @@
         }
       ],
       "count":2
-    }
-    ```
-
-    ##### sessions__401
-    ```json
-    {
-      "list":[],
-      "count":0
-    }
-    ```
-    
-    ##### sessions__400
-    ```json
-    {
-      "list":[],
-      "count":0
-    }
-    ```
-    
-    ##### sessions__500
-    ```json
-    {
-      "list":[],
-      "count":0
     }
     ```
 
@@ -284,10 +197,10 @@
   | Status code | Description |
   | - | - |
   | [OK](#sign_out__200) | | |
-  | [BAD REQUEST](#sign_out__400) | | |
-  | [UNAUTHORIZED](#sign_out__401) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
   | [NOT_FOUND](#sign_out__404) | | |
-  | [INTERNAL_SERVER_ERROR](#sign_out__500) | | |
+  | [INTERNAL_SERVER_ERROR](#500) | | |
 
     ##### sign_out__200
     ```json
@@ -299,28 +212,6 @@
       }
     }
     ```
-    
-    ##### sign_out__400
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "the data is not valid",
-            "ru": "неправильные данные"
-        },
-    }
-    ```
-
-    ##### sign_out__401
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "unauthorized",
-            "ru": "не авторизован"
-        },
-    }
-    ```
 
     ##### sign_out__404
     ```json
@@ -329,17 +220,6 @@
             "de": null,
             "en": "failed to delete token",
             "ru": "не удалось удалить токен"
-        },
-    }
-    ```
-
-    ##### sign_out__500
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "server error",
-            "ru": "ошибка сервера"
         },
     }
     ```
@@ -372,8 +252,8 @@
   | Status code | Description |
   | - | - |
   | [OK](#create__200) | | |
-  | [BAD REQUEST](#create__400) | | |
-  | [UNAUTHORIZED](#create__401) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
   | [INTERNAL_SERVER_ERROR](#create__500) | | |
 
     ##### create__200
@@ -386,36 +266,14 @@
         },
     }
     ```
-    
-    ##### create__401
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "unauthorized",
-            "ru": "не авторизован"
-        },
-    }
-    ```
-
-    ##### create__400
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "the data is not valid",
-            "ru": "неправильные данные"
-        },
-    }
-    ```
 
     ##### create__500
     ```json
     {
       "msg": {
             "de": null,
-            "en": "server error",
-            "ru": "ошибка сервера"
+            "en": "failed to create a safe",
+            "ru": "не удалось создать сейф"
         },
     }
     ```
@@ -444,10 +302,10 @@
   | Status code | Description |
   | - | - |
   | [OK](#get__200) | list[N].discription, watch text encryption | |
-  | [BAD REQUEST](#get__400) | | |
+  | [BAD REQUEST](#400) | | |
   | [NOT_FOUND](#get__404) | | |
-  | [UNAUTHORIZED](#get__401) | | |
-  | [INTERNAL_SERVER_ERROR](#get__500) | | |
+  | [UNAUTHORIZED](#401) | | |
+  | [INTERNAL_SERVER_ERROR](#500) | | |
 
     ##### get__200
     ```json
@@ -480,38 +338,6 @@
     }
     ```
 
-    ##### get__400
-    ```json
-    {
-        "msg": {
-            "de": null,
-            "en": "the data is not valid",
-            "ru": "неправильные данные"
-        }
-    }
-    ```
-
-    ##### get__401
-    ```json
-    {
-        "msg": {
-            "de": null,
-            "en": "unauthorized",
-            "ru": "не авторизован"
-        }
-    }
-    ```
-
-    ##### get__500
-    ```json
-    {
-      "msg": {
-            "de": null,
-            "en": "server error",
-            "ru": "ошибка сервера"
-        },
-    }
-    ```
 - ## Update
   - ### Request
   
@@ -539,8 +365,8 @@
   | Status code | Description |
   | - | - |
   | [OK](#update__200) | | |
-  | [BAD REQUEST](#update__400) | | |
-  | [UNAUTHORIZED](#update__401) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
   | [INTERNAL_SERVER_ERROR](#update__500) | | |
 
     ##### update__200
@@ -551,28 +377,6 @@
             "en": "the safe was successfully updated",
             "ru": "сейф успешно обновлен"
         },
-    }
-    ```
-
-    ##### update__400
-    ```json
-    {
-        "msg": {
-            "de": null,
-            "en": "the data is not valid",
-            "ru": "неправильные данные"
-        }
-    }
-    ```
-
-    ##### update__401
-    ```json
-    {
-        "msg": {
-            "de": null,
-            "en": "unauthorized",
-            "ru": "не авторизован"
-        }
     }
     ```
 
@@ -614,9 +418,9 @@
   | Status code | Description |
   | - | - |
   | [OK](#delete__200) | | |
-  | [BAD REQUEST](#delete__400) | | |
+  | [BAD REQUEST](#400) | | |
   | [NOT FOUND](#delete__404) | | |
-  | [UNAUTHORIZED](#delete__401) | | |
+  | [UNAUTHORIZED](#401) | | |
   | [INTERNAL_SERVER_ERROR](#delete__500) | | |
 
     ##### delete__200
@@ -626,17 +430,6 @@
             "de": null,
             "en": "the safe has been successfully deleted",
             "ru": "сейф был успешно удален"
-        }
-    }
-    ```
-
-    ##### delete__400
-    ```json
-    {
-        "msg": {
-            "de": null,
-            "en": "the data is not valid",
-            "ru": "неправильные данные"
         }
     }
     ```
@@ -652,17 +445,6 @@
     }
     ```
 
-    ##### delete__401
-    ```json
-    {
-        "msg": {
-            "de": null,
-            "en": "unauthorized",
-            "ru": "не авторизован"
-        }
-    }
-    ```
-
     ##### delete__500
     ```json
     {
@@ -673,6 +455,100 @@
         },
     }
     ```
+
+## • Public
+
+- ## Configuration
+  - ### Request
+  
+  ```http
+  GET /v1/public/configuration
+  ```
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  
+  - Body
+  
+  | Parameters | Type | Description |
+  | - | - | - |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#configuration__200) | | |
+
+    ##### configuration__200
+    ```json
+    {
+        "authentication": {
+            "pbkdf2": {
+                "SHA": "sha256",
+                "iterations": 10000
+            },
+            "aes256": {
+                "mode": "CBC"
+            },
+            "password_rule": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[\\W]).{8,64}$"
+        },
+        "text": {
+            "encrypted": {
+                "begin": "<BEGIN>",
+                "end": "</END>"
+            }
+        }
+    }
+    ```
+    
+## • JSON Responses
+-
+  ### *401*
+  ```json
+  {
+    "msg": {
+      "de": null,
+      "en": "unauthorized",
+      "ru": "не авторизован"
+    }
+  }
+  ```
+-
+  ### *400*
+  ```json
+  {
+    "msg": {
+      "de": null,
+      "en": "failed to delete the safe",
+      "ru": "не удалось удалить сейф"
+    }
+  }
+  ```
+
+-
+  ### *503*
+  ```json
+  {
+      "msg": {
+        "de": null,
+        "en": "the service is not available",
+        "ru": "сервис недоступен"
+      },
+  }
+  ```
+
+-
+  ### *500*
+  ```json
+  {
+    "msg": {
+      "de": null,
+      "en": "server error",
+      "ru": "ошибка сервера"
+    },
+  }
+  ```
 
 # Variables
 ### secret_string
