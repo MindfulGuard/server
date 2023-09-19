@@ -26,6 +26,8 @@ class Language:
         return self.__message.get("failed_to_delete_token")
     def safe_was_successfully_created(self)->dict[str,Any]:
         return self.__message.get("safe_was_successfully_created")
+    def failed_to_create_a_safe(self)->dict[str,Any]:
+        return self.__message.get("failed_to_create_a_safe")
     def unauthorized(self)->dict[str,Any]:
         return self.__message.get("unauthorized")
     def safe_was_successfully_updated(self)->dict[str,Any]:

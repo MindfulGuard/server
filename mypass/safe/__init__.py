@@ -29,7 +29,7 @@ class Safe:
         elif status_code == UNAUTHORIZED:
             return self.__json_responses.unauthorized()
         else:
-            return self.__json_responses.server_error()
+            return {"msg":self.__lang.failed_to_create_a_safe()}
 
     async def get(self,token:str,response:Response):
         obj_get = Get()
@@ -67,7 +67,7 @@ class Safe:
         elif status_code == OK:
             return {"msg":self.__lang.safe_was_successfully_updated()}
         else:
-            return self.__json_responses.server_error()
+            return {"msg":self.__lang.failed_to_update_safe()}
 
     async def delete(self,token:str,id:str,response:Response):
         obj_update = Delete()
