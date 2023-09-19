@@ -301,7 +301,7 @@
 
   | Status code | Description |
   | - | - |
-  | [OK](#get__200) | list[N].discription, watch text encryption | |
+  | [OK](#get__200) | list[N].discription, [watch text encryption](#Text) | |
   | [BAD REQUEST](#400) | | |
   | [NOT_FOUND](#get__404) | | |
   | [UNAUTHORIZED](#401) | | |
