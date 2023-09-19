@@ -479,12 +479,6 @@
                 "mode": "GCM"
             },
             "password_rule": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[\\W]).{8,64}$"
-        },
-        "text": {
-            "encrypted": {
-                "begin": "<BEGIN>",
-                "end": "</END>"
-            }
         }
     }
     ```
@@ -550,13 +544,11 @@ sha256(login|password|uuid)
 ```
 
 - #### iterations = 100000 ([can be obtained from the response "authentication.pbkdf2.iterations"](#configuration__200))
-- #### begin = <BEGIN> ([can be obtained from the response "text.encrypted.begin"](#configuration__200))
-- #### end = </END> ([can be obtained from the response "text.encrypted.end"](#configuration__200))
 - #### mode = "" ([can be obtained from the response "authentication.aes256.mode"](#configuration__200))
 
 ## Text
 ```python
 private_key = PBKDF2(password, salt = uuid, iterations, length = 64)[:32]
-ciphertext = aes256_encrypt(begin+text+end, private_key, mode) return iv(16 bytes)+cyphertext+tag(16 bytes).hex.to_string() = "e60c203ae89b8ec4cc3d4917..."
+ciphertext = aes256_encrypt(text, private_key, mode) return iv(16 bytes)+cyphertext+tag(16 bytes).hex.to_string() = "e60c203ae89b8ec4cc3d4917..."
 aes256_decrypt(ciphertext.fromhex, private_key, mode)
 ```
