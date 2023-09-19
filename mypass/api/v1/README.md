@@ -27,10 +27,10 @@
   | Status code | Description |
   | - | - |
   | [OK](#sign_up__200) | | |
-  | [Service Unavailable](#sign_up__503) | | |
-  | [BAD REQUEST](#sign_up__400) | | |
+  | [Service Unavailable](#503) | | |
+  | [BAD REQUEST](#400) | | |
   | [CONFLICT](#sign_up__409) | | |
-  | [INTERNAL_SERVER_ERROR](#sign_up__500) | | |
+  | [INTERNAL_SERVER_ERROR](#500) | | |
 
     ##### sign_up__200
     ```json
@@ -719,6 +719,54 @@
         }
     }
     ```
+    
+## • JSON Responses
+-
+  ### *401*
+  ```json
+  {
+    "msg": {
+      "de": null,
+      "en": "unauthorized",
+      "ru": "не авторизован"
+    }
+  }
+  ```
+-
+  ### *400*
+  ```json
+  {
+    "msg": {
+      "de": null,
+      "en": "failed to delete the safe",
+      "ru": "не удалось удалить сейф"
+    }
+  }
+  ```
+
+-
+  ### *503*
+  ```json
+  {
+      "msg": {
+        "de": null,
+        "en": "the service is not available",
+        "ru": "сервис недоступен"
+      },
+  }
+  ```
+
+-
+  ### *500*
+  ```json
+  {
+    "msg": {
+      "de": null,
+      "en": "server error",
+      "ru": "ошибка сервера"
+    },
+  }
+  ```
 
 # Variables
 ### secret_string
