@@ -674,6 +674,52 @@
     }
     ```
 
+## • Public
+
+- ## Configuration
+  - ### Request
+  
+  ```http
+  POST /v1/public/configuration
+  ```
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  
+  - Body
+  
+  | Parameters | Type | Description |
+  | - | - | - |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#create__200) | | |
+
+    ##### configuration__200
+    ```json
+    {
+        "authentication": {
+            "pbkdf2": {
+                "SHA": "sha256",
+                "iterations": 10000
+            },
+            "aes256": {
+                "mode": "CBC"
+            },
+            "password_rule": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[\\W]).{8,64}$"
+        },
+        "text": {
+            "encrypted": {
+                "begin": "<BEGIN>",
+                "end": "</END>"
+            }
+        }
+    }
+    ```
+
 # Variables
 ### secret_string
 ```c
