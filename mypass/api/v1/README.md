@@ -680,7 +680,7 @@
   - ### Request
   
   ```http
-  POST /v1/public/configuration
+  GET /v1/public/configuration
   ```
   - Headers
   
