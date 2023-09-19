@@ -13,16 +13,13 @@ registration=true
         reserve_codes_length = 6
 
     [authentication.lengths]
-    #aes_length=64
     token_length = 128
     login_length = 50
     secret_string_length = 512
 
     [authentication.public.configuration]
-    #iterations = 10000
-    #sha_client = "sha256"
     password_rule = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[\\W]).{8,64}$"
-    aes_mode = "CBC"
+    aes_mode = "GCM"
 
         [authentication.public.configuration.PBKDF2]
         iterations = 10000
