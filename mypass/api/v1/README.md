@@ -543,7 +543,7 @@ length = 128
 sha256(login|password|uuid)
 ```
 
-- #### iterations = 100000 ([can be obtained from the response "authentication.pbkdf2.iterations"](#configuration__200))
+- #### iterations = 100000 ([can be obtained from the response "authentication.pbkdf2.iterations"](#configuration__200)) *(Abandoned)*
 - #### mode = "" ([can be obtained from the response "authentication.aes256.mode"](#configuration__200))
 
 ## Text
