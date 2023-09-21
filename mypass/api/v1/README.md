@@ -245,7 +245,7 @@
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
   | name | string | the length is specified in the configuration | &#10007; | |
-  | description | string | the length is specified in the configuration | [&#10003;](#Text) | |
+  | description | string | description<=64  | [&#10003;](#Text) | |
   
   - ### Responses
 
@@ -358,7 +358,7 @@
   | - | - | - | - |
   | id | string | uuid v4 | &#10007; | |
   | name | string | the length is specified in the configuration | &#10007; | |
-  | description | string | the length is specified in the configuration | [&#10003;](#Text) | |
+  | description | string | description<=64 | [&#10003;](#Text) | |
   
   - ### Responses
 
@@ -534,7 +534,7 @@
 # Encryption
 ## **The "Encryption" section explains how the client should encrypt the data.**
 
-- #### uuid  = UUIDv4 (stored only on the client)
+- #### uuid  = UUIDv4 (stored only on the client, !the uuid must be without hyphens!)
 - #### password = @mV3?fsf43vvewqf (must match a [regular expression "authentication.password_rule"](#configuration__200))
 
 ### secret_string
@@ -550,6 +550,7 @@ sha256(login|password|uuid)
 ```python
 private_key = PBKDF2(password, salt = uuid, iterations = 10000, length = 32)
 ciphertext = aes256_encrypt(text, private_key, mode)
+  #!!!attention, 1 character in unencrypted form is equal to 2 in encrypted!!!
   return (iv(32 bytes).hex+cyphertext.hex+tag(32 bytes).hex).to_string() = "e60c203ae89b8ec4cc3d4917..."
 decrypt_text = aes256_decrypt(ciphertext.fromhex, private_key, mode)
 ```
