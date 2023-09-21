@@ -17,7 +17,7 @@ class Validation:
         return bool(re.compile(r'^[A-Za-z0-9_-]{2,'+str(length)+'}$').match(login))
         
     def validate_secret_string(self,secret_string:str)->bool:
-        if len(secret_string) == 128 or len(secret_string) == 64 or len(secret_string) == 32:
+        if len(secret_string) == 64:
             return True
         return False
     

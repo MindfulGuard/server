@@ -7,34 +7,36 @@ from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Util.Padding import pad, unpad
+import pyotp
 
 class PbkdF2HMAC:
-    def __init__(self,iterations:int,SHA:str):
-        self.__iterations = iterations
-        self.__SHA = SHA
-    def encrypt(self, password: str, private_key: bytes) -> bytes:
-        if self.__SHA == "sha256":
-            algorithm = hashes.SHA256()
-        else:
-            raise ValueError("Unsupported SHA algorithm")
-
-        kdf = PBKDF2HMAC(
-            algorithm=algorithm,
-            iterations=self.__iterations,
-            salt=private_key,
-            length=64,
-        )
-
-        key = kdf.derive(bytes(password, 'utf-8'))
-        return key
+    def __init__(self):...
+    def encrypt(self, password: str, salt: bytes) -> bytes:
+        kdf = PBKDF2(password, salt, 32, 10000)
+        return kdf
 
 class AES_256:
-    def encrypt_aes_256(self,key, message):
-        cipher = AES.new(key, AES.MODE_EAX)
-        ciphertext, tag = cipher.encrypt_and_digest(message.encode('utf-8'))
-        return ciphertext
+    def encrypt(self, private_key, message):
+        cipher = AES.new(private_key, AES.MODE_GCM)
+        ciphertext, auth_tag = cipher.encrypt_and_digest(message.encode())
+        return cipher.nonce.hex() + ciphertext.hex() + auth_tag.hex()
 
-    def aes_256_decrypt(self,key:bytes, ciphertext):
-        decipher = AES.new(key, AES.MODE_EAX)
-        plaintext = decipher.decrypt(ciphertext).decode('utf-8')
-        return plaintext
+    def decrypt(self, private_key: bytes, ciphertext: str):
+        nonce = bytes.fromhex(ciphertext[:32])
+        ciphertext_bytes = bytes.fromhex(ciphertext[32:-32])
+        tag = bytes.fromhex(ciphertext[-32:])
+
+        cipher = AES.new(private_key, AES.MODE_GCM, nonce=nonce)
+        plaintext = cipher.decrypt_and_verify(ciphertext_bytes, tag)
+        return plaintext.decode()
+    
+def sha256s(string:str):
+    sha256 = hashlib.sha256()
+    
+    sha256.update(string.encode('utf-8'))
+    
+    return sha256.hexdigest()
+
+def totp_client(secret_code:str)->str:
+    totp = pyotp.TOTP(secret_code)
+    return totp.now()
