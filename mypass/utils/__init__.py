@@ -32,7 +32,10 @@ class Validation:
             return str(uuid_obj) == uuid_str
         except ValueError:
             return False
-    
+        
+    def validate_description(self,text:str)->bool:
+        return len(text) <= 200
+
     def validate_TOTP_code(self,code:str):
         return len(code)==6 and code.isdigit() == True
 def get_client_ip(request: Request) -> str:
