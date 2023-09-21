@@ -549,6 +549,7 @@ sha256(login|password|uuid)
 ## Text
 ```python
 private_key = PBKDF2(password, salt = uuid, iterations = 10000, length = 32)
-ciphertext = aes256_encrypt(text, private_key, mode) return iv(16 bytes)+cyphertext+tag(16 bytes).hex.to_string() = "e60c203ae89b8ec4cc3d4917..."
-aes256_decrypt(ciphertext.fromhex, private_key, mode)
+ciphertext = aes256_encrypt(text, private_key, mode)
+  return (iv(32 bytes).hex+cyphertext.hex+tag(32 bytes).hex).to_string() = "e60c203ae89b8ec4cc3d4917..."
+decrypt_text = aes256_decrypt(ciphertext.fromhex, private_key, mode)
 ```
