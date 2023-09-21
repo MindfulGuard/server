@@ -22,11 +22,11 @@ SET row_security = off;
 
 CREATE FUNCTION public.active_token(token character varying) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$DECLARE
-    record_exists BOOLEAN;
-BEGIN
-SELECT EXISTS (SELECT t_id FROM t_tokens WHERE t_token = $1 AND EXTRACT(EPOCH FROM current_timestamp)::BIGINT <= t_expiration) INTO record_exists;
-RETURN record_exists;
+    AS $_$DECLARE
+    record_exists BOOLEAN;
+BEGIN
+SELECT EXISTS (SELECT t_id FROM t_tokens WHERE t_token = $1 AND EXTRACT(EPOCH FROM current_timestamp)::BIGINT <= t_expiration) INTO record_exists;
+RETURN record_exists;
 END;$_$;
 
 
@@ -38,23 +38,23 @@ ALTER FUNCTION public.active_token(token character varying) OWNER TO mypass;
 
 CREATE FUNCTION public.create_safe(token character varying, name character varying, description character varying) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-declare
-    user_id UUID;
-    safe_id UUID;
-    timestmp BIGINT;
-begin
-timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
-IF user_id IS NULL THEN
-    RETURN -1;
-END IF;
-INSERT INTO s_safes VALUES (gen_random_uuid(),user_id,$2,$3,timestmp,timestmp) RETURNING s_id INTO safe_id;
-IF safe_id IS NULL THEN
-    RETURN -2;
-END IF;
-RETURN 0;
-end;
+    AS $_$
+declare
+    user_id UUID;
+    safe_id UUID;
+    timestmp BIGINT;
+begin
+timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+INSERT INTO s_safes VALUES (gen_random_uuid(),user_id,$2,$3,timestmp,timestmp) RETURNING s_id INTO safe_id;
+IF safe_id IS NULL THEN
+    RETURN -2;
+END IF;
+RETURN 0;
+end;
 $_$;
 
 
@@ -66,29 +66,29 @@ ALTER FUNCTION public.create_safe(token character varying, name character varyin
 
 CREATE FUNCTION public.delete_safe(token character varying, id uuid) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-declare
-    user_id UUID;
-    safe_id UUID;
-begin
-
-SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
-
-IF user_id IS NULL THEN
-    RETURN -1;
-END IF;
-
-DELETE FROM r_records WHERE r_s_id = $2 AND r_u_id = user_id;
-
-DELETE FROM s_safes WHERE s_u_id = user_id AND s_id = $2 RETURNING s_id INTO safe_id;
-
-IF safe_id IS NULL THEN
-    RETURN -2;
-END IF;
-
-RETURN 0;
-
-end;
+    AS $_$
+declare
+    user_id UUID;
+    safe_id UUID;
+begin
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+
+DELETE FROM r_records WHERE r_s_id = $2 AND r_u_id = user_id;
+
+DELETE FROM s_safes WHERE s_u_id = user_id AND s_id = $2 RETURNING s_id INTO safe_id;
+
+IF safe_id IS NULL THEN
+    RETURN -2;
+END IF;
+
+RETURN 0;
+
+end;
 $_$;
 
 
@@ -100,24 +100,24 @@ ALTER FUNCTION public.delete_safe(token character varying, id uuid) OWNER TO myp
 
 CREATE FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint, is_verified_code boolean) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$DECLARE
-user_id UUID;
-user_confirm BOOLEAN;
-timestmp BIGINT;
-BEGIN
-timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-SELECT u_id,u_confirm INTO user_id, user_confirm FROM u_users WHERE u_login = $1 AND u_secret_string=$2;
-IF $7 IS TRUE THEN
-    IF user_id IS NULL THEN
-        RETURN FALSE;
-    END IF;
-    IF user_confirm IS FALSE THEN
-        UPDATE u_users SET u_confirm = $7 WHERE u_id = user_id;
-    END IF;
-    INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
-    RETURN TRUE;
-END IF;
-RETURN FALSE;
+    AS $_$DECLARE
+user_id UUID;
+user_confirm BOOLEAN;
+timestmp BIGINT;
+BEGIN
+timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+SELECT u_id,u_confirm INTO user_id, user_confirm FROM u_users WHERE u_login = $1 AND u_secret_string=$2;
+IF $7 IS TRUE THEN
+    IF user_id IS NULL THEN
+        RETURN FALSE;
+    END IF;
+    IF user_confirm IS FALSE THEN
+        UPDATE u_users SET u_confirm = $7 WHERE u_id = user_id;
+    END IF;
+    INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
+    RETURN TRUE;
+END IF;
+RETURN FALSE;
 END$_$;
 
 
@@ -129,23 +129,23 @@ ALTER FUNCTION public.sign_in(login character varying, secret_string character v
 
 CREATE FUNCTION public.sign_out(token character varying, token_id uuid) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$DECLARE
-    user_id UUID;
-    deletion_successful INTEGER;
-BEGIN
-    SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 and active_token($1) = TRUE;
-    IF user_id IS NULL THEN
-        deletion_successful := -1;
-    ELSE
-        DELETE FROM t_tokens WHERE t_u_id = user_id AND t_id = $2;
-        IF FOUND THEN
-            deletion_successful := 0;
-        ELSE
-            deletion_successful := -2;
-        END IF;
-    END IF;
-    RETURN deletion_successful;
-END;
+    AS $_$DECLARE
+    user_id UUID;
+    deletion_successful INTEGER;
+BEGIN
+    SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 and active_token($1) = TRUE;
+    IF user_id IS NULL THEN
+        deletion_successful := -1;
+    ELSE
+        DELETE FROM t_tokens WHERE t_u_id = user_id AND t_id = $2;
+        IF FOUND THEN
+            deletion_successful := 0;
+        ELSE
+            deletion_successful := -2;
+        END IF;
+    END IF;
+    RETURN deletion_successful;
+END;
 $_$;
 
 
@@ -157,47 +157,47 @@ ALTER FUNCTION public.sign_out(token character varying, token_id uuid) OWNER TO 
 
 CREATE FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, backup_codes integer[]) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-declare
-    user_id UUID;
-    code_id UUID;
-
-    user_id_insert UUID;
-    code_id_insert UUID;
-    current_timeu BIGINT;
-BEGIN
-current_timeu := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-
-SELECT u_id INTO user_id FROM u_users WHERE u_login = $1 AND u_secret_string = $2 AND u_confirm = FALSE;
-
-IF user_id IS NULL THEN
-    INSERT INTO u_users VALUES (gen_random_uuid (),$1,$3,$4,current_timeu,$2) RETURNING u_id INTO user_id_insert;
-    IF user_id_insert IS NULL THEN
-        RETURN -1;
-    END IF;
-    INSERT INTO c_codes VALUES (gen_random_uuid(),user_id_insert,$5,$6,current_timeu) RETURNING c_id INTO code_id_insert;
-    IF code_id_insert IS NULL THEN
-        RETURN -2;
-    END IF;
-    RETURN 0;
-END IF;
-
-SELECT c_id INTO code_id FROM c_codes WHERE c_u_id = user_id;
-IF code_id IS NULL THEN
-    INSERT INTO c_codes VALUES (gen_random_uuid(),user_id,$5,$6,current_timeu) RETURNING c_id INTO code_id_insert;
-    IF code_id_insert IS NULL THEN
-        RETURN -3;
-    END IF;
-    RETURN 1;
-END IF;
-
-UPDATE c_codes SET c_secret_code = $5,c_backup_codes = $6,c_created_at = current_timeu WHERE c_u_id = user_id RETURNING c_codes.c_id INTO code_id;
-IF code_id IS NULL THEN
-    RETURN -4;
-END IF;
-RETURN 2;
-
-END
+    AS $_$
+declare
+    user_id UUID;
+    code_id UUID;
+
+    user_id_insert UUID;
+    code_id_insert UUID;
+    current_timeu BIGINT;
+BEGIN
+current_timeu := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+SELECT u_id INTO user_id FROM u_users WHERE u_login = $1 AND u_secret_string = $2 AND u_confirm = FALSE;
+
+IF user_id IS NULL THEN
+    INSERT INTO u_users VALUES (gen_random_uuid (),$1,$3,$4,current_timeu,$2) RETURNING u_id INTO user_id_insert;
+    IF user_id_insert IS NULL THEN
+        RETURN -1;
+    END IF;
+    INSERT INTO c_codes VALUES (gen_random_uuid(),user_id_insert,$5,$6,current_timeu) RETURNING c_id INTO code_id_insert;
+    IF code_id_insert IS NULL THEN
+        RETURN -2;
+    END IF;
+    RETURN 0;
+END IF;
+
+SELECT c_id INTO code_id FROM c_codes WHERE c_u_id = user_id;
+IF code_id IS NULL THEN
+    INSERT INTO c_codes VALUES (gen_random_uuid(),user_id,$5,$6,current_timeu) RETURNING c_id INTO code_id_insert;
+    IF code_id_insert IS NULL THEN
+        RETURN -3;
+    END IF;
+    RETURN 1;
+END IF;
+
+UPDATE c_codes SET c_secret_code = $5,c_backup_codes = $6,c_created_at = current_timeu WHERE c_u_id = user_id RETURNING c_codes.c_id INTO code_id;
+IF code_id IS NULL THEN
+    RETURN -4;
+END IF;
+RETURN 2;
+
+END
 $_$;
 
 
@@ -209,27 +209,27 @@ ALTER FUNCTION public.sign_up(login character varying, secret_string character v
 
 CREATE FUNCTION public.update_safe(token character varying, safe_id uuid, name character varying, description character varying) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-DECLARE
-    safe_id UUID;
-BEGIN
-    IF active_token($1) IS FALSE THEN
-        RETURN -1;
-    END IF;
-
-    UPDATE s_safes SET s_name = $3, s_description = $4,s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::bigint
-    WHERE s_u_id =(
-        SELECT t_u_id FROM t_tokens
-        WHERE t_token = $1
-                    )
-    AND s_id = $2
-    RETURNING s_id INTO safe_id;
-
-    IF safe_id IS NULL THEN
-        RETURN -2;
-    END IF;
-    RETURN 0;
-END
+    AS $_$
+DECLARE
+    safe_id UUID;
+BEGIN
+    IF active_token($1) IS FALSE THEN
+        RETURN -1;
+    END IF;
+
+    UPDATE s_safes SET s_name = $3, s_description = $4,s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::bigint
+    WHERE s_u_id =(
+        SELECT t_u_id FROM t_tokens
+        WHERE t_token = $1
+                    )
+    AND s_id = $2
+    RETURNING s_id INTO safe_id;
+
+    IF safe_id IS NULL THEN
+        RETURN -2;
+    END IF;
+    RETURN 0;
+END
 $_$;
 
 
@@ -241,12 +241,12 @@ ALTER FUNCTION public.update_safe(token character varying, safe_id uuid, name ch
 
 CREATE FUNCTION public.update_secret_string(old_secret_string character varying, new_secret_string character varying, token character varying) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$BEGIN
-UPDATE u_users AS u_us
-SET u_secret_string = $2
-FROM t_tokens AS t_ts
-WHERE t_ts.t_u_id = u_us.u_id AND u_secret_string = $1 AND active_token($3) = TRUE;
-RETURN FOUND;
+    AS $_$BEGIN
+UPDATE u_users AS u_us
+SET u_secret_string = $2
+FROM t_tokens AS t_ts
+WHERE t_ts.t_u_id = u_us.u_id AND u_secret_string = $1 AND active_token($3) = TRUE;
+RETURN FOUND;
 END;$_$;
 
 
@@ -258,20 +258,20 @@ ALTER FUNCTION public.update_secret_string(old_secret_string character varying, 
 
 CREATE FUNCTION public.update_token_info(token character varying, device character varying, ip inet) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$BEGIN
-
-    UPDATE t_tokens
-
-    SET t_last_login = EXTRACT(EPOCH FROM current_timestamp)::BIGINT,
-
-        t_device = $2,
-
-		t_last_ip = $3
-
-    WHERE active_token($1) = TRUE AND t_token = $1;
-
-    RETURN FOUND;
-
+    AS $_$BEGIN
+
+    UPDATE t_tokens
+
+    SET t_last_login = EXTRACT(EPOCH FROM current_timestamp)::BIGINT,
+
+        t_device = $2,
+
+		t_last_ip = $3
+
+    WHERE active_token($1) = TRUE AND t_token = $1;
+
+    RETURN FOUND;
+
 END;$_$;
 
 
@@ -308,8 +308,8 @@ CREATE TABLE public.r_records (
     r_partition character varying(5012),
     r_notes character varying(512),
     r_tags character varying(512),
-    r_last_change bigint NOT NULL,
-    r_created bigint NOT NULL,
+    r_created_at bigint NOT NULL,
+    r_updated_at bigint NOT NULL,
     r_category character varying(64) NOT NULL,
     r_favourite boolean NOT NULL
 );
@@ -324,8 +324,8 @@ ALTER TABLE public.r_records OWNER TO mypass;
 CREATE TABLE public.s_safes (
     s_id uuid NOT NULL,
     s_u_id uuid NOT NULL,
-    s_name character varying(256) NOT NULL,
-    s_description character varying(200) NOT NULL,
+    s_name character varying(64) NOT NULL,
+    s_description character varying(580) NOT NULL,
     s_created_at bigint NOT NULL,
     s_updated_at bigint NOT NULL
 );
@@ -379,7 +379,7 @@ COPY public.c_codes (c_id, c_u_id, c_secret_code, c_backup_codes, c_created_at) 
 -- Data for Name: r_records; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_partition, r_notes, r_tags, r_last_change, r_created, r_category, r_favourite) FROM stdin;
+COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_partition, r_notes, r_tags, r_created_at, r_updated_at, r_category, r_favourite) FROM stdin;
 \.
 
 

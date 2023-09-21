@@ -30,5 +30,5 @@ registration=true
 
 [safe]
     [safe.lengths]
-    name_length = 256
-    description_length = 500
+    name_length = 64
+    description_length = 200

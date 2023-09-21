@@ -14,7 +14,7 @@ class Update:
         safe_lengths_conf = self.__get_lengths()
         tokenf:str = get_authorization_token(token)
         print(validation.validate_is_uuid(id))
-        if validation.validate_token(tokenf) == False or len(name)>safe_lengths_conf.get_name_length() or validation.validate_description(description) == False or validation.validate_is_uuid(id) == False:
+        if validation.validate_token(tokenf) == False or len(name)>safe_lengths_conf.get_name_length() or len(description)>safe_lengths_conf.get_description_length() or validation.validate_is_uuid(id) == False:
             return BAD_REQUEST
         return await obj_safe.update(sha256s(tokenf),id,name,description)
     
