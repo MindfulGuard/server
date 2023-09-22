@@ -58,3 +58,14 @@ registration=true
         "MEDICAL_RECORD",
         "SSH_KEY"
         ]
+    [records.types]
+    array = [
+        "STRING",
+        "EMAIL",
+        "CONCEALED",
+        "URL",
+        "OTP",
+        "DATE",
+        "MONTH_YEAR",
+        "MENU"
+    ]
