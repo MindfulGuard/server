@@ -523,7 +523,7 @@
         ]
       },
       {
-        "section":"Other records",
+        "section":"Other sections",
         "fields":[
           {
             "type":"URL",
@@ -540,16 +540,37 @@
     ]
   }
   ```
-  
+
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | title | string | The title of the item | &#10007; | |
+  | category | string | The category of the item. One of: <br>• `"LOGIN"`<br>• `"PASSWORD"`<br>• `"SERVER"`<br>• `"DATABASE"`<br>• `"CREDIT_CARD"`<br>• `"MEMBERSHIP"`<br>• `"PASSPORT"`<br>• `"SOFTWARE_LICENSE"`<br>• `"OUTDOOR_LICENSE"`<br>• `"SECURE_NOTE"`<br>• `"WIRELESS_ROUTER"`<br>• `"BANK_ACCOUNT"`<br>• `"DRIVER_LICENSE"`<br>• `"IDENTITY"`<br>• `"REWARD_PROGRAM"`<br>• `"EMAIL_ACCOUNT"`<br>• `"SOCIAL_SECURITY_NUMBER"`<br>• `"MEDICAL_RECORD"`<br>• `"SSH_KEY"` | &#10007; | |
+  | notes | string | Notes of the item | [&#10003;](#Text) | |
+  | tags | array | Tags of the item, the elements in the array must be of type string | &#10007; | |
+  | sections | array | Stores objects in itself | &#10007; | |
+  | section | string | The name of the section where the records are located | &#10007; | |
+  | fields | array | Contains objects with records | &#10007; | |
+  | type | string | The category of the field. One of: <br>• `"STRING"`<br>• `"EMAIL"`<br>• `"CONCEALED"`<br>• `"URL"`<br>• `"OTP"`<br>• `"DATE"`<br>• `"MONTH_YEAR"`<br>• `"MENU"`<br>• `"FILE"` | &#10007; | |
+  | label | Label for the field |  | &#10007; | |
+  | value | The value that is stored in the field |  | [&#10003;](#Text) | |
+
   - ### Responses
 
   | Status code | Description |
   | - | - |
   | [OK](#records_create__200) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
+  | [INTERNAL_SERVER_ERROR](#500) | | |
 
     ##### records_create__200
     ```json
     {
+      "msg": {
+        "de": null,
+        "en": "the record was saved successfully",
+        "ru": "запись была успешно сохранена"
+      }
     }
     ```
 
