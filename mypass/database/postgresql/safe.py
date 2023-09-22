@@ -34,14 +34,14 @@ class Safe:
 
             if not is_auth:
                 return (None, UNAUTHORIZED)
-
             records = await connection.fetch('''
-                SELECT s_id, s_name, s_description, s_created_at, s_updated_at
-                FROM s_safes
-                JOIN t_tokens
-                ON t_tokens.t_u_id = s_safes.s_u_id
-                WHERE t_tokens.t_token = $1
-                AND active_token($1) = True
+            SELECT s.s_id, s.s_name, s.s_description, s.s_created_at, s.s_updated_at, COUNT(r.r_id) AS r_count
+            FROM s_safes AS s
+            JOIN t_tokens AS t ON t.t_u_id = s.s_u_id
+            LEFT JOIN r_records AS r ON r.r_s_id = s.s_id
+            WHERE t.t_token = $1
+            AND active_token($1) = True
+            GROUP BY s.s_id, s.s_name, s.s_description, s.s_created_at, s.s_updated_at;
             ''', token)
 
             value_list = []
@@ -52,6 +52,7 @@ class Safe:
                     'description': record['s_description'],
                     'created_at': record['s_created_at'],
                     'updated_at': record['s_updated_at'],
+                    'number_of_records':record['r_count']
                 }
                 value_list.append(value_dict)
 
