@@ -304,10 +304,10 @@ CREATE TABLE public.r_records (
     r_id uuid NOT NULL,
     r_s_id uuid NOT NULL,
     r_u_id uuid NOT NULL,
-    r_title character varying(512),
-    r_partition character varying(5012),
-    r_notes character varying(512),
-    r_tags character varying(512),
+    r_title character varying(512) NOT NULL,
+    r_sections json NOT NULL,
+    r_notes character varying(512) NOT NULL,
+    r_tags character varying(512) NOT NULL,
     r_created_at bigint NOT NULL,
     r_updated_at bigint NOT NULL,
     r_category character varying(64) NOT NULL,
@@ -379,7 +379,7 @@ COPY public.c_codes (c_id, c_u_id, c_secret_code, c_backup_codes, c_created_at) 
 -- Data for Name: r_records; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_partition, r_notes, r_tags, r_created_at, r_updated_at, r_category, r_favourite) FROM stdin;
+COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_sections, r_notes, r_tags, r_created_at, r_updated_at, r_category, r_favourite) FROM stdin;
 \.
 
 
