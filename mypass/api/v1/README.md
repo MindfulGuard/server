@@ -245,7 +245,7 @@
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
   | name | string | the length is specified in the configuration | &#10007; | |
-  | description | string | description<=64  | [&#10003;](#Text) | |
+  | description | string | description<=280  | [&#10003;](#Text) | |
   
   - ### Responses
 
@@ -358,7 +358,7 @@
   | - | - | - | - |
   | id | string | uuid v4 | &#10007; | |
   | name | string | the length is specified in the configuration | &#10007; | |
-  | description | string | description<=64 | [&#10003;](#Text) | |
+  | description | string | description<=280 | [&#10003;](#Text) | |
   
   - ### Responses
 
