@@ -482,6 +482,77 @@
         }
     }
     ```
+
+## • Records
+
+- ## Create
+  - ### Request
+  
+  ```http
+  POST /v1/records/create
+  ```
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/json | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  ```json
+  {
+    "title":"Title",
+    "category":"LOGIN",
+    "notes":"There should be notes here",
+    "tags":["the values in the tags must be of the string type","tag2"],
+    "sections":[
+      {
+        "section":"main",
+        "fields":[
+          {
+            "type":"STRING",
+            "label":"login",
+            "value":"user1"
+          },
+          {
+            "type":"PASSWORD",
+            "label":"password",
+            "value":"12345"
+          },
+        ]
+      },
+      {
+        "section":"Other records",
+        "fields":[
+          {
+            "type":"URL",
+            "label":"title",
+            "value":"https://example.com"
+          },
+          {
+            "type":"EMAIL",
+            "label":"email",
+            "value":"user@example.com"
+          }
+        ]
+      }
+    ]
+  }
+  ```
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#records_create__200) | | |
+
+    ##### records_create__200
+    ```json
+    {
+    }
+    ```
+
     
 ## • JSON Responses
 -
