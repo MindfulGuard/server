@@ -489,7 +489,7 @@
   - ### Request
   
   ```http
-  POST /v1/records/create
+  POST /v1/records/create/{safe_id}
   ```
   - Headers
   
@@ -502,7 +502,6 @@
   
   ```json
   {
-    "safe_id":"2eacff90-b78e-476f-a27a-b6192e5a0934",
     "title":"Title",
     "category":"LOGIN",
     "notes":"There should be notes here",
