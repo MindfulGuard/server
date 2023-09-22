@@ -502,6 +502,7 @@
   
   ```json
   {
+    "safe_id":"2eacff90-b78e-476f-a27a-b6192e5a0934",
     "title":"Title",
     "category":"LOGIN",
     "notes":"There should be notes here",
@@ -519,7 +520,7 @@
             "type":"PASSWORD",
             "label":"password",
             "value":"12345"
-          },
+          }
         ]
       },
       {
@@ -543,6 +544,7 @@
 
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
+  | safe_id | string | UUID4, id of the safe in which the item will be recorded | &#10007; | |
   | title | string | The title of the item | &#10007; | |
   | category | string | The category of the item. One of: <br>• `"LOGIN"`<br>• `"PASSWORD"`<br>• `"SERVER"`<br>• `"DATABASE"`<br>• `"CREDIT_CARD"`<br>• `"MEMBERSHIP"`<br>• `"PASSPORT"`<br>• `"SOFTWARE_LICENSE"`<br>• `"OUTDOOR_LICENSE"`<br>• `"SECURE_NOTE"`<br>• `"WIRELESS_ROUTER"`<br>• `"BANK_ACCOUNT"`<br>• `"DRIVER_LICENSE"`<br>• `"IDENTITY"`<br>• `"REWARD_PROGRAM"`<br>• `"EMAIL_ACCOUNT"`<br>• `"SOCIAL_SECURITY_NUMBER"`<br>• `"MEDICAL_RECORD"`<br>• `"SSH_KEY"` | &#10007; | |
   | notes | string | Notes of the item | [&#10003;](#Text) | |
@@ -573,8 +575,159 @@
       }
     }
     ```
-
     
+- ## Get
+  - ### Request
+  
+  ```http
+  GET /v1/records/get/
+  ```
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#records_get__200) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
+  | [INTERNAL_SERVER_ERROR](#500) | | |
+
+    ##### records_get__200
+    ```json
+    {
+      "list":[
+        {
+          "safe_id":"df81795d-d39c-4c82-9067-3bb0503847a1",
+          "items":[
+            {
+              "id":"6fff7323-3606-4e2f-8b7e-f0820243f8a0",
+              "title":"Title",
+              "category":"LOGIN",
+              "notes":"There should be notes here",
+              "tags":["the values in the tags must be of the string type","tag2"],
+              "sections":[
+                {
+                  "section":"main",
+                  "fields":[
+                    {
+                      "type":"STRING",
+                      "label":"login",
+                      "value":"user1"
+                    },
+                    {
+                      "type":"PASSWORD",
+                      "label":"password",
+                      "value":"12345"
+                    }
+                  ]
+                },
+                {
+                  "section":"Other sections",
+                  "fields":[
+                    {
+                      "type":"URL",
+                      "label":"title",
+                      "value":"https://example.com"
+                    },
+                    {
+                      "type":"EMAIL",
+                      "label":"email",
+                      "value":"user@example.com"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "safe_id":"fd2bc249-c560-49b8-b801-3c8b604825a4",
+          "items":[
+            {
+              "id":"5d9aa22d-2797-46d6-b8b7-7c30c3e5a024",
+              "title":"Title2",
+              "category":"LOGIN",
+              "notes":"There should be notes here 2",
+              "tags":["the values in the tags must be of the string type","tag2","tag3"],
+              "sections":[
+                {
+                  "section":"main",
+                  "fields":[
+                    {
+                      "type":"STRING",
+                      "label":"login",
+                      "value":"user2"
+                    },
+                    {
+                      "type":"PASSWORD",
+                      "label":"password",
+                      "value":"123456"
+                    }
+                  ]
+                },
+                {
+                  "section":"Other sections",
+                  "fields":[
+                    {
+                      "type":"URL",
+                      "label":"title",
+                      "value":"https://example2.com"
+                    },
+                    {
+                      "type":"EMAIL",
+                      "label":"email",
+                      "value":"user2@example2.com"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    ```
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | list | array | Contains an array with items distributed across safes | &#10007; | |
+  | items | array | [A description of the other parameters can be found here](#records_get__200) | &#10007; | |
+  | id | string | UUID4, "id" is the item ID | &#10007; | |
+  
+
+- ## Update
+  - ### Request
+  
+  ```http
+  PUT /v1/records/update/{safe_id}/{item_id}
+  ```
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+
 ## • JSON Responses
 -
   ### *401*
