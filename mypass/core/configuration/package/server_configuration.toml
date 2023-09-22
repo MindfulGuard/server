@@ -67,5 +67,6 @@ registration=true
         "OTP",
         "DATE",
         "MONTH_YEAR",
-        "MENU"
+        "MENU",
+        "FILE"
     ]
