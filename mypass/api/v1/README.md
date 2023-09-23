@@ -230,7 +230,7 @@
   - ### Request
   
   ```http
-  POST /v1/safe/create
+  POST /v1/safe
   ```
   - Headers
   
@@ -282,7 +282,7 @@
   - ### Request
   
   ```http
-  GET /v1/safe/get
+  GET /v1/safe
   ```
   - Headers
   
@@ -342,8 +342,15 @@
   - ### Request
   
   ```http
-  PUT /v1/safe/update
+  PUT /v1/safe/{safe_id}
   ```
+  
+  - Params
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | safe_id | string | uuid v4 | &#10007; | |
+  
   - Headers
   
   | key | value | Description |
@@ -356,7 +363,6 @@
   
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
-  | id | string | uuid v4 | &#10007; | |
   | name | string | the length is specified in the configuration | &#10007; | |
   | description | string | description<=280 | [&#10003;](#Text) | |
   
@@ -395,8 +401,14 @@
   - ### Request
   
   ```http
-  DELETE /v1/safe/delete
+  DELETE /v1/safe/{safe_id}
   ```
+  - Params
+  - 
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | safe_id | string | uuid v4 | &#10007; | |
+
   - Headers
   
   | key | value | Description |
@@ -409,7 +421,6 @@
   
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
-  | id | string | uuid v4 | &#10007; | |
   
   - ### Responses
 
@@ -489,8 +500,15 @@
   - ### Request
   
   ```http
-  POST /v1/records/create/{safe_id}
+  POST /v1/safe/{safe_id}/item
   ```
+  
+  - Params
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | safe_id | string | uuid v4 | &#10007; | |
+
   - Headers
   
   | key | value | Description |
@@ -499,7 +517,7 @@
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
-  
+  - ##### item_create
   ```json
   {
     "title":"Title",
@@ -579,8 +597,14 @@
   - ### Request
   
   ```http
-  GET /v1/records/get/
+  GET /v1/safe/all/item
   ```
+  - Params
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | all | string | selects all safes | &#10007; | |
+  
   - Headers
   
   | key | value | Description |
@@ -708,8 +732,75 @@
   - ### Request
   
   ```http
-  PUT /v1/records/update/{safe_id}/{item_id}
+  PUT /v1/safe/{safe_id}/item/{item_id}
   ```
+  
+  - Params
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | safe_id | string | uuid v4, id of the safe that contains the item | &#10007; | |
+  | item_id | string | uuid v4, id of the item to be changed in the safe | &#10007; | |
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Content-Type | application/json | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | body | object | [the request body is the same as when it was created](#item_create) | |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#item_update__200) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
+  | [INTERNAL_SERVER_ERROR](#item_update__500) | | |
+
+    ##### item_update__200
+    ```json
+    {
+      "msg": {
+        "de": null,
+        "en": "the record was successfully updated",
+        "ru": "запись была успешно обновлена"
+      }
+    }
+    ```
+
+    ##### item_update__500
+    ```json
+    {
+      "msg": {
+        "de": null,
+        "en": "failed to update record",
+        "ru": "не удалось обновить запись "
+      }
+    }
+    ```
+
+- ## Delete
+  - ### Request
+  
+  ```http
+  DELETE /v1/safe/{safe_id}/item/{item_id}
+  ```
+  
+  - Params
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | safe_id | string | uuid v4, id of the safe that contains the item | &#10007; | |
+  | item_id | string | uuid v4, id of the item to be changed in the safe | &#10007; | |
+  
   - Headers
   
   | key | value | Description |
@@ -726,6 +817,32 @@
 
   | Status code | Description |
   | - | - |
+  | [OK](#item_delete__200) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
+  | [INTERNAL_SERVER_ERROR](#item_delete__500) | | |
+
+    ##### item_delete__200
+    ```json
+    {
+      "msg": {
+        "de": null,
+        "en": "the record was successfully deleted",
+        "ru": "запись была успешно удалена"
+      }
+    }
+    ```
+
+    ##### item_delete__500
+    ```json
+    {
+      "msg": {
+        "de": null,
+        "en": "failed to deleted record",
+        "ru": "не удалось удалить запись "
+      }
+    }
+    ```
 
 ## • JSON Responses
 -
