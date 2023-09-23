@@ -1,3 +1,4 @@
+import json
 import re
 import secrets
 import uuid
@@ -38,6 +39,18 @@ class Validation:
 
     def validate_TOTP_code(self,code:str):
         return len(code)==6 and code.isdigit() == True
+    
+    def validate_user_agent(self,text:str)->bool:
+        return len(text)>0 and len(text)<=256
+    
+    def validate_json(self,json_string:str):
+        try:
+            json.loads(json_string)
+            return True
+        except ValueError:
+            return False
+
+    
 def get_client_ip(request: Request) -> str:
     # Let's try to get the IP from the X-Real-IP header
     client_ip = request.headers.get("x-real-ip")

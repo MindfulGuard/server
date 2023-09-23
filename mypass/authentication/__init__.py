@@ -86,6 +86,9 @@ class Authentication:
                                 request:Request)->None:
         client_ip:str = utils.get_client_ip(request)
         auth =  authentication.Authentication()
+        validate = utils.Validation()
+        if validate.validate_token(token) == False or validate.validate_user_agent(device) == False:
+            return
         await auth.update_token_info(security.sha256s(get_authorization_token(token)),device,client_ip)
     
     async def get_tokens(self,token:str,response:Response):

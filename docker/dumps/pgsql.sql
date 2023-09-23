@@ -33,6 +33,42 @@ END;$_$;
 ALTER FUNCTION public.active_token(token character varying) OWNER TO mypass;
 
 --
+-- Name: create_item(character varying, uuid, character varying, json, character varying, character varying[], character varying, boolean); Type: FUNCTION; Schema: public; Owner: mypass
+--
+
+CREATE FUNCTION public.create_item(token character varying, safe_id uuid, title character varying, item json, notes character varying, tags character varying[], category character varying, favorite boolean) RETURNS integer
+    LANGUAGE plpgsql
+    AS $_$
+declare
+    user_id UUID;
+    record_id UUID;
+    timestmp BIGINT;
+begin
+timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+
+INSERT INTO r_records VALUES (gen_random_uuid(),$2,user_id,$3,$4,$5,$6,timestmp,timestmp,$7,$8) RETURNING r_id INTO record_id;
+
+IF record_id IS NULL THEN
+    RETURN -2;
+END IF;
+
+
+RETURN 0;
+
+end;
+
+$_$;
+
+
+ALTER FUNCTION public.create_item(token character varying, safe_id uuid, title character varying, item json, notes character varying, tags character varying[], category character varying, favorite boolean) OWNER TO mypass;
+
+--
 -- Name: create_safe(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
 --
 
@@ -59,6 +95,44 @@ $_$;
 
 
 ALTER FUNCTION public.create_safe(token character varying, name character varying, description character varying) OWNER TO mypass;
+
+--
+-- Name: delete_item(character varying, uuid, uuid); Type: FUNCTION; Schema: public; Owner: mypass
+--
+
+CREATE FUNCTION public.delete_item(token character varying, safe_id uuid, item_id uuid) RETURNS integer
+    LANGUAGE plpgsql
+    AS $_$
+declare
+    user_id UUID;
+    record_id UUID;
+begin
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+
+DELETE FROM r_records
+WHERE r_id = $3
+AND r_s_id = $2
+AND r_u_id = user_id
+RETURNING r_id INTO record_id;
+
+IF record_id IS NULL THEN
+    RETURN -2;
+END IF;
+
+CALL update_safe_info($1,$2);
+
+RETURN 0;
+
+end;
+
+$_$;
+
+
+ALTER FUNCTION public.delete_item(token character varying, safe_id uuid, item_id uuid) OWNER TO mypass;
 
 --
 -- Name: delete_safe(character varying, uuid); Type: FUNCTION; Schema: public; Owner: mypass
@@ -204,6 +278,46 @@ $_$;
 ALTER FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, backup_codes integer[]) OWNER TO mypass;
 
 --
+-- Name: update_item(character varying, uuid, uuid, character varying, json, character varying, character varying[]); Type: FUNCTION; Schema: public; Owner: mypass
+--
+
+CREATE FUNCTION public.update_item(token character varying, safe_id uuid, item_id uuid, title character varying, item json, notes character varying, tags character varying[]) RETURNS integer
+    LANGUAGE plpgsql
+    AS $_$
+DECLARE
+    user_id UUID;
+    record_id UUID;
+BEGIN
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+
+UPDATE r_records
+SET r_title = $4,
+r_item = $5,
+r_notes = $6,
+r_tags = $7,
+r_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
+WHERE r_s_id = $2 AND r_u_id = user_id AND r_id = $3
+RETURNING r_id INTO record_id;
+
+IF record_id IS NULL THEN
+    RETURN -2;
+END IF;
+
+CALL update_safe_info($1,$2);
+
+RETURN 0;
+END
+$_$;
+
+
+ALTER FUNCTION public.update_item(token character varying, safe_id uuid, item_id uuid, title character varying, item json, notes character varying, tags character varying[]) OWNER TO mypass;
+
+--
 -- Name: update_safe(character varying, uuid, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
 --
 
@@ -234,6 +348,33 @@ $_$;
 
 
 ALTER FUNCTION public.update_safe(token character varying, safe_id uuid, name character varying, description character varying) OWNER TO mypass;
+
+--
+-- Name: update_safe_info(character varying, uuid); Type: PROCEDURE; Schema: public; Owner: mypass
+--
+
+CREATE PROCEDURE public.update_safe_info(IN token character varying, IN safe_id uuid)
+    LANGUAGE plpgsql
+    AS $_$
+DECLARE
+    user_id UUID;
+BEGIN
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+IF user_id IS NULL THEN
+    RETURN;
+END IF;
+
+UPDATE s_safes
+SET s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
+WHERE s_id = $2 AND s_u_id=user_id;
+
+END
+$_$;
+
+
+ALTER PROCEDURE public.update_safe_info(IN token character varying, IN safe_id uuid) OWNER TO mypass;
 
 --
 -- Name: update_secret_string(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
@@ -367,7 +508,7 @@ CREATE TABLE public.r_records (
     r_created_at bigint NOT NULL,
     r_updated_at bigint NOT NULL,
     r_category character varying(64) NOT NULL,
-    r_favourite boolean NOT NULL
+    r_favorite boolean NOT NULL
 );
 
 
@@ -399,7 +540,7 @@ CREATE TABLE public.t_tokens (
     t_token character varying(128) NOT NULL,
     t_created_at bigint NOT NULL,
     t_updated_at bigint NOT NULL,
-    t_device character varying(50) NOT NULL,
+    t_device character varying(256) NOT NULL,
     t_last_ip inet NOT NULL,
     t_expiration bigint NOT NULL
 );
@@ -428,6 +569,7 @@ ALTER TABLE public.u_users OWNER TO mypass;
 --
 
 COPY public.c_codes (c_id, c_u_id, c_secret_code, c_backup_codes, c_created_at) FROM stdin;
+a232549c-ac93-4160-8741-fb8e106d9bcb	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	QOQJXIXYDRCCE6LLK5EY3FMEATAHIHBE	{517249,276816,959907,834457,956144}	1695471548
 \.
 
 
@@ -435,7 +577,11 @@ COPY public.c_codes (c_id, c_u_id, c_secret_code, c_backup_codes, c_created_at) 
 -- Data for Name: r_records; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_item, r_notes, r_tags, r_created_at, r_updated_at, r_category, r_favourite) FROM stdin;
+COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_item, r_notes, r_tags, r_created_at, r_updated_at, r_category, r_favorite) FROM stdin;
+11d3a148-ee9b-4efa-afdf-addd96075c17	23d367fe-3149-4d75-9030-e80cecd18534	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	Title1	{"field1":"hello"}	Notes mew mew	{tag1,tag2}	1695471834	1695471834	LOGIN	f
+336605f0-cabc-480f-9570-a5a97f6a35a4	23d367fe-3149-4d75-9030-e80cecd18534	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	Title1	{"field1":"hello"}	Notes mew mew	{tag1,tag2}	1695471836	1695471836	LOGIN	f
+a857758b-3421-4c60-8215-95b9855b5582	23d367fe-3149-4d75-9030-e80cecd18534	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	Title1	{"field1":"hello"}	Notes mew mew	{tag1,tag2}	1695471885	1695471885	LOGIN	f
+99792b7c-fdf6-4a7c-a2df-6f6ace9b05b2	23d367fe-3149-4d75-9030-e80cecd18534	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	Title1	{"field1":"hello"}	Notes mew mew	{tag1,tag2}	1695471892	1695471892	LOGIN	f
 \.
 
 
@@ -444,6 +590,10 @@ COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_item, r_notes, r_tags, r
 --
 
 COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_updated_at) FROM stdin;
+f2c40ebe-5d11-4c57-925a-8576d14e42bf	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	safe 1	create safe	1695471626	1695471626
+af5fb270-69e3-4e95-83fb-d52d5903afa6	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	safe 1	create safe	1695471631	1695471631
+0b6b1ef3-af24-4e32-96b4-82cdf6acd729	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	safe 1	create safe	1695471631	1695471631
+23d367fe-3149-4d75-9030-e80cecd18534	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	safe 2	create safe 2	1695471636	1695483485
 \.
 
 
@@ -452,6 +602,8 @@ COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_update
 --
 
 COPY public.t_tokens (t_id, t_u_id, t_token, t_created_at, t_updated_at, t_device, t_last_ip, t_expiration) FROM stdin;
+7c82a556-45ee-4871-86bb-485067c82488	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	9494f6f28996ad63107134974b7236703fcd041c967b032ef8e282efae0fd2ee	1695471598	1695471598	PostmanRuntime/7.33.0	127.0.0.1	1695798778
+8f4b15f5-c765-466c-8d46-2c40fa0ee155	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	a7868d038fc8df9e615920451c373382e1f73032115250c650dec14b5d3f185e	1695471587	1695475706	PostmanRuntime/7.33.0	127.0.0.1	1695798767
 \.
 
 
@@ -460,6 +612,7 @@ COPY public.t_tokens (t_id, t_u_id, t_token, t_created_at, t_updated_at, t_devic
 --
 
 COPY public.u_users (u_id, u_login, u_reg_ip, u_confirm, u_reg_time, u_secret_string) FROM stdin;
+47cca362-2d3f-4898-95fa-a8a80d7ef4f1	Mvmurooui_rve-343	127.0.0.1	t	1695471548	3ba1bcfe80237e88347c4bfbedab3a5c40e8d477deeb94e085a12bb199f6c821
 \.
 
 

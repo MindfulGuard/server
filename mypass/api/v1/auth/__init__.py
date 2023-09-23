@@ -27,9 +27,9 @@ async def sign_in(
     auth = Authentication()
     return await auth.sign_in(login,secret_string,code,type,user_agent,expiration,request,response)
 
-@router.delete("/sign_out")
+@router.delete("/sign_out/{id}")
 async def sign_out(
-    id: Annotated[str, Form()],
+    id:str,
     user_agent: Annotated[str, Header()],
     request: Request,
     response: Response,
