@@ -1,4 +1,5 @@
-from mypass.database.postgresql.connection import *
+import asyncpg
+from mypass.database.postgresql.connection import Connection
 from mypass.core.response_status_codes import *
 
 class Authentication:
@@ -137,7 +138,7 @@ class Authentication:
             if is_auth == False:
                 return (value_list,UNAUTHORIZED)
             records = await connection.fetch('''
-                SELECT t_id, t_first_login, t_last_login, t_device, t_last_ip, t_expiration
+                SELECT t_id, t_created_at, t_updated_at, t_device, t_last_ip, t_expiration
                 FROM t_tokens
                 WHERE t_u_id IN (
                     SELECT t_u_id
@@ -151,8 +152,8 @@ class Authentication:
             for record in records:
                 value_dict = {
                     'id': record['t_id'],
-                    'first_login': record['t_first_login'],
-                    'last_login': record['t_last_login'],
+                    'created_at': record['t_created_at'],
+                    'updated_at': record['t_updated_at'],
                     'device': record['t_device'],
                     'last_ip': record['t_last_ip'],
                     'expiration': record['t_expiration']

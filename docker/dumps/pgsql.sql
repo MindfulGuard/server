@@ -258,20 +258,76 @@ ALTER FUNCTION public.update_secret_string(old_secret_string character varying, 
 
 CREATE FUNCTION public.update_token_info(token character varying, device character varying, ip inet) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$BEGIN
-
-    UPDATE t_tokens
-
-    SET t_last_login = EXTRACT(EPOCH FROM current_timestamp)::BIGINT,
-
-        t_device = $2,
-
-		t_last_ip = $3
-
-    WHERE active_token($1) = TRUE AND t_token = $1;
-
-    RETURN FOUND;
-
+    AS $_$BEGIN
+
+
+
+
+
+
+
+
+
+    UPDATE t_tokens
+
+
+
+
+
+
+
+
+
+    SET t_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT,
+
+
+
+
+
+
+
+
+
+        t_device = $2,
+
+
+
+
+
+
+
+
+
+		t_last_ip = $3
+
+
+
+
+
+
+
+
+
+    WHERE active_token($1) = TRUE AND t_token = $1;
+
+
+
+
+
+
+
+
+
+    RETURN FOUND;
+
+
+
+
+
+
+
+
+
 END;$_$;
 
 
@@ -341,8 +397,8 @@ CREATE TABLE public.t_tokens (
     t_id uuid NOT NULL,
     t_u_id uuid NOT NULL,
     t_token character varying(128) NOT NULL,
-    t_first_login bigint NOT NULL,
-    t_last_login bigint NOT NULL,
+    t_created_at bigint NOT NULL,
+    t_updated_at bigint NOT NULL,
     t_device character varying(50) NOT NULL,
     t_last_ip inet NOT NULL,
     t_expiration bigint NOT NULL
@@ -395,7 +451,7 @@ COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_update
 -- Data for Name: t_tokens; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.t_tokens (t_id, t_u_id, t_token, t_first_login, t_last_login, t_device, t_last_ip, t_expiration) FROM stdin;
+COPY public.t_tokens (t_id, t_u_id, t_token, t_created_at, t_updated_at, t_device, t_last_ip, t_expiration) FROM stdin;
 \.
 
 
