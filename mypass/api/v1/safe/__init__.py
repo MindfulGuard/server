@@ -7,7 +7,7 @@ from mypass.safe import Safe
 
 router = APIRouter()
 
-@router.post("/create")
+@router.post("/")
 async def create_safe(
     name:Annotated[str, Form()], 
     description:Annotated[str, Form()],
@@ -21,7 +21,7 @@ async def create_safe(
     await auth.update_token_info(token,user_agent,request)
     return await safe.create(token,name,description,response)
 
-@router.get("/get")
+@router.get("/")
 async def get_safe(
     user_agent: Annotated[str, Header()],
     request: Request,
@@ -33,9 +33,9 @@ async def get_safe(
     await auth.update_token_info(token,user_agent,request)
     return await safe.get(token,response)
 
-@router.put("/udpate")
+@router.put("/{id}")
 async def update_safe(
-    id:Annotated[str, Form()],
+    id,
     name:Annotated[str, Form()],
     description:Annotated[str, Form()],
     user_agent: Annotated[str, Header()],
@@ -48,9 +48,9 @@ async def update_safe(
     await auth.update_token_info(token,user_agent,request)
     return await safe.update(token,id,name,description,response)
 
-@router.delete("/delete")
+@router.delete("/{id}")
 async def delete_safe(
-    id:Annotated[str, Form()],
+    id,
     user_agent: Annotated[str, Header()],
     request: Request,
     response: Response,
