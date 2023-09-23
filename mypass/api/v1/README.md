@@ -175,8 +175,14 @@
   - ### Request
   
   ```http
-  DELETE /v1/auth/sign_out
+  DELETE /v1/auth/sign_out/{token_id}
   ```
+  
+  - Params
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | token_id | string | uuid v4, [id of the token that can be obtained from sessions](#sessions__200) | &#10007; | |
   
   - Headers
   
@@ -190,7 +196,6 @@
   
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
-  | id | string | uuid v4 | &#10007; | |
   
   - ### Responses
 
@@ -404,7 +409,7 @@
   DELETE /v1/safe/{safe_id}
   ```
   - Params
-  - 
+  
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
   | safe_id | string | uuid v4 | &#10007; | |
