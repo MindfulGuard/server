@@ -646,7 +646,7 @@
               "tags":["the values in the tags must be of the string type","tag2"],
               "sections":[
                 {
-                  "section":"main",
+                  "section":"INIT",
                   "fields":[
                     {
                       "type":"STRING",
