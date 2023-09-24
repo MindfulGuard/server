@@ -592,8 +592,19 @@
     {
       "msg": {
         "de": null,
-        "en": "the record was saved successfully",
-        "ru": "запись была успешно сохранена"
+        "en": "the item was successfully created",
+        "ru": "элемент был успешно создан"
+      }
+    }
+    ```
+    
+    ##### item_update__500
+    ```json
+    {
+      "msg": {
+        "de": null,
+        "en": "failed to create item",
+        "ru": "не удалось создать элемент"
       }
     }
     ```
@@ -775,8 +786,8 @@
     {
       "msg": {
         "de": null,
-        "en": "the record was successfully updated",
-        "ru": "запись была успешно обновлена"
+        "en": "the item was successfully updated",
+        "ru": "элемент был успешно обновлен"
       }
     }
     ```
@@ -786,8 +797,8 @@
     {
       "msg": {
         "de": null,
-        "en": "failed to update record",
-        "ru": "не удалось обновить запись "
+        "en": "failed to update the item",
+        "ru": "не удалось обновить элемент"
       }
     }
     ```
@@ -832,8 +843,8 @@
     {
       "msg": {
         "de": null,
-        "en": "the record was successfully deleted",
-        "ru": "запись была успешно удалена"
+        "en": "the item was successfully deleted",
+        "ru": "элемент был успешно удален"
       }
     }
     ```
@@ -843,8 +854,8 @@
     {
       "msg": {
         "de": null,
-        "en": "failed to deleted record",
-        "ru": "не удалось удалить запись "
+        "en": "не удалось удалить элемент",
+        "ru": "failed to delete item"
       }
     }
     ```
