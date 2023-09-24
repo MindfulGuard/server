@@ -44,3 +44,7 @@ class Language:
         return self.__message.get("item_was_successfully_created")
     def failed_to_create_item(self)->dict[str,Any]:
         return self.__message.get("failed_to_create_item")
+    def failed_to_update_the_item(self)->dict[str,Any]:
+        return self.__message.get("failed_to_update_the_item")
+    def item_has_been_successfully_updated(self)->dict[str,Any]:
+        return self.__message.get("item_has_been_successfully_updated")

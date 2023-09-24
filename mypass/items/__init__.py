@@ -3,6 +3,7 @@ from mypass.core.languages import Language
 from mypass.core.languages.responses import Responses
 from mypass.core.response_status_codes import *
 from mypass.items.executors.create import Create
+from mypass.items.executors.update import Update
 
 
 class Item:
@@ -29,3 +30,24 @@ class Item:
             return self.__json_responses.unauthorized()
         else:
             return {"msg":self.__lang.failed_to_create_item()}
+    
+    async def update(self,
+                     token:str,
+                     json_item,
+                     safe_id:str,
+                     item_id:str,
+                     response:Response):
+        
+        obj_create = Update()
+
+        status_code = await obj_create.execute(token, safe_id, item_id, json_item)
+        response.status_code = status_code
+        
+        if status_code == BAD_REQUEST:
+            return self.__json_responses.data_not_valid()
+        elif status_code == OK:
+            return {"msg":self.__lang.item_has_been_successfully_updated()}
+        elif status_code == UNAUTHORIZED:
+            return self.__json_responses.unauthorized()
+        else:
+            return {"msg":self.__lang.failed_to_update_the_item()}

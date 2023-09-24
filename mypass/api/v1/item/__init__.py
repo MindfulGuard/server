@@ -2,9 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Header, Request, Response
 from mypass.authentication import Authentication
 import mypass.items as items
-from mypass.items.models.create import Item 
-
-
+from mypass.items.models.item import Item 
 
 router = APIRouter()
 
@@ -22,3 +20,17 @@ async def create_safe(
     await auth.update_token_info(token, user_agent, request)
     return await obj.create(token, json, safe_id, response)
 
+@router.put("/{safe_id}/item/{item_id}")
+async def update_safe(
+    safe_id: str,
+    item_id: str,
+    json: Item,
+    request: Request,
+    response: Response,
+    user_agent: Annotated[str, Header()],
+    token: str = Header(default=None, alias="Authorization"),
+):
+    auth = Authentication()
+    obj = items.Item()
+    await auth.update_token_info(token, user_agent, request)
+    return await obj.update(token, json, safe_id, item_id, response)

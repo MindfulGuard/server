@@ -8,9 +8,9 @@ from mypass.utils import Validation
 from mypass.core.security import sha256s
 
 
-class Create:
+class Update:
     def __init__(self):...
-    async def execute(self,token:str,safe_id:str,json_item:Item):
+    async def execute(self,token:str,safe_id:str,item_id:str,json_item:Item):
         obj = pgsql_items.Item()
         validation = Validation()
         tokenf:str = get_authorization_token(token)
@@ -18,6 +18,7 @@ class Create:
         if (
             validation.validate_token(tokenf) == False
             or validation.validate_is_uuid(safe_id) == False
+            or validation.validate_is_uuid(item_id) == False
             ):
             return BAD_REQUEST
 
@@ -34,11 +35,12 @@ class Create:
         
         copied_item_json = json.dumps(copied_item.model_dump(),ensure_ascii=False)
 
-        return await obj.create(
+        return await obj.update(
             sha256s(tokenf),
-            safe_id,item.title,
+            safe_id,
+            item_id,
+            item.title,
             copied_item_json,
             item.notes,
-            item.tags,
-            item.category
+            item.tags
             )
