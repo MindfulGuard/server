@@ -13,4 +13,5 @@ app.add_middleware(
 )
 app.include_router(auth_router,prefix="/v1/auth")
 app.include_router(safe_router,prefix="/v1/safe")
+app.include_router(item_router,prefix="/v1/safe")
 app.include_router(public_router,prefix="/v1/public")

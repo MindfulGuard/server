@@ -28,6 +28,8 @@ class Item:
                 return INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return INTERNAL_SERVER_ERROR
+        except asyncpg.exceptions.ForeignKeyViolationError:
+            return INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.UniqueViolationError as e:
             print(e)
             return INTERNAL_SERVER_ERROR

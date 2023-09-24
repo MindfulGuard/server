@@ -38,31 +38,31 @@ ALTER FUNCTION public.active_token(token character varying) OWNER TO mypass;
 
 CREATE FUNCTION public.create_item(token character varying, safe_id uuid, title character varying, item json, notes character varying, tags character varying[], category character varying, favorite boolean) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-declare
-    user_id UUID;
-    record_id UUID;
-    timestmp BIGINT;
-begin
-timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-
-SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
-
-IF user_id IS NULL THEN
-    RETURN -1;
-END IF;
-
-INSERT INTO r_records VALUES (gen_random_uuid(),$2,user_id,$3,$4,$5,$6,timestmp,timestmp,$7,$8) RETURNING r_id INTO record_id;
-
-IF record_id IS NULL THEN
-    RETURN -2;
-END IF;
-
-
-RETURN 0;
-
-end;
-
+    AS $_$
+declare
+    user_id UUID;
+    record_id UUID;
+    timestmp BIGINT;
+begin
+timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+
+INSERT INTO r_records VALUES (gen_random_uuid(),$2,user_id,$3,$4,$5,$6,timestmp,timestmp,$7,$8) RETURNING r_id INTO record_id;
+
+IF record_id IS NULL THEN
+    RETURN -2;
+END IF;
+
+CALL update_safe_info($1,$2);
+RETURN 0;
+
+end;
+
 $_$;
 
 
@@ -557,7 +557,7 @@ CREATE TABLE public.u_users (
     u_login character varying(64) NOT NULL,
     u_reg_ip inet NOT NULL,
     u_confirm boolean NOT NULL,
-    u_reg_time bigint NOT NULL,
+    u_created_at bigint NOT NULL,
     u_secret_string character varying(512) NOT NULL
 );
 
@@ -569,7 +569,6 @@ ALTER TABLE public.u_users OWNER TO mypass;
 --
 
 COPY public.c_codes (c_id, c_u_id, c_secret_code, c_backup_codes, c_created_at) FROM stdin;
-a232549c-ac93-4160-8741-fb8e106d9bcb	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	QOQJXIXYDRCCE6LLK5EY3FMEATAHIHBE	{517249,276816,959907,834457,956144}	1695471548
 \.
 
 
@@ -578,10 +577,6 @@ a232549c-ac93-4160-8741-fb8e106d9bcb	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	QOQJXI
 --
 
 COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_item, r_notes, r_tags, r_created_at, r_updated_at, r_category, r_favorite) FROM stdin;
-11d3a148-ee9b-4efa-afdf-addd96075c17	23d367fe-3149-4d75-9030-e80cecd18534	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	Title1	{"field1":"hello"}	Notes mew mew	{tag1,tag2}	1695471834	1695471834	LOGIN	f
-336605f0-cabc-480f-9570-a5a97f6a35a4	23d367fe-3149-4d75-9030-e80cecd18534	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	Title1	{"field1":"hello"}	Notes mew mew	{tag1,tag2}	1695471836	1695471836	LOGIN	f
-a857758b-3421-4c60-8215-95b9855b5582	23d367fe-3149-4d75-9030-e80cecd18534	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	Title1	{"field1":"hello"}	Notes mew mew	{tag1,tag2}	1695471885	1695471885	LOGIN	f
-99792b7c-fdf6-4a7c-a2df-6f6ace9b05b2	23d367fe-3149-4d75-9030-e80cecd18534	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	Title1	{"field1":"hello"}	Notes mew mew	{tag1,tag2}	1695471892	1695471892	LOGIN	f
 \.
 
 
@@ -590,10 +585,6 @@ a857758b-3421-4c60-8215-95b9855b5582	23d367fe-3149-4d75-9030-e80cecd18534	47cca3
 --
 
 COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_updated_at) FROM stdin;
-f2c40ebe-5d11-4c57-925a-8576d14e42bf	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	safe 1	create safe	1695471626	1695471626
-af5fb270-69e3-4e95-83fb-d52d5903afa6	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	safe 1	create safe	1695471631	1695471631
-0b6b1ef3-af24-4e32-96b4-82cdf6acd729	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	safe 1	create safe	1695471631	1695471631
-23d367fe-3149-4d75-9030-e80cecd18534	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	safe 2	create safe 2	1695471636	1695483485
 \.
 
 
@@ -602,8 +593,6 @@ af5fb270-69e3-4e95-83fb-d52d5903afa6	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	safe 1
 --
 
 COPY public.t_tokens (t_id, t_u_id, t_token, t_created_at, t_updated_at, t_device, t_last_ip, t_expiration) FROM stdin;
-7c82a556-45ee-4871-86bb-485067c82488	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	9494f6f28996ad63107134974b7236703fcd041c967b032ef8e282efae0fd2ee	1695471598	1695471598	PostmanRuntime/7.33.0	127.0.0.1	1695798778
-8f4b15f5-c765-466c-8d46-2c40fa0ee155	47cca362-2d3f-4898-95fa-a8a80d7ef4f1	a7868d038fc8df9e615920451c373382e1f73032115250c650dec14b5d3f185e	1695471587	1695475706	PostmanRuntime/7.33.0	127.0.0.1	1695798767
 \.
 
 
@@ -611,8 +600,7 @@ COPY public.t_tokens (t_id, t_u_id, t_token, t_created_at, t_updated_at, t_devic
 -- Data for Name: u_users; Type: TABLE DATA; Schema: public; Owner: mypass
 --
 
-COPY public.u_users (u_id, u_login, u_reg_ip, u_confirm, u_reg_time, u_secret_string) FROM stdin;
-47cca362-2d3f-4898-95fa-a8a80d7ef4f1	Mvmurooui_rve-343	127.0.0.1	t	1695471548	3ba1bcfe80237e88347c4bfbedab3a5c40e8d477deeb94e085a12bb199f6c821
+COPY public.u_users (u_id, u_login, u_reg_ip, u_confirm, u_created_at, u_secret_string) FROM stdin;
 \.
 
 

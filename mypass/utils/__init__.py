@@ -50,6 +50,7 @@ class Validation:
         except ValueError:
             return False
 
+
     
 def get_client_ip(request: Request) -> str:
     # Let's try to get the IP from the X-Real-IP header

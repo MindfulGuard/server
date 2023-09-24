@@ -33,8 +33,19 @@ registration=true
     name_length = 64
     description_length = 580
 
-[records]
-    [records.categories]
+[item]
+    [item.lengths]
+    title_length = 1024
+    notes_length = 1024
+    tags_array_length = 11
+    tags_length = 256
+    sections_array_length = 64
+    section_length = 256
+    fields_array_length = 64
+    label_length = 64
+    value_length = 1024
+    
+    [item.categories]
     array = [
         "LOGIN",
         "PASSWORD",
@@ -58,7 +69,7 @@ registration=true
         "MEDICAL_RECORD",
         "SSH_KEY"
         ]
-    [records.types]
+    [item.types]
     array = [
         "STRING",
         "EMAIL",

@@ -40,3 +40,7 @@ class Language:
         return self.__message.get("safe_has_been_successfully_deleted")
     def failed_to_delete_the_safe(self)->dict[str,Any]:
         return self.__message.get("failed_to_delete_the_safe")
+    def item_was_successfully_created(self)->dict[str,Any]:
+        return self.__message.get("item_was_successfully_created")
+    def failed_to_create_item(self)->dict[str,Any]:
+        return self.__message.get("failed_to_create_item")
