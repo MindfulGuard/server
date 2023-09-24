@@ -582,12 +582,12 @@
 
   | Status code | Description |
   | - | - |
-  | [OK](#records_create__200) | | |
+  | [OK](#item_create__200) | | |
   | [BAD REQUEST](#400) | | |
   | [UNAUTHORIZED](#401) | | |
-  | [INTERNAL_SERVER_ERROR](#500) | | |
+  | [INTERNAL_SERVER_ERROR](#item_create__500) | | |
 
-    ##### records_create__200
+    ##### item_create__200
     ```json
     {
       "msg": {
@@ -598,7 +598,7 @@
     }
     ```
     
-    ##### item_update__500
+    ##### item_create__500
     ```json
     {
       "msg": {
