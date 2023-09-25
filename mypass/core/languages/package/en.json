@@ -21,7 +21,7 @@
     "failed_to_create_item":"failed to create item",
     "failed_to_update_the_item":"failed to update the item",
     "item_has_been_successfully_updated":"the item has been successfully updated",
-
     "item_was_successfully_deleted":"the item was successfully deleted",
-    "failed_to_delete_item":"failed to delete item"
+    "failed_to_delete_item":"failed to delete item",
+    "failed_to_update_favorite":"failed to update favorite"
 }

@@ -48,3 +48,17 @@ async def delete_safe(
     obj = items.Item()
     await auth.update_token_info(token, user_agent, request)
     return await obj.delete(token, safe_id, item_id, response)
+
+@router.put("/{safe_id}/item/{item_id}/favorite")
+async def favorite(
+    safe_id: str,
+    item_id: str,
+    request: Request,
+    response: Response,
+    user_agent: Annotated[str, Header()],
+    token: str = Header(default=None, alias="Authorization"),
+):
+    auth = Authentication()
+    obj = items.Item()
+    await auth.update_token_info(token, user_agent, request)
+    return await obj.set_favorite(token, safe_id, item_id, response)

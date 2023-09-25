@@ -4,9 +4,7 @@ import mypass.database.postgresql.items as pgsql_items
 from mypass.utils import Validation
 from mypass.core.security import sha256s
 
-
-class Delete:
-    def __init__(self):...
+class Favorite:
     async def execute(self,token:str,safe_id:str,item_id:str):
         obj = pgsql_items.Item()
         validation = Validation()
@@ -20,7 +18,7 @@ class Delete:
             return BAD_REQUEST
 
 
-        return await obj.delete(
+        return await obj.set_favorite(
             sha256s(tokenf),
             safe_id,
             item_id

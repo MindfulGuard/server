@@ -3,6 +3,7 @@ from mypass.core.languages import Language
 from mypass.core.languages.responses import Responses
 from mypass.core.response_status_codes import *
 from mypass.items.executors.create import Create
+from mypass.items.executors.favorite import Favorite
 from mypass.items.executors.update import Update
 from mypass.items.executors.delete import Delete
 
@@ -39,9 +40,9 @@ class Item:
                      item_id:str,
                      response:Response):
         
-        obj_create = Update()
+        obj = Update()
 
-        status_code = await obj_create.execute(token, safe_id, item_id, json_item)
+        status_code = await obj.execute(token, safe_id, item_id, json_item)
         response.status_code = status_code
         
         if status_code == BAD_REQUEST:
@@ -59,9 +60,9 @@ class Item:
                      item_id:str,
                      response:Response):
         
-        obj_create = Delete()
+        obj = Delete()
 
-        status_code = await obj_create.execute(token, safe_id, item_id)
+        status_code = await obj.execute(token, safe_id, item_id)
         response.status_code = status_code
         
         if status_code == BAD_REQUEST:
@@ -72,3 +73,23 @@ class Item:
             return self.__json_responses.unauthorized()
         else:
             return {"msg":self.__lang.failed_to_delete_item()}
+        
+    async def set_favorite(self,
+                     token:str,
+                     safe_id:str,
+                     item_id:str,
+                     response:Response):
+        
+        obj = Favorite()
+
+        status_code = await obj.execute(token, safe_id, item_id)
+        response.status_code = status_code
+        
+        if status_code == BAD_REQUEST:
+            return self.__json_responses.data_not_valid()
+        elif status_code == OK:
+            return {"msg":"ok"}
+        elif status_code == UNAUTHORIZED:
+            return self.__json_responses.unauthorized()
+        else:
+            return {"msg":self.__lang.failed_to_update_favorite()}
