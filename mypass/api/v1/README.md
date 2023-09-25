@@ -574,7 +574,7 @@
   | sections | array | Stores objects in itself | &#10007; | |
   | section | string | The name of the section where the records are located | &#10007; | |
   | fields | array | Contains objects with records | &#10007; | |
-  | type | string | The category of the field. One of: <br>• `"STRING"`<br>• `"EMAIL"`<br>• `"CONCEALED"`<br>• `"URL"`<br>• `"OTP"`<br>• `"DATE"`<br>• `"MONTH_YEAR"`<br>• `"MENU"`<br>• `"FILE"` | &#10007; | |
+  | type | string | The category of the field. One of: <br>• `"STRING"`<br>• `"PASSWORD"`<br>• `"EMAIL"`<br>• `"CONCEALED"`<br>• `"URL"`<br>• `"OTP"`<br>• `"DATE"`<br>• `"MONTH_YEAR"`<br>• `"MENU"`<br>• `"FILE"` | &#10007; | |
   | label | Label for the field |  | &#10007; | |
   | value | The value that is stored in the field |  | [&#10003;](#Text) | |
 
