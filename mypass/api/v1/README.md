@@ -645,8 +645,10 @@
     ##### records_get__200
     ```json
     {
+      "count":2,
       "list":[
         {
+          "count":2,
           "safe_id":"df81795d-d39c-4c82-9067-3bb0503847a1",
           "items":[
             {
@@ -687,10 +689,50 @@
                   ]
                 }
               ]
+            },
+            {
+              "id":"20228d77-5364-4390-aea7-63bc7d61edfe",
+              "title":"Title2",
+              "category":"LOGIN",
+              "notes":"There should be notes here",
+              "tags":["the values in the tags must be of the string type","tag2"],
+              "sections":[
+                {
+                  "section":"INIT",
+                  "fields":[
+                    {
+                      "type":"STRING",
+                      "label":"login",
+                      "value":"user1"
+                    },
+                    {
+                      "type":"PASSWORD",
+                      "label":"password",
+                      "value":"12345"
+                    }
+                  ]
+                },
+                {
+                  "section":"Other sections",
+                  "fields":[
+                    {
+                      "type":"URL",
+                      "label":"title",
+                      "value":"https://example.com"
+                    },
+                    {
+                      "type":"EMAIL",
+                      "label":"email",
+                      "value":"user@example.com"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
         {
+          "count":1,
           "safe_id":"fd2bc249-c560-49b8-b801-3c8b604825a4",
           "items":[
             {
@@ -742,7 +784,62 @@
   | list | array | Contains an array with items distributed across safes | &#10007; | |
   | items | array | [A description of the other parameters can be found here](#records_get__200) | &#10007; | |
   | id | string | UUID4, "id" is the item ID | &#10007; | |
+  | count | int | number of safes | &#10007; | |
+  | list[N].count | int | number of items in the safe | &#10007; | |
+
+- ## Set favorite
+  - ### Request
   
+  ```http
+  PUT /v1/safe/{safe_id}/item/{item_id}/favorite
+  ```
+  
+  - Params
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | safe_id | string | uuid v4, id of the safe that contains the item | &#10007; | |
+  | item_id | string | uuid v4, id of the item to be changed in the safe | &#10007; | |
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Content-Type | application/json | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#item_favorite__200) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
+  | [INTERNAL_SERVER_ERROR](#item_favorite__500) | | |
+
+    ##### item_favorite__200
+    ```json
+    {
+      "msg": "ok"
+    }
+    ```
+
+    ##### item_favorite__500
+    ```json
+    {
+      "msg": {
+        "de": null,
+        "en": "failed to update favorite",
+        "ru": "не удалось обновить фаворита"
+      }
+    }
+    ```
 
 - ## Update
   - ### Request
