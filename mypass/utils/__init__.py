@@ -23,6 +23,8 @@ class Validation:
         return False
     
     def validate_token(self,token:str):
+        if token == None:
+            return False
         if len(token)==128:
             return True
         return False
