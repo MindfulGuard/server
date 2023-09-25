@@ -4,6 +4,7 @@ from mypass.core.languages.responses import Responses
 from mypass.core.response_status_codes import *
 from mypass.items.executors.create import Create
 from mypass.items.executors.update import Update
+from mypass.items.executors.delete import Delete
 
 
 class Item:
@@ -51,3 +52,23 @@ class Item:
             return self.__json_responses.unauthorized()
         else:
             return {"msg":self.__lang.failed_to_update_the_item()}
+        
+    async def delete(self,
+                     token:str,
+                     safe_id:str,
+                     item_id:str,
+                     response:Response):
+        
+        obj_create = Delete()
+
+        status_code = await obj_create.execute(token, safe_id, item_id)
+        response.status_code = status_code
+        
+        if status_code == BAD_REQUEST:
+            return self.__json_responses.data_not_valid()
+        elif status_code == OK:
+            return {"msg":self.__lang.item_was_successfully_deleted()}
+        elif status_code == UNAUTHORIZED:
+            return self.__json_responses.unauthorized()
+        else:
+            return {"msg":self.__lang.failed_to_delete_item()}

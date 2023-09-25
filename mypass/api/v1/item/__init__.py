@@ -34,3 +34,17 @@ async def update_safe(
     obj = items.Item()
     await auth.update_token_info(token, user_agent, request)
     return await obj.update(token, json, safe_id, item_id, response)
+
+@router.delete("/{safe_id}/item/{item_id}")
+async def delete_safe(
+    safe_id: str,
+    item_id: str,
+    request: Request,
+    response: Response,
+    user_agent: Annotated[str, Header()],
+    token: str = Header(default=None, alias="Authorization"),
+):
+    auth = Authentication()
+    obj = items.Item()
+    await auth.update_token_info(token, user_agent, request)
+    return await obj.delete(token, safe_id, item_id, response)

@@ -48,3 +48,7 @@ class Language:
         return self.__message.get("failed_to_update_the_item")
     def item_has_been_successfully_updated(self)->dict[str,Any]:
         return self.__message.get("item_has_been_successfully_updated")
+    def item_was_successfully_deleted(self)->dict[str,Any]:
+        return self.__message.get("item_was_successfully_deleted")
+    def failed_to_delete_item(self)->dict[str,Any]:
+        return self.__message.get("failed_to_delete_item")

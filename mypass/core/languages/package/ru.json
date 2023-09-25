@@ -20,5 +20,8 @@
     "item_was_successfully_created":"элемент был успешно создан",
     "failed_to_create_item":"не удалось создать элемент",
     "failed_to_update_the_item":"не удалось обновить элемент",
-    "item_has_been_successfully_updated":"элемент успешно обновлен"
+    "item_has_been_successfully_updated":"элемент успешно обновлен",
+
+    "item_was_successfully_deleted":"элемент был успешно удален",
+    "failed_to_delete_item":"не удалось удалить элемент"
 }
