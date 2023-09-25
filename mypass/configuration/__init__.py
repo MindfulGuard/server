@@ -14,10 +14,11 @@ class Configuration:
     def get(self,response:Response):
         config = Get().execute()
         authentication = config.authentication()
+        item =config.item()
         status_code:int = authentication[1]
 
         response.status_code = status_code
         if status_code == OK:
-            return {"authentication":authentication[0]}
+            return {"authentication":authentication[0], "item":item[0]}
         else:
             return self.__json_responses.server_error()#INTERNAL_SERVER_ERROR
