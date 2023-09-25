@@ -495,6 +495,43 @@
                 "mode": "GCM"
             },
             "password_rule": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[\\W]).{8,64}$"
+        },
+        "item": {
+            "categories": [
+                "LOGIN",
+                "PASSWORD",
+                "API_CREDENTIAL",
+                "SERVER",
+                "DATABASE",
+                "CREDIT_CARD",
+                "MEMBERSHIP",
+                "PASSPORT",
+                "SOFTWARE_LICENSE",
+                "OUTDOOR_LICENSE",
+                "SECURE_NOTE",
+                "WIRELESS_ROUTER",
+                "BANK_ACCOUNT",
+                "DRIVER_LICENSE",
+                "IDENTITY",
+                "REWARD_PROGRAM",
+                "DOCUMENT",
+                "EMAIL_ACCOUNT",
+                "SOCIAL_SECURITY_NUMBER",
+                "MEDICAL_RECORD",
+                "SSH_KEY"
+            ],
+            "types": [
+                "STRING",
+                "PASSWORD",
+                "EMAIL",
+                "CONCEALED",
+                "URL",
+                "OTP",
+                "DATE",
+                "MONTH_YEAR",
+                "MENU",
+                "FILE"
+            ]
         }
     }
     ```
@@ -568,13 +605,13 @@
   | - | - | - | - |
   | safe_id | string | UUID4, id of the safe in which the item will be recorded | &#10007; | |
   | title | string | The title of the item | &#10007; | |
-  | category | string | The category of the item. One of: <br>• `"LOGIN"`<br>• `"PASSWORD"`<br>• `"SERVER"`<br>• `"DATABASE"`<br>• `"CREDIT_CARD"`<br>• `"MEMBERSHIP"`<br>• `"PASSPORT"`<br>• `"SOFTWARE_LICENSE"`<br>• `"OUTDOOR_LICENSE"`<br>• `"SECURE_NOTE"`<br>• `"WIRELESS_ROUTER"`<br>• `"BANK_ACCOUNT"`<br>• `"DRIVER_LICENSE"`<br>• `"IDENTITY"`<br>• `"REWARD_PROGRAM"`<br>• `"EMAIL_ACCOUNT"`<br>• `"SOCIAL_SECURITY_NUMBER"`<br>• `"MEDICAL_RECORD"`<br>• `"SSH_KEY"` | &#10007; | |
+  | category | string | The category of the item. One of: <br>• `"LOGIN"`<br>• `"PASSWORD"`<br>• `"SERVER"`<br>• `"DATABASE"`<br>• `"CREDIT_CARD"`<br>• `"MEMBERSHIP"`<br>• `"PASSPORT"`<br>• `"SOFTWARE_LICENSE"`<br>• `"OUTDOOR_LICENSE"`<br>• `"SECURE_NOTE"`<br>• `"WIRELESS_ROUTER"`<br>• `"BANK_ACCOUNT"`<br>• `"DRIVER_LICENSE"`<br>• `"IDENTITY"`<br>• `"REWARD_PROGRAM"`<br>• `"EMAIL_ACCOUNT"`<br>• `"SOCIAL_SECURITY_NUMBER"`<br>• `"MEDICAL_RECORD"`<br>• `"SSH_KEY"`, [can be found on request](#configuration__200) | &#10007; | |
   | notes | string | Notes of the item | [&#10003;](#Text) | |
   | tags | array | Tags of the item, the elements in the array must be of type string | &#10007; | |
   | sections | array | Stores objects in itself | &#10007; | |
-  | section | string | The name of the section where the records are located | &#10007; | |
+  | section | string | The name of the section where the records are located. Attention! `"sections"` must contain at least one `"section"` with the `"INIT"` key, since `"INIT"` acts as the main section | &#10007; | |
   | fields | array | Contains objects with records | &#10007; | |
-  | type | string | The category of the field. One of: <br>• `"STRING"`<br>• `"PASSWORD"`<br>• `"EMAIL"`<br>• `"CONCEALED"`<br>• `"URL"`<br>• `"OTP"`<br>• `"DATE"`<br>• `"MONTH_YEAR"`<br>• `"MENU"`<br>• `"FILE"` | &#10007; | |
+  | type | string | The category of the field. One of: <br>• `"STRING"`<br>• `"PASSWORD"`<br>• `"EMAIL"`<br>• `"CONCEALED"`<br>• `"URL"`<br>• `"OTP"`<br>• `"DATE"`<br>• `"MONTH_YEAR"`<br>• `"MENU"`<br>• `"FILE"`, [can be found on request](#configuration__200) | &#10007; | |
   | label | Label for the field |  | &#10007; | |
   | value | The value that is stored in the field |  | [&#10003;](#Text) | |
 
@@ -645,8 +682,12 @@
     ##### records_get__200
     ```json
     {
+      "tags":["tag1","tag2","tag3"],
+      "favorite":["20228d77-5364-4390-aea7-63bc7d61edfe"],
+      "count":2,
       "list":[
         {
+          "count":2,
           "safe_id":"df81795d-d39c-4c82-9067-3bb0503847a1",
           "items":[
             {
@@ -655,6 +696,47 @@
               "category":"LOGIN",
               "notes":"There should be notes here",
               "tags":["the values in the tags must be of the string type","tag2"],
+              "favorite":false,
+              "sections":[
+                {
+                  "section":"INIT",
+                  "fields":[
+                    {
+                      "type":"STRING",
+                      "label":"login",
+                      "value":"user1"
+                    },
+                    {
+                      "type":"PASSWORD",
+                      "label":"password",
+                      "value":"12345"
+                    }
+                  ]
+                },
+                {
+                  "section":"Other sections",
+                  "fields":[
+                    {
+                      "type":"URL",
+                      "label":"title",
+                      "value":"https://example.com"
+                    },
+                    {
+                      "type":"EMAIL",
+                      "label":"email",
+                      "value":"user@example.com"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id":"20228d77-5364-4390-aea7-63bc7d61edfe",
+              "title":"Title2",
+              "category":"LOGIN",
+              "notes":"There should be notes here",
+              "tags":["the values in the tags must be of the string type","tag2"],
+              "favorite":true,
               "sections":[
                 {
                   "section":"INIT",
@@ -691,6 +773,7 @@
           ]
         },
         {
+          "count":1,
           "safe_id":"fd2bc249-c560-49b8-b801-3c8b604825a4",
           "items":[
             {
@@ -699,6 +782,7 @@
               "category":"LOGIN",
               "notes":"There should be notes here 2",
               "tags":["the values in the tags must be of the string type","tag2","tag3"],
+              "favorite":false,
               "sections":[
                 {
                   "section":"INIT",
@@ -740,9 +824,67 @@
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
   | list | array | Contains an array with items distributed across safes | &#10007; | |
-  | items | array | [A description of the other parameters can be found here](#records_get__200) | &#10007; | |
+  | items | array | [A description of the other parameters can be found here](#item_create) | &#10007; | |
   | id | string | UUID4, "id" is the item ID | &#10007; | |
+  | count | int | number of safes | &#10007; | |
+  | list[N].count | int | number of items in the safe | &#10007; | |
+  | favorite | bool | indicates whether an item is a favorite] | &#10007; | |
+  | favorite | array | contains all the UUIDs of favorites from all the safes | &#10007; | |
+  | tags | array | shows all existing tags | &#10007; | |
+
+- ## Set favorite
+  - ### Request
   
+  ```http
+  PUT /v1/safe/{safe_id}/item/{item_id}/favorite
+  ```
+  
+  - Params
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | safe_id | string | uuid v4, id of the safe that contains the item | &#10007; | |
+  | item_id | string | uuid v4, id of the item to be changed in the safe | &#10007; | |
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Content-Type | application/json | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#item_favorite__200) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
+  | [INTERNAL_SERVER_ERROR](#item_favorite__500) | | |
+
+    ##### item_favorite__200
+    ```json
+    {
+      "msg": "ok"
+    }
+    ```
+
+    ##### item_favorite__500
+    ```json
+    {
+      "msg": {
+        "de": null,
+        "en": "failed to update favorite",
+        "ru": "не удалось обновить фаворита"
+      }
+    }
+    ```
 
 - ## Update
   - ### Request
