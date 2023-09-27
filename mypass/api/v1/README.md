@@ -82,7 +82,7 @@
   | - | - | - | - |
   | login | string | the length is set in the configuration | &#10007; | |
   | secret_string | string | [secret_string](#secret_string) | &#10003; | |
-  | expiration | int64 | 1 < expiration < sizeof(int64) | &#10007; | |
+  | expiration | int64 | 1 < expiration < sizeof(int64), measured in minutes | &#10007; | |
   | code | string | the code consists of a 6-digit number, the code can be obtained in the TOTP client or from a backup code | &#10007; | |
   
   - ### Responses
@@ -280,66 +280,6 @@
             "en": "failed to create a safe",
             "ru": "не удалось создать сейф"
         },
-    }
-    ```
-    
-- ## Get
-  - ### Request
-  
-  ```http
-  GET /v1/safe
-  ```
-  - Headers
-  
-  | key | value | Description |
-  | - | - | - |
-  | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
-  | Authorization | Bearer &lt;token> |  | |
-  
-  - Body
-  
-  | Parameters | Type | Description | Encrypt |
-  | - | - | - | - |
-  
-  - ### Responses
-
-  | Status code | Description |
-  | - | - |
-  | [OK](#get__200) | list[N].discription, [watch text encryption](#Text) | |
-  | [BAD REQUEST](#400) | | |
-  | [NOT_FOUND](#get__404) | | |
-  | [UNAUTHORIZED](#401) | | |
-  | [INTERNAL_SERVER_ERROR](#500) | | |
-
-    ##### get__200
-    ```json
-    {
-      "list": [
-            {
-                "id": "00538bc9-dedc-401a-ab1a-a4a024906784",
-                "name": "hello_user2 mew",
-                "description": "Encrypted string",
-                "created_at": 1695044525,
-                "updated_at": 1695044525
-            },
-            {
-                "id": "77ab76fe-47dd-4bac-9d12-d9fc2c93de0c",
-                "name": "hello_user3 mew",
-                "description": "Encrypted string",
-                "created_at": 1695044539,
-                "updated_at": 1695044539
-            }
-        ],
-        "count": 2
-    }
-    ```
-
-    ##### get__404
-    ```json
-    {
-      "msg": [],
-      "count": 0
     }
     ```
 
@@ -682,159 +622,321 @@
     ##### records_get__200
     ```json
     {
-      "tags":["tag1","tag2","tag3"],
-      "favorite":["20228d77-5364-4390-aea7-63bc7d61edfe"],
-      "safes": [
-        {
-          "id": "df81795d-d39c-4c82-9067-3bb0503847a1",
-          "name": "hello_user2 mew",
-          "description": "Encrypted string",
-          "created_at": 1695044525,
-          "updated_at": 1695044525
-        },
-        {
-          "id": "fd2bc249-c560-49b8-b801-3c8b604825a4",
-          "name": "hello_user3 mew",
-          "description": "Encrypted string",
-          "created_at": 1695044539,
-          "updated_at": 1695044539
-        }
-      ],
-      "count":2,
-      "list":[
-        {
-          "count":2,
-          "safe_id":"df81795d-d39c-4c82-9067-3bb0503847a1",
-          "items":[
+        "safes": [
             {
-              "id":"6fff7323-3606-4e2f-8b7e-f0820243f8a0",
-              "title":"Title",
-              "category":"LOGIN",
-              "notes":"There should be notes here",
-              "tags":["the values in the tags must be of the string type","tag2"],
-              "favorite":false,
-              "sections":[
-                {
-                  "section":"INIT",
-                  "fields":[
-                    {
-                      "type":"STRING",
-                      "label":"login",
-                      "value":"user1"
-                    },
-                    {
-                      "type":"PASSWORD",
-                      "label":"password",
-                      "value":"12345"
-                    }
-                  ]
-                },
-                {
-                  "section":"Other sections",
-                  "fields":[
-                    {
-                      "type":"URL",
-                      "label":"title",
-                      "value":"https://example.com"
-                    },
-                    {
-                      "type":"EMAIL",
-                      "label":"email",
-                      "value":"user@example.com"
-                    }
-                  ]
-                }
-              ]
+                "id": "13a0d3c9-e48c-405c-844c-c6356f29d1d7",
+                "name": "safe 1",
+                "description": "descrip. 1",
+                "created_at": 1695750016,
+                "updated_at": 1695820640,
+                "count_items": 1
             },
             {
-              "id":"20228d77-5364-4390-aea7-63bc7d61edfe",
-              "title":"Title2",
-              "category":"LOGIN",
-              "notes":"There should be notes here",
-              "tags":["the values in the tags must be of the string type","tag2"],
-              "favorite":true,
-              "sections":[
-                {
-                  "section":"INIT",
-                  "fields":[
-                    {
-                      "type":"STRING",
-                      "label":"login",
-                      "value":"user1"
-                    },
-                    {
-                      "type":"PASSWORD",
-                      "label":"password",
-                      "value":"12345"
-                    }
-                  ]
-                },
-                {
-                  "section":"Other sections",
-                  "fields":[
-                    {
-                      "type":"URL",
-                      "label":"title",
-                      "value":"https://example.com"
-                    },
-                    {
-                      "type":"EMAIL",
-                      "label":"email",
-                      "value":"user@example.com"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "count":1,
-          "safe_id":"fd2bc249-c560-49b8-b801-3c8b604825a4",
-          "items":[
+                "id": "4607459b-404e-4048-b5d7-40ab296fc2bf",
+                "name": "safe 2",
+                "description": "descrip. 2",
+                "created_at": 1695750022,
+                "updated_at": 1695750154,
+                "count_items": 2
+            },
             {
-              "id":"5d9aa22d-2797-46d6-b8b7-7c30c3e5a024",
-              "title":"Title2",
-              "category":"LOGIN",
-              "notes":"There should be notes here 2",
-              "tags":["the values in the tags must be of the string type","tag2","tag3"],
-              "favorite":false,
-              "sections":[
-                {
-                  "section":"INIT",
-                  "fields":[
-                    {
-                      "type":"STRING",
-                      "label":"login",
-                      "value":"user2"
-                    },
-                    {
-                      "type":"PASSWORD",
-                      "label":"password",
-                      "value":"123456"
-                    }
-                  ]
-                },
-                {
-                  "section":"Other sections",
-                  "fields":[
-                    {
-                      "type":"URL",
-                      "label":"title",
-                      "value":"https://example2.com"
-                    },
-                    {
-                      "type":"EMAIL",
-                      "label":"email",
-                      "value":"user2@example2.com"
-                    }
-                  ]
-                }
-              ]
+                "id": "f8b67b11-dcc6-4c70-b2b0-5299beb0f43d",
+                "name": "safe 3",
+                "description": "descrip. 3",
+                "created_at": 1695750025,
+                "updated_at": 1695750196,
+                "count_items": 3
             }
-          ]
-        }
-      ]
+        ],
+        "count": 3,
+        "tags": [
+            "the values in the tags must be of the string type",
+            "tag2",
+            "tag3",
+            "tag65"
+        ],
+        "favorites": [
+            "eaf7c608-f857-48ff-aec4-9cac14b15b4c",
+            "cee5638a-5b33-4e57-90ab-0228d1935880"
+        ],
+        "list": [
+            {
+                "safe_id": "4607459b-404e-4048-b5d7-40ab296fc2bf",
+                "count": 2,
+                "items": [
+                    {
+                        "id": "b6637471-653e-4ab8-861f-5e029dc7a9bc",
+                        "title": "Title",
+                        "category": "LOGIN",
+                        "notes": "There should be notes here",
+                        "tags": [
+                            "the values in the tags must be of the string type",
+                            "tag2"
+                        ],
+                        "favorite": false,
+                        "sections": [
+                            {
+                                "section": "INIT",
+                                "fields": [
+                                    {
+                                        "type": "STRING",
+                                        "label": "login",
+                                        "value": "user1"
+                                    },
+                                    {
+                                        "type": "PASSWORD",
+                                        "label": "password",
+                                        "value": "12345"
+                                    }
+                                ]
+                            },
+                            {
+                                "section": "Other sections",
+                                "fields": [
+                                    {
+                                        "type": "URL",
+                                        "label": "title",
+                                        "value": "https://example.com"
+                                    },
+                                    {
+                                        "type": "EMAIL",
+                                        "label": "email",
+                                        "value": "user@example.com"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "20d9a8c6-5da6-4df1-92c5-defb025e35a9",
+                        "title": "Title 2",
+                        "category": "LOGIN",
+                        "notes": "There should be notes here",
+                        "tags": [
+                            "the values in the tags must be of the string type",
+                            "tag2"
+                        ],
+                        "favorite": false,
+                        "sections": [
+                            {
+                                "section": "INIT",
+                                "fields": [
+                                    {
+                                        "type": "STRING",
+                                        "label": "login",
+                                        "value": "user1"
+                                    },
+                                    {
+                                        "type": "PASSWORD",
+                                        "label": "password",
+                                        "value": "12345"
+                                    }
+                                ]
+                            },
+                            {
+                                "section": "Other sections 2",
+                                "fields": [
+                                    {
+                                        "type": "URL",
+                                        "label": "title",
+                                        "value": "https://example.com"
+                                    },
+                                    {
+                                        "type": "EMAIL",
+                                        "label": "email",
+                                        "value": "user@example.com"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "safe_id": "f8b67b11-dcc6-4c70-b2b0-5299beb0f43d",
+                "count": 3,
+                "items": [
+                    {
+                        "id": "75622f14-adbd-4a23-b374-2ce9cbb7291b",
+                        "title": "Title mew",
+                        "category": "LOGIN",
+                        "notes": "There should be notes here",
+                        "tags": [
+                            "the values in the tags must be of the string type",
+                            "tag2"
+                        ],
+                        "favorite": false,
+                        "sections": [
+                            {
+                                "section": "INIT",
+                                "fields": [
+                                    {
+                                        "type": "STRING",
+                                        "label": "login",
+                                        "value": "user1"
+                                    },
+                                    {
+                                        "type": "PASSWORD",
+                                        "label": "password",
+                                        "value": "12345"
+                                    }
+                                ]
+                            },
+                            {
+                                "section": "Other sections f",
+                                "fields": [
+                                    {
+                                        "type": "URL",
+                                        "label": "title",
+                                        "value": "https://example.com"
+                                    },
+                                    {
+                                        "type": "EMAIL",
+                                        "label": "email",
+                                        "value": "user@example.com"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "86057143-8e30-40c8-aa4d-887a48920cef",
+                        "title": "Title mew",
+                        "category": "LOGIN",
+                        "notes": "There should be notes here",
+                        "tags": [
+                            "the values in the tags must be of the string type",
+                            "tag2"
+                        ],
+                        "favorite": false,
+                        "sections": [
+                            {
+                                "section": "INIT",
+                                "fields": [
+                                    {
+                                        "type": "STRING",
+                                        "label": "login",
+                                        "value": "user1"
+                                    },
+                                    {
+                                        "type": "PASSWORD",
+                                        "label": "password",
+                                        "value": "12345"
+                                    }
+                                ]
+                            },
+                            {
+                                "section": "Other sections f",
+                                "fields": [
+                                    {
+                                        "type": "URL",
+                                        "label": "title",
+                                        "value": "https://example.com"
+                                    },
+                                    {
+                                        "type": "EMAIL",
+                                        "label": "email",
+                                        "value": "user@example.com"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "cee5638a-5b33-4e57-90ab-0228d1935880",
+                        "title": "Title mew",
+                        "category": "LOGIN",
+                        "notes": "There should be notes here",
+                        "tags": [
+                            "the values in the tags must be of the string type",
+                            "tag2"
+                        ],
+                        "favorite": true,
+                        "sections": [
+                            {
+                                "section": "INIT",
+                                "fields": [
+                                    {
+                                        "type": "STRING",
+                                        "label": "login",
+                                        "value": "user1"
+                                    },
+                                    {
+                                        "type": "PASSWORD",
+                                        "label": "password",
+                                        "value": "12345"
+                                    }
+                                ]
+                            },
+                            {
+                                "section": "Other sections f",
+                                "fields": [
+                                    {
+                                        "type": "URL",
+                                        "label": "title",
+                                        "value": "https://example.com"
+                                    },
+                                    {
+                                        "type": "EMAIL",
+                                        "label": "email",
+                                        "value": "user@example.com"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "safe_id": "13a0d3c9-e48c-405c-844c-c6356f29d1d7",
+                "count": 1,
+                "items": [
+                    {
+                        "id": "eaf7c608-f857-48ff-aec4-9cac14b15b4c",
+                        "title": "Title mew",
+                        "category": "LOGIN",
+                        "notes": "There should be notes here",
+                        "tags": [
+                            "tag3",
+                            "tag65"
+                        ],
+                        "favorite": true,
+                        "sections": [
+                            {
+                                "section": "INIT",
+                                "fields": [
+                                    {
+                                        "type": "STRING",
+                                        "label": "login",
+                                        "value": "user1"
+                                    },
+                                    {
+                                        "type": "PASSWORD",
+                                        "label": "password",
+                                        "value": "12345"
+                                    }
+                                ]
+                            },
+                            {
+                                "section": "Other sections f",
+                                "fields": [
+                                    {
+                                        "type": "URL",
+                                        "label": "title",
+                                        "value": "https://example.com"
+                                    },
+                                    {
+                                        "type": "EMAIL",
+                                        "label": "email",
+                                        "value": "user@example.com"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     }
     ```
   | Parameters | Type | Description | Encrypt |
@@ -845,7 +947,7 @@
   | count | int | number of safes | &#10007; | |
   | list[N].count | int | number of items in the safe | &#10007; | |
   | favorite | bool | indicates whether an item is a favorite] | &#10007; | |
-  | favorite | array | contains all the UUIDs of favorites from all the safes | &#10007; | |
+  | favorites | array | contains all the UUIDs of favorites from all the safes | &#10007; | |
   | tags | array | shows all existing tags | &#10007; | |
   | safes | array | contain information about safes | &#10007; | |
 
