@@ -82,7 +82,7 @@
   | - | - | - | - |
   | login | string | the length is set in the configuration | &#10007; | |
   | secret_string | string | [secret_string](#secret_string) | &#10003; | |
-  | expiration | int64 | 1 < expiration < sizeof(int64) | &#10007; | |
+  | expiration | int64 | 1 < expiration < sizeof(int64), measured in minutes | &#10007; | |
   | code | string | the code consists of a 6-digit number, the code can be obtained in the TOTP client or from a backup code | &#10007; | |
   
   - ### Responses
