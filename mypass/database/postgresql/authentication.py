@@ -143,12 +143,10 @@ class Authentication:
                 WHERE t_u_id IN (
                     SELECT t_u_id
                     FROM t_tokens
-                    WHERE t_token = $1
+                    WHERE t_token = $1 AND active_token($1) = TRUE
                 );
                 ''', token)
             
-            #if records == None:
-                #return (value_list,UNAUTHORIZED)
             for record in records:
                 value_dict = {
                     'id': record['t_id'],
