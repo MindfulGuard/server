@@ -342,6 +342,64 @@
     }
     ```
 
+- ## Move
+  - ### Request
+  
+  ```http
+  PUT /v1/safe/{from}/{to}
+  ```
+  
+  - Params
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | from | string | uuid v4, `id` of the safe from which to move the items | &#10007; | |
+  | to | string | uuid v4, `id` of the safe to move the items to | &#10007; | |
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/x-www-form-urlencoded |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#safe_move__200) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
+  | [INTERNAL_SERVER_ERROR](#safe_move__500) | | |
+
+    ##### safe_move__200
+    ```json
+    {
+      "msg": {
+            "de": null,
+            "en": "the items were successfully moved to the safe",
+            "ru": "элементы были успешно перемещены в сейф"
+        },
+    }
+    ```
+
+    ##### safe_move__500
+    ```json
+    {
+        "msg": {
+            "de": null,
+            "en": "failed to move items to the safe",
+            "ru": "не удалось переместить элементы в сейф"
+        }
+    }
+    ```
+
 - ## Delete
   - ### Request
   
