@@ -22,11 +22,11 @@ SET row_security = off;
 
 CREATE FUNCTION public.active_token(token character varying) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$DECLARE
-    record_exists BOOLEAN;
-BEGIN
-SELECT EXISTS (SELECT t_id FROM t_tokens WHERE t_token = $1 AND EXTRACT(EPOCH FROM current_timestamp)::BIGINT <= t_expiration) INTO record_exists;
-RETURN record_exists;
+    AS $_$DECLARE
+    record_exists BOOLEAN;
+BEGIN
+SELECT EXISTS (SELECT t_id FROM t_tokens WHERE t_token = $1 AND EXTRACT(EPOCH FROM current_timestamp)::BIGINT <= t_expiration) INTO record_exists;
+RETURN record_exists;
 END;$_$;
 
 
@@ -41,6 +41,7 @@ CREATE FUNCTION public.create_item(token character varying, safe_id uuid, title 
     AS $_$
 declare
     user_id UUID;
+    _safe_id UUID;
     record_id UUID;
     timestmp BIGINT;
 begin
@@ -52,7 +53,13 @@ IF user_id IS NULL THEN
     RETURN -1;
 END IF;
 
-INSERT INTO r_records VALUES (gen_random_uuid(),$2,user_id,$3,$4,$5,$6,timestmp,timestmp,$7,$8) RETURNING r_id INTO record_id;
+SELECT s_id INTO _safe_id FROM s_safes WHERE s_u_id = user_id AND s_id = $2;
+
+IF _safe_id IS NULL THEN
+    RETURN -2;
+END IF; 
+
+INSERT INTO r_records VALUES (gen_random_uuid(),_safe_id,user_id,$3,$4,$5,$6,timestmp,timestmp,$7,$8) RETURNING r_id INTO record_id;
 
 IF record_id IS NULL THEN
     RETURN -2;
@@ -74,23 +81,29 @@ ALTER FUNCTION public.create_item(token character varying, safe_id uuid, title c
 
 CREATE FUNCTION public.create_safe(token character varying, name character varying, description character varying) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-declare
-    user_id UUID;
-    safe_id UUID;
-    timestmp BIGINT;
-begin
-timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
-IF user_id IS NULL THEN
-    RETURN -1;
-END IF;
-INSERT INTO s_safes VALUES (gen_random_uuid(),user_id,$2,$3,timestmp,timestmp) RETURNING s_id INTO safe_id;
-IF safe_id IS NULL THEN
-    RETURN -2;
-END IF;
-RETURN 0;
-end;
+    AS $_$
+declare
+    user_id UUID;
+    safe_id UUID;
+    timestmp BIGINT;
+begin
+
+timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+
+INSERT INTO s_safes VALUES (gen_random_uuid(),user_id,$2,$3,timestmp,timestmp) RETURNING s_id INTO safe_id;
+
+IF safe_id IS NULL THEN
+    RETURN -2;
+END IF;
+
+RETURN 0;
+
+end;
 $_$;
 
 
@@ -140,29 +153,29 @@ ALTER FUNCTION public.delete_item(token character varying, safe_id uuid, item_id
 
 CREATE FUNCTION public.delete_safe(token character varying, id uuid) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-declare
-    user_id UUID;
-    safe_id UUID;
-begin
-
-SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
-
-IF user_id IS NULL THEN
-    RETURN -1;
-END IF;
-
-DELETE FROM r_records WHERE r_s_id = $2 AND r_u_id = user_id;
-
-DELETE FROM s_safes WHERE s_u_id = user_id AND s_id = $2 RETURNING s_id INTO safe_id;
-
-IF safe_id IS NULL THEN
-    RETURN -2;
-END IF;
-
-RETURN 0;
-
-end;
+    AS $_$
+declare
+    user_id UUID;
+    safe_id UUID;
+begin
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+
+DELETE FROM r_records WHERE r_s_id = $2 AND r_u_id = user_id;
+
+DELETE FROM s_safes WHERE s_u_id = user_id AND s_id = $2 RETURNING s_id INTO safe_id;
+
+IF safe_id IS NULL THEN
+    RETURN -2;
+END IF;
+
+RETURN 0;
+
+end;
 $_$;
 
 
@@ -360,27 +373,28 @@ ALTER FUNCTION public.update_item(token character varying, safe_id uuid, item_id
 
 CREATE FUNCTION public.update_safe(token character varying, safe_id uuid, name character varying, description character varying) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-DECLARE
-    safe_id UUID;
-BEGIN
-    IF active_token($1) IS FALSE THEN
-        RETURN -1;
-    END IF;
-
-    UPDATE s_safes SET s_name = $3, s_description = $4,s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::bigint
-    WHERE s_u_id =(
-        SELECT t_u_id FROM t_tokens
-        WHERE t_token = $1
-                    )
-    AND s_id = $2
-    RETURNING s_id INTO safe_id;
-
-    IF safe_id IS NULL THEN
-        RETURN -2;
-    END IF;
-    RETURN 0;
-END
+    AS $_$
+DECLARE
+    safe_id UUID;
+    user_id UUID;
+BEGIN
+    SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+    
+    IF user_id IS NULL THEN
+        RETURN -1;
+    END IF;
+
+    UPDATE s_safes SET s_name = $3, s_description = $4,s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::bigint
+    WHERE s_u_id = user_id AND s_id = $2
+    RETURNING s_id INTO safe_id;
+
+    IF safe_id IS NULL THEN
+        RETURN -2;
+    END IF;
+
+    RETURN 0;
+
+END
 $_$;
 
 

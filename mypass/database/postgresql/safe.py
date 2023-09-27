@@ -33,7 +33,7 @@ class Safe:
             is_auth = await Authentication().is_auth(connection,token)
 
             if not is_auth:
-                return (None, UNAUTHORIZED)
+                return ([], UNAUTHORIZED)
             records = await connection.fetch('''
             SELECT s.s_id, s.s_name, s.s_description, s.s_created_at, s.s_updated_at, COUNT(r.r_id) AS r_count
             FROM s_safes AS s
@@ -52,16 +52,16 @@ class Safe:
                     'description': record['s_description'],
                     'created_at': record['s_created_at'],
                     'updated_at': record['s_updated_at'],
-                    'number_of_records':record['r_count']
+                    'count_items':record['r_count']
                 }
                 value_list.append(value_dict)
 
             if not value_list:
-                return (None, NOT_FOUND)
+                return ([], OK)
 
             return (value_list, OK)
         except asyncpg.exceptions.ConnectionDoesNotExistError:
-            return (None, INTERNAL_SERVER_ERROR)
+            return ([], INTERNAL_SERVER_ERROR)
         finally:
             if connection:
                 await connection.close()

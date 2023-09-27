@@ -7,7 +7,7 @@ from mypass.items.models.item import Item
 router = APIRouter()
 
 @router.post("/{safe_id}/item")
-async def create_safe(
+async def create_item(
     safe_id: str,
     json: Item,
     request: Request,
@@ -21,7 +21,7 @@ async def create_safe(
     return await obj.create(token, json, safe_id, response)
 
 @router.put("/{safe_id}/item/{item_id}")
-async def update_safe(
+async def update_item(
     safe_id: str,
     item_id: str,
     json: Item,
@@ -35,8 +35,20 @@ async def update_safe(
     await auth.update_token_info(token, user_agent, request)
     return await obj.update(token, json, safe_id, item_id, response)
 
+@router.get("/all/item")
+async def get_item(
+    request: Request,
+    response: Response,
+    user_agent: Annotated[str, Header()],
+    token: str = Header(default=None, alias="Authorization"),
+):
+    auth = Authentication()
+    obj = items.Item()
+    await auth.update_token_info(token, user_agent, request)
+    return await obj.get(token, response)
+
 @router.delete("/{safe_id}/item/{item_id}")
-async def delete_safe(
+async def delete_item(
     safe_id: str,
     item_id: str,
     request: Request,

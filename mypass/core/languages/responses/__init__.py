@@ -1,3 +1,4 @@
+from typing import Any
 from mypass.core.languages import Language
 
 """
@@ -12,11 +13,11 @@ class Responses:
         """
         self.__language = language
 
-    def service_is_not_available(self):
+    def service_is_not_available(self)-> dict[str, dict[str, Any]]:
         return {"msg":self.__language.service_is_not_available()}
-    def data_not_valid(self):
+    def data_not_valid(self)-> dict[str, dict[str, Any]]:
         return {"msg":self.__language.data_not_valid()}
-    def unauthorized(self):
+    def unauthorized(self)-> dict[str, dict[str, Any]]:
         return {"msg":self.__language.unauthorized()}
-    def server_error(self):
+    def server_error(self)-> dict[str, dict[str, Any]]:
         return {"msg":self.__language.server_error()}

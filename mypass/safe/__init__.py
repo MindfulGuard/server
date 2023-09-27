@@ -30,24 +30,6 @@ class Safe:
             return self.__json_responses.unauthorized()
         else:
             return {"msg":self.__lang.failed_to_create_a_safe()}
-
-    async def get(self,token:str,response:Response):
-        obj_get = Get()
-        get = await obj_get.execute(token)
-        status_code = get[1]
-
-        response.status_code = status_code
-
-        if status_code == BAD_REQUEST:
-            return self.__json_responses.data_not_valid()
-        elif status_code == UNAUTHORIZED:
-            return self.__json_responses.unauthorized()
-        elif status_code == NOT_FOUND:
-            return {"msg":[],"count":0}
-        elif status_code == OK:
-            return {"list":get[0],"count":len(get[0])}#!the code analyzer may swear, but errors should not occur!
-        else:
-            return self.__json_responses.server_error()
         
     async def update(self,token:str,
                      id:str,
