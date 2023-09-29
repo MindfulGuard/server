@@ -24,7 +24,6 @@
     "item_was_successfully_deleted":"элемент был успешно удален",
     "failed_to_delete_item":"не удалось удалить элемент",
     "failed_to_update_favorite":"не удалось обновить фаворита",
-
     "item_was_successfully_moved_to_safe":"элемент был успешно перемещен в сейф",
     "failed_to_move_item_to_safe":"не удалось переместить элемент в сейф"
 }

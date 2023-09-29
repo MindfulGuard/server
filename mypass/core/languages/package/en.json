@@ -24,7 +24,6 @@
     "item_was_successfully_deleted":"the item was successfully deleted",
     "failed_to_delete_item":"failed to delete item",
     "failed_to_update_favorite":"failed to update favorite",
-
     "item_was_successfully_moved_to_safe":"the item was successfully moved to the safe",
     "failed_to_move_item_to_safe":"failed to move item to safe"
 }
