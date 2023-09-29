@@ -219,6 +219,43 @@ $_$;
 ALTER FUNCTION public.item_favorite(token character varying, safe_id uuid, item_id uuid) OWNER TO mypass;
 
 --
+-- Name: move_item_to_new_safe(character varying, uuid, uuid, uuid); Type: FUNCTION; Schema: public; Owner: mypass
+--
+
+CREATE FUNCTION public.move_item_to_new_safe(token character varying, old_safe_id uuid, new_safe_id uuid, item_id uuid) RETURNS integer
+    LANGUAGE plpgsql
+    AS $_$
+DECLARE
+    user_id UUID;
+    record_id UUID;
+BEGIN
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+
+UPDATE r_records
+SET r_s_id = $3,
+r_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
+WHERE r_s_id = $2 AND r_u_id = user_id AND r_id = $4
+RETURNING r_id INTO record_id;
+
+IF record_id IS NULL THEN
+    RETURN -2;
+END IF;
+
+CALL update_safe_info($1,$2);
+
+RETURN 0;
+END
+$_$;
+
+
+ALTER FUNCTION public.move_item_to_new_safe(token character varying, old_safe_id uuid, new_safe_id uuid, item_id uuid) OWNER TO mypass;
+
+--
 -- Name: sign_in(character varying, character varying, character varying, character varying, inet, bigint, boolean); Type: FUNCTION; Schema: public; Owner: mypass
 --
 

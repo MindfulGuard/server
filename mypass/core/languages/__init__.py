@@ -54,3 +54,7 @@ class Language:
         return self.__message.get("failed_to_delete_item")
     def failed_to_update_favorite(self)->dict[str,Any]:
         return self.__message.get("failed_to_update_favorite")
+    def item_was_successfully_moved_to_safe(self)->dict[str,Any]:
+        return self.__message.get("item_was_successfully_moved_to_safe")
+    def failed_to_move_item_to_safe(self)->dict[str,Any]:
+        return self.__message.get("failed_to_move_item_to_safe")

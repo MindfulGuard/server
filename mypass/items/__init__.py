@@ -4,6 +4,7 @@ from mypass.core.languages.responses import Responses
 from mypass.core.response_status_codes import *
 from mypass.items.executors.create import Create
 from mypass.items.executors.favorite import Favorite
+from mypass.items.executors.move import Move
 import mypass.safe.executors.get as safe
 import mypass.items.executors.get as item
 from mypass.items.executors.update import Update
@@ -90,7 +91,28 @@ class Item:
         else:
             response.status_code = INTERNAL_SERVER_ERROR
             return self.__json_responses.server_error()
+
+    async def move(self,
+                     token:str,
+                     old_safe_id:str,
+                     new_safe_id:str,
+                     item_id:str,
+                     response:Response):
         
+        obj = Move()
+
+        status_code = await obj.execute(token, old_safe_id, new_safe_id, item_id)
+        response.status_code = status_code
+        
+        if status_code == BAD_REQUEST:
+            return self.__json_responses.data_not_valid()
+        elif status_code == OK:
+            return {"msg":self.__lang.item_was_successfully_moved_to_safe()}
+        elif status_code == UNAUTHORIZED:
+            return self.__json_responses.unauthorized()
+        else:
+            return {"msg":self.__lang.failed_to_move_item_to_safe()}
+
     async def delete(self,
                      token:str,
                      safe_id:str,
