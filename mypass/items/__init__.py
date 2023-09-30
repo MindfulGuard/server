@@ -147,7 +147,7 @@ class Item:
         if status_code == BAD_REQUEST:
             return self.__json_responses.data_not_valid()
         elif status_code == OK:
-            return {"msg":"ok"}
+            return {"msg":self.__lang.item_was_successfully_added_to_favorites()}
         elif status_code == UNAUTHORIZED:
             return self.__json_responses.unauthorized()
         else:

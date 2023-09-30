@@ -69,6 +69,6 @@ class Item(BaseModel):
             raise ValueError(f"The number of tags exceeds the maximum of {max_tags_length} allowed tags")
         
         for i, string in enumerate(value):
-            if len(string) > tags_length or len(string) == 0:
+            if len(string) > tags_length or len(string.replace(" ", "").replace("\t", "").replace("\n", "")) == 0:
                 raise ValueError(f"Element {i} exceeds the maximum length of {tags_length} characters and it is impossible for the length of the element {i} to be less than 0")
         return value
