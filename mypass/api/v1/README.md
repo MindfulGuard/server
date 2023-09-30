@@ -1049,7 +1049,11 @@
     ##### item_favorite__200
     ```json
     {
-      "msg": "ok"
+      "msg": {
+        "de": null,
+        "en": "the item was successfully added to favorites",
+        "ru": "элемент успешно добавлен в избранное"
+      }
     }
     ```
 
@@ -1058,8 +1062,8 @@
     {
       "msg": {
         "de": null,
-        "en": "failed to update favorite",
-        "ru": "не удалось обновить фаворита"
+        "en": "couldn't add item to favorites",
+        "ru": "не удалось добавить элемент в избранное"
       }
     }
     ```
