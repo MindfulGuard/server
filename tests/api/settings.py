@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from mypass.__main__ import app
+from mindfulguard.__main__ import app
 
 client = TestClient(app)
 

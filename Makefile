@@ -1,4 +1,4 @@
-PROJECT-NAME = mypass
+PROJECT-NAME = mindfulguard
 VENV = $(PROJECT-NAME)-venv
 INFO = $(PROJECT-NAME).egg-info
 PIP-WIN = .\$(VENV)\Scripts\pip

@@ -1,10 +1,10 @@
-mypass-venv/
-mypass/__pycache__/
+mindfulguard-venv/
+mindfulguard/__pycache__/
 .vscode/
-mypass/.vscode/
+mindfulguard/.vscode/
 .idea/
-mypass/.idea/
+mindfulguard/.idea/
 __pycache__/
-mypass.egg-info/
+mindfulguard.egg-info/
 .pytest_cache
 minio-data

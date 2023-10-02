@@ -1,3 +1,7 @@
+CREATE USER user_create WITH PASSWORD 'user_password';
+GRANT CONNECT ON DATABASE mindfulguard_production TO user_create;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO user_create;
+
 --
 -- PostgreSQL database dump
 --
@@ -17,7 +21,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: active_token(character varying); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: active_token(character varying); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.active_token(token character varying) RETURNS boolean
@@ -30,10 +34,10 @@ RETURN record_exists;
 END;$_$;
 
 
-ALTER FUNCTION public.active_token(token character varying) OWNER TO mypass;
+ALTER FUNCTION public.active_token(token character varying) OWNER TO user_create;
 
 --
--- Name: create_item(character varying, uuid, character varying, json, character varying, character varying[], character varying, boolean); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: create_item(character varying, uuid, character varying, json, character varying, character varying[], character varying, boolean); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.create_item(token character varying, safe_id uuid, title character varying, item json, notes character varying, tags character varying[], category character varying, favorite boolean) RETURNS integer
@@ -73,10 +77,10 @@ end;
 $_$;
 
 
-ALTER FUNCTION public.create_item(token character varying, safe_id uuid, title character varying, item json, notes character varying, tags character varying[], category character varying, favorite boolean) OWNER TO mypass;
+ALTER FUNCTION public.create_item(token character varying, safe_id uuid, title character varying, item json, notes character varying, tags character varying[], category character varying, favorite boolean) OWNER TO user_create;
 
 --
--- Name: create_safe(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: create_safe(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.create_safe(token character varying, name character varying, description character varying) RETURNS integer
@@ -107,48 +111,75 @@ end;
 $_$;
 
 
-ALTER FUNCTION public.create_safe(token character varying, name character varying, description character varying) OWNER TO mypass;
+ALTER FUNCTION public.create_safe(token character varying, name character varying, description character varying) OWNER TO user_create;
 
 --
--- Name: delete_item(character varying, uuid, uuid); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: delete_item(character varying, uuid, uuid); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.delete_item(token character varying, safe_id uuid, item_id uuid) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-declare
-    user_id UUID;
-    record_id UUID;
-begin
-SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
-
-IF user_id IS NULL THEN
-    RETURN -1;
-END IF;
-
-DELETE FROM r_records
-WHERE r_id = $3
-AND r_s_id = $2
-AND r_u_id = user_id
-RETURNING r_id INTO record_id;
-
-IF record_id IS NULL THEN
-    RETURN -2;
-END IF;
-
-CALL update_safe_info($1,$2);
-
-RETURN 0;
-
-end;
-
+    AS $_$
+
+declare
+
+    user_id UUID;
+
+    record_id UUID;
+
+begin
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+
+
+IF user_id IS NULL THEN
+
+    RETURN -1;
+
+END IF;
+
+
+
+DELETE FROM r_records
+
+WHERE r_id = $3
+
+AND r_s_id = $2
+
+AND r_u_id = user_id
+
+RETURNING r_id INTO record_id;
+
+
+
+IF record_id IS NULL THEN
+
+    RETURN -2;
+
+END IF;
+
+
+
+CALL update_safe_info($1,$2);
+
+
+
+RETURN 0;
+
+
+
+end;
+
+
+
 $_$;
 
 
-ALTER FUNCTION public.delete_item(token character varying, safe_id uuid, item_id uuid) OWNER TO mypass;
+ALTER FUNCTION public.delete_item(token character varying, safe_id uuid, item_id uuid) OWNER TO user_create;
 
 --
--- Name: delete_safe(character varying, uuid); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: delete_safe(character varying, uuid); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.delete_safe(token character varying, id uuid) RETURNS integer
@@ -179,47 +210,73 @@ end;
 $_$;
 
 
-ALTER FUNCTION public.delete_safe(token character varying, id uuid) OWNER TO mypass;
+ALTER FUNCTION public.delete_safe(token character varying, id uuid) OWNER TO user_create;
 
 --
--- Name: item_favorite(character varying, uuid, uuid); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: item_favorite(character varying, uuid, uuid); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.item_favorite(token character varying, safe_id uuid, item_id uuid) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-DECLARE
-    user_id UUID;
-    record_id UUID;
-BEGIN
-
-SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
-
-IF user_id IS NULL THEN
-    RETURN -1;
-END IF;
-
-UPDATE r_records
-SET r_favorite = NOT r_favorite,
-r_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
-WHERE r_s_id = $2 AND r_u_id = user_id AND r_id = $3
-RETURNING r_id INTO record_id;
-
-IF record_id IS NULL THEN
-    RETURN -2;
-END IF;
-
-CALL update_safe_info($1,$2);
-
-RETURN 0;
-END
+    AS $_$
+
+DECLARE
+
+    user_id UUID;
+
+    record_id UUID;
+
+BEGIN
+
+
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+
+
+IF user_id IS NULL THEN
+
+    RETURN -1;
+
+END IF;
+
+
+
+UPDATE r_records
+
+SET r_favorite = NOT r_favorite,
+
+r_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
+
+WHERE r_s_id = $2 AND r_u_id = user_id AND r_id = $3
+
+RETURNING r_id INTO record_id;
+
+
+
+IF record_id IS NULL THEN
+
+    RETURN -2;
+
+END IF;
+
+
+
+CALL update_safe_info($1,$2);
+
+
+
+RETURN 0;
+
+END
+
 $_$;
 
 
-ALTER FUNCTION public.item_favorite(token character varying, safe_id uuid, item_id uuid) OWNER TO mypass;
+ALTER FUNCTION public.item_favorite(token character varying, safe_id uuid, item_id uuid) OWNER TO user_create;
 
 --
--- Name: move_item_to_new_safe(character varying, uuid, uuid, uuid); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: move_item_to_new_safe(character varying, uuid, uuid, uuid); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.move_item_to_new_safe(token character varying, old_safe_id uuid, new_safe_id uuid, item_id uuid) RETURNS integer
@@ -273,119 +330,424 @@ END
 $_$;
 
 
-ALTER FUNCTION public.move_item_to_new_safe(token character varying, old_safe_id uuid, new_safe_id uuid, item_id uuid) OWNER TO mypass;
+ALTER FUNCTION public.move_item_to_new_safe(token character varying, old_safe_id uuid, new_safe_id uuid, item_id uuid) OWNER TO user_create;
 
 --
--- Name: sign_in(character varying, character varying, character varying, character varying, inet, bigint, boolean); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: sign_in(character varying, character varying, character varying, character varying, inet, bigint, boolean); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint, is_verified_code boolean) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$DECLARE
-user_id UUID;
-user_confirm BOOLEAN;
-timestmp BIGINT;
-BEGIN
-timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-SELECT u_id,u_confirm INTO user_id, user_confirm FROM u_users WHERE u_login = $1 AND u_secret_string=$2;
-IF $7 IS TRUE THEN
-    IF user_id IS NULL THEN
-        RETURN FALSE;
-    END IF;
-    IF user_confirm IS FALSE THEN
-        UPDATE u_users SET u_confirm = $7 WHERE u_id = user_id;
-    END IF;
-    INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
-    RETURN TRUE;
-END IF;
-RETURN FALSE;
+    AS $_$DECLARE
+
+
+
+
+
+user_id UUID;
+
+
+
+
+
+user_confirm BOOLEAN;
+
+
+
+
+
+timestmp BIGINT;
+
+
+
+
+
+BEGIN
+
+
+
+
+
+timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+
+
+
+
+SELECT u_id,u_confirm INTO user_id, user_confirm FROM u_users WHERE u_login = $1 AND u_secret_string=$2;
+
+
+
+
+
+IF $7 IS TRUE THEN
+
+
+
+
+
+    IF user_id IS NULL THEN
+
+
+
+
+
+        RETURN FALSE;
+
+
+
+
+
+    END IF;
+
+
+
+
+
+    IF user_confirm IS FALSE THEN
+
+
+
+
+
+        UPDATE u_users SET u_confirm = $7 WHERE u_id = user_id;
+
+
+
+
+
+    END IF;
+
+
+
+
+
+    INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
+
+
+
+
+
+    RETURN TRUE;
+
+
+
+
+
+END IF;
+
+
+
+
+
+RETURN FALSE;
+
+
+
+
+
 END$_$;
 
 
-ALTER FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint, is_verified_code boolean) OWNER TO mypass;
+ALTER FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint, is_verified_code boolean) OWNER TO user_create;
 
 --
--- Name: sign_out(character varying, uuid); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: sign_out(character varying, uuid); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.sign_out(token character varying, token_id uuid) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$DECLARE
-    user_id UUID;
-    deletion_successful INTEGER;
-BEGIN
-    SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 and active_token($1) = TRUE;
-    IF user_id IS NULL THEN
-        deletion_successful := -1;
-    ELSE
-        DELETE FROM t_tokens WHERE t_u_id = user_id AND t_id = $2;
-        IF FOUND THEN
-            deletion_successful := 0;
-        ELSE
-            deletion_successful := -2;
-        END IF;
-    END IF;
-    RETURN deletion_successful;
-END;
+    AS $_$DECLARE
+
+
+
+    user_id UUID;
+
+
+
+    deletion_successful INTEGER;
+
+
+
+BEGIN
+
+
+
+    SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 and active_token($1) = TRUE;
+
+
+
+    IF user_id IS NULL THEN
+
+
+
+        deletion_successful := -1;
+
+
+
+    ELSE
+
+
+
+        DELETE FROM t_tokens WHERE t_u_id = user_id AND t_id = $2;
+
+
+
+        IF FOUND THEN
+
+
+
+            deletion_successful := 0;
+
+
+
+        ELSE
+
+
+
+            deletion_successful := -2;
+
+
+
+        END IF;
+
+
+
+    END IF;
+
+
+
+    RETURN deletion_successful;
+
+
+
+END;
+
+
+
 $_$;
 
 
-ALTER FUNCTION public.sign_out(token character varying, token_id uuid) OWNER TO mypass;
+ALTER FUNCTION public.sign_out(token character varying, token_id uuid) OWNER TO user_create;
 
 --
--- Name: sign_up(character varying, character varying, inet, boolean, character varying, integer[]); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: sign_up(character varying, character varying, inet, boolean, character varying, integer[]); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, backup_codes integer[]) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$
-declare
-    user_id UUID;
-    code_id UUID;
-
-    user_id_insert UUID;
-    code_id_insert UUID;
-    current_timeu BIGINT;
-BEGIN
-current_timeu := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-
-SELECT u_id INTO user_id FROM u_users WHERE u_login = $1 AND u_secret_string = $2 AND u_confirm = FALSE;
-
-IF user_id IS NULL THEN
-    INSERT INTO u_users VALUES (gen_random_uuid (),$1,$3,$4,current_timeu,$2) RETURNING u_id INTO user_id_insert;
-    IF user_id_insert IS NULL THEN
-        RETURN -1;
-    END IF;
-    INSERT INTO c_codes VALUES (gen_random_uuid(),user_id_insert,$5,$6,current_timeu) RETURNING c_id INTO code_id_insert;
-    IF code_id_insert IS NULL THEN
-        RETURN -2;
-    END IF;
-    RETURN 0;
-END IF;
-
-SELECT c_id INTO code_id FROM c_codes WHERE c_u_id = user_id;
-IF code_id IS NULL THEN
-    INSERT INTO c_codes VALUES (gen_random_uuid(),user_id,$5,$6,current_timeu) RETURNING c_id INTO code_id_insert;
-    IF code_id_insert IS NULL THEN
-        RETURN -3;
-    END IF;
-    RETURN 1;
-END IF;
-
-UPDATE c_codes SET c_secret_code = $5,c_backup_codes = $6,c_created_at = current_timeu WHERE c_u_id = user_id RETURNING c_codes.c_id INTO code_id;
-IF code_id IS NULL THEN
-    RETURN -4;
-END IF;
-RETURN 2;
-
-END
+    AS $_$
+
+
+
+
+declare
+
+
+
+
+    user_id UUID;
+
+
+
+
+    code_id UUID;
+
+
+
+
+
+
+
+
+
+    user_id_insert UUID;
+
+
+
+
+    code_id_insert UUID;
+
+
+
+
+    current_timeu BIGINT;
+
+
+
+
+BEGIN
+
+
+
+
+current_timeu := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+
+
+
+
+
+
+
+
+SELECT u_id INTO user_id FROM u_users WHERE u_login = $1 AND u_secret_string = $2 AND u_confirm = FALSE;
+
+
+
+
+
+
+
+
+
+IF user_id IS NULL THEN
+
+
+
+
+    INSERT INTO u_users VALUES (gen_random_uuid (),$1,$3,$4,current_timeu,$2) RETURNING u_id INTO user_id_insert;
+
+
+
+
+    IF user_id_insert IS NULL THEN
+
+
+
+
+        RETURN -1;
+
+
+
+
+    END IF;
+
+
+
+
+    INSERT INTO c_codes VALUES (gen_random_uuid(),user_id_insert,$5,$6,current_timeu) RETURNING c_id INTO code_id_insert;
+
+
+
+
+    IF code_id_insert IS NULL THEN
+
+
+
+
+        RETURN -2;
+
+
+
+
+    END IF;
+
+
+
+
+    RETURN 0;
+
+
+
+
+END IF;
+
+
+
+
+
+
+
+
+
+SELECT c_id INTO code_id FROM c_codes WHERE c_u_id = user_id;
+
+
+
+
+IF code_id IS NULL THEN
+
+
+
+
+    INSERT INTO c_codes VALUES (gen_random_uuid(),user_id,$5,$6,current_timeu) RETURNING c_id INTO code_id_insert;
+
+
+
+
+    IF code_id_insert IS NULL THEN
+
+
+
+
+        RETURN -3;
+
+
+
+
+    END IF;
+
+
+
+
+    RETURN 1;
+
+
+
+
+END IF;
+
+
+
+
+
+
+
+
+
+UPDATE c_codes SET c_secret_code = $5,c_backup_codes = $6,c_created_at = current_timeu WHERE c_u_id = user_id RETURNING c_codes.c_id INTO code_id;
+
+
+
+
+IF code_id IS NULL THEN
+
+
+
+
+    RETURN -4;
+
+
+
+
+END IF;
+
+
+
+
+RETURN 2;
+
+
+
+
+
+
+
+
+
+END
+
+
+
+
 $_$;
 
 
-ALTER FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, backup_codes integer[]) OWNER TO mypass;
+ALTER FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, backup_codes integer[]) OWNER TO user_create;
 
 --
--- Name: update_item(character varying, uuid, uuid, character varying, json, character varying, character varying[]); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: update_item(character varying, uuid, uuid, character varying, json, character varying, character varying[]); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.update_item(token character varying, safe_id uuid, item_id uuid, title character varying, item json, notes character varying, tags character varying[]) RETURNS integer
@@ -422,10 +784,10 @@ END
 $_$;
 
 
-ALTER FUNCTION public.update_item(token character varying, safe_id uuid, item_id uuid, title character varying, item json, notes character varying, tags character varying[]) OWNER TO mypass;
+ALTER FUNCTION public.update_item(token character varying, safe_id uuid, item_id uuid, title character varying, item json, notes character varying, tags character varying[]) OWNER TO user_create;
 
 --
--- Name: update_safe(character varying, uuid, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: update_safe(character varying, uuid, character varying, character varying); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.update_safe(token character varying, safe_id uuid, name character varying, description character varying) RETURNS integer
@@ -455,54 +817,118 @@ END
 $_$;
 
 
-ALTER FUNCTION public.update_safe(token character varying, safe_id uuid, name character varying, description character varying) OWNER TO mypass;
+ALTER FUNCTION public.update_safe(token character varying, safe_id uuid, name character varying, description character varying) OWNER TO user_create;
 
 --
--- Name: update_safe_info(character varying, uuid); Type: PROCEDURE; Schema: public; Owner: mypass
+-- Name: update_safe_info(character varying, uuid); Type: PROCEDURE; Schema: public; Owner: user_create
 --
 
 CREATE PROCEDURE public.update_safe_info(IN token character varying, IN safe_id uuid)
     LANGUAGE plpgsql
-    AS $_$
-DECLARE
-    user_id UUID;
-BEGIN
-
-SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
-
-IF user_id IS NULL THEN
-    RETURN;
-END IF;
-
-UPDATE s_safes
-SET s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
-WHERE s_id = $2 AND s_u_id=user_id;
-
-END
+    AS $_$
+
+DECLARE
+
+    user_id UUID;
+
+BEGIN
+
+
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+
+
+IF user_id IS NULL THEN
+
+    RETURN;
+
+END IF;
+
+
+
+UPDATE s_safes
+
+SET s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
+
+WHERE s_id = $2 AND s_u_id=user_id;
+
+
+
+END
+
 $_$;
 
 
-ALTER PROCEDURE public.update_safe_info(IN token character varying, IN safe_id uuid) OWNER TO mypass;
+ALTER PROCEDURE public.update_safe_info(IN token character varying, IN safe_id uuid) OWNER TO user_create;
 
 --
--- Name: update_secret_string(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: update_secret_string(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.update_secret_string(old_secret_string character varying, new_secret_string character varying, token character varying) RETURNS boolean
     LANGUAGE plpgsql
-    AS $_$BEGIN
-UPDATE u_users AS u_us
-SET u_secret_string = $2
-FROM t_tokens AS t_ts
-WHERE t_ts.t_u_id = u_us.u_id AND u_secret_string = $1 AND active_token($3) = TRUE;
-RETURN FOUND;
+    AS $_$BEGIN
+
+
+
+
+
+
+
+
+UPDATE u_users AS u_us
+
+
+
+
+
+
+
+
+SET u_secret_string = $2
+
+
+
+
+
+
+
+
+FROM t_tokens AS t_ts
+
+
+
+
+
+
+
+
+WHERE t_ts.t_u_id = u_us.u_id AND u_secret_string = $1 AND active_token($3) = TRUE;
+
+
+
+
+
+
+
+
+RETURN FOUND;
+
+
+
+
+
+
+
+
 END;$_$;
 
 
-ALTER FUNCTION public.update_secret_string(old_secret_string character varying, new_secret_string character varying, token character varying) OWNER TO mypass;
+ALTER FUNCTION public.update_secret_string(old_secret_string character varying, new_secret_string character varying, token character varying) OWNER TO user_create;
 
 --
--- Name: update_token_info(character varying, character varying, inet); Type: FUNCTION; Schema: public; Owner: mypass
+-- Name: update_token_info(character varying, character varying, inet); Type: FUNCTION; Schema: public; Owner: user_create
 --
 
 CREATE FUNCTION public.update_token_info(token character varying, device character varying, ip inet) RETURNS boolean
@@ -580,14 +1006,14 @@ CREATE FUNCTION public.update_token_info(token character varying, device charact
 END;$_$;
 
 
-ALTER FUNCTION public.update_token_info(token character varying, device character varying, ip inet) OWNER TO mypass;
+ALTER FUNCTION public.update_token_info(token character varying, device character varying, ip inet) OWNER TO user_create;
 
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: c_codes; Type: TABLE; Schema: public; Owner: mypass
+-- Name: c_codes; Type: TABLE; Schema: public; Owner: user_create
 --
 
 CREATE TABLE public.c_codes (
@@ -599,10 +1025,10 @@ CREATE TABLE public.c_codes (
 );
 
 
-ALTER TABLE public.c_codes OWNER TO mypass;
+ALTER TABLE public.c_codes OWNER TO user_create;
 
 --
--- Name: r_records; Type: TABLE; Schema: public; Owner: mypass
+-- Name: r_records; Type: TABLE; Schema: public; Owner: user_create
 --
 
 CREATE TABLE public.r_records (
@@ -620,10 +1046,10 @@ CREATE TABLE public.r_records (
 );
 
 
-ALTER TABLE public.r_records OWNER TO mypass;
+ALTER TABLE public.r_records OWNER TO user_create;
 
 --
--- Name: s_safes; Type: TABLE; Schema: public; Owner: mypass
+-- Name: s_safes; Type: TABLE; Schema: public; Owner: user_create
 --
 
 CREATE TABLE public.s_safes (
@@ -636,10 +1062,10 @@ CREATE TABLE public.s_safes (
 );
 
 
-ALTER TABLE public.s_safes OWNER TO mypass;
+ALTER TABLE public.s_safes OWNER TO user_create;
 
 --
--- Name: t_tokens; Type: TABLE; Schema: public; Owner: mypass
+-- Name: t_tokens; Type: TABLE; Schema: public; Owner: user_create
 --
 
 CREATE TABLE public.t_tokens (
@@ -654,10 +1080,10 @@ CREATE TABLE public.t_tokens (
 );
 
 
-ALTER TABLE public.t_tokens OWNER TO mypass;
+ALTER TABLE public.t_tokens OWNER TO user_create;
 
 --
--- Name: u_users; Type: TABLE; Schema: public; Owner: mypass
+-- Name: u_users; Type: TABLE; Schema: public; Owner: user_create
 --
 
 CREATE TABLE public.u_users (
@@ -670,10 +1096,10 @@ CREATE TABLE public.u_users (
 );
 
 
-ALTER TABLE public.u_users OWNER TO mypass;
+ALTER TABLE public.u_users OWNER TO user_create;
 
 --
--- Data for Name: c_codes; Type: TABLE DATA; Schema: public; Owner: mypass
+-- Data for Name: c_codes; Type: TABLE DATA; Schema: public; Owner: user_create
 --
 
 COPY public.c_codes (c_id, c_u_id, c_secret_code, c_backup_codes, c_created_at) FROM stdin;
@@ -681,7 +1107,7 @@ COPY public.c_codes (c_id, c_u_id, c_secret_code, c_backup_codes, c_created_at) 
 
 
 --
--- Data for Name: r_records; Type: TABLE DATA; Schema: public; Owner: mypass
+-- Data for Name: r_records; Type: TABLE DATA; Schema: public; Owner: user_create
 --
 
 COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_item, r_notes, r_tags, r_created_at, r_updated_at, r_category, r_favorite) FROM stdin;
@@ -689,7 +1115,7 @@ COPY public.r_records (r_id, r_s_id, r_u_id, r_title, r_item, r_notes, r_tags, r
 
 
 --
--- Data for Name: s_safes; Type: TABLE DATA; Schema: public; Owner: mypass
+-- Data for Name: s_safes; Type: TABLE DATA; Schema: public; Owner: user_create
 --
 
 COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_updated_at) FROM stdin;
@@ -697,7 +1123,7 @@ COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_update
 
 
 --
--- Data for Name: t_tokens; Type: TABLE DATA; Schema: public; Owner: mypass
+-- Data for Name: t_tokens; Type: TABLE DATA; Schema: public; Owner: user_create
 --
 
 COPY public.t_tokens (t_id, t_u_id, t_token, t_created_at, t_updated_at, t_device, t_last_ip, t_expiration) FROM stdin;
@@ -705,7 +1131,7 @@ COPY public.t_tokens (t_id, t_u_id, t_token, t_created_at, t_updated_at, t_devic
 
 
 --
--- Data for Name: u_users; Type: TABLE DATA; Schema: public; Owner: mypass
+-- Data for Name: u_users; Type: TABLE DATA; Schema: public; Owner: user_create
 --
 
 COPY public.u_users (u_id, u_login, u_reg_ip, u_confirm, u_created_at, u_secret_string) FROM stdin;
@@ -713,7 +1139,7 @@ COPY public.u_users (u_id, u_login, u_reg_ip, u_confirm, u_created_at, u_secret_
 
 
 --
--- Name: c_codes c_codes_pk; Type: CONSTRAINT; Schema: public; Owner: mypass
+-- Name: c_codes c_codes_pk; Type: CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.c_codes
@@ -721,7 +1147,7 @@ ALTER TABLE ONLY public.c_codes
 
 
 --
--- Name: c_codes e_ecodes_pkey; Type: CONSTRAINT; Schema: public; Owner: mypass
+-- Name: c_codes e_ecodes_pkey; Type: CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.c_codes
@@ -729,7 +1155,7 @@ ALTER TABLE ONLY public.c_codes
 
 
 --
--- Name: r_records r_login_pkey; Type: CONSTRAINT; Schema: public; Owner: mypass
+-- Name: r_records r_login_pkey; Type: CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.r_records
@@ -737,7 +1163,7 @@ ALTER TABLE ONLY public.r_records
 
 
 --
--- Name: s_safes s_safes_pkey; Type: CONSTRAINT; Schema: public; Owner: mypass
+-- Name: s_safes s_safes_pkey; Type: CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.s_safes
@@ -745,7 +1171,7 @@ ALTER TABLE ONLY public.s_safes
 
 
 --
--- Name: t_tokens t_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: mypass
+-- Name: t_tokens t_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.t_tokens
@@ -753,7 +1179,7 @@ ALTER TABLE ONLY public.t_tokens
 
 
 --
--- Name: t_tokens t_tokens_t_token_key; Type: CONSTRAINT; Schema: public; Owner: mypass
+-- Name: t_tokens t_tokens_t_token_key; Type: CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.t_tokens
@@ -761,7 +1187,7 @@ ALTER TABLE ONLY public.t_tokens
 
 
 --
--- Name: u_users u_users_pk; Type: CONSTRAINT; Schema: public; Owner: mypass
+-- Name: u_users u_users_pk; Type: CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.u_users
@@ -769,7 +1195,7 @@ ALTER TABLE ONLY public.u_users
 
 
 --
--- Name: u_users u_users_pkey; Type: CONSTRAINT; Schema: public; Owner: mypass
+-- Name: u_users u_users_pkey; Type: CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.u_users
@@ -777,7 +1203,7 @@ ALTER TABLE ONLY public.u_users
 
 
 --
--- Name: u_users u_users_u_secret_string_key; Type: CONSTRAINT; Schema: public; Owner: mypass
+-- Name: u_users u_users_u_secret_string_key; Type: CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.u_users
@@ -785,7 +1211,7 @@ ALTER TABLE ONLY public.u_users
 
 
 --
--- Name: r_records r_login_r_s_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mypass
+-- Name: r_records r_login_r_s_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.r_records
@@ -793,7 +1219,7 @@ ALTER TABLE ONLY public.r_records
 
 
 --
--- Name: r_records r_records_u_users_u_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: mypass
+-- Name: r_records r_records_u_users_u_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: user_create
 --
 
 ALTER TABLE ONLY public.r_records
