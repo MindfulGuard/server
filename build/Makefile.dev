@@ -1,0 +1,43 @@
+POSTGRES_PASSWORD = 12345678
+POSTGRES_PASSWORD_USER = user1
+POSTGRES_PASSWORD_PASSWORD = 123456
+
+PROJECT-NAME = mindfulguard
+VENV = $(PROJECT-NAME)-venv
+PYTHON_VERSION = 3.10
+DOCKER_WORK_DIR = docker
+PATH_TO_DOCKER-COMPOSE = $(DOCKER_WORK_DIR)/docker-compose.yml
+
+#docker
+CONTAINER_NAME = docker-postgresql-1
+DATABASE_USER = user
+DATABASE_NAME = database_name
+PATH-TO-DUMP = $(DOCKER_WORK_DIR)/dumps/pgsql.sql
+
+ifeq ($(OS),Windows_NT)
+    RM = rmdir /s /q
+
+	#it will need to be completed
+	PATH_TO_PYTHON_VENV = $(PROJECT-NAME)-venv\
+
+	RUN = py -$(VERSION) __main__.py
+	SETUP-VENV = py -$(VERSION) -m venv $(VENV)
+	RUN-VENV = $(ACTIVATE-VENV-MSG) .\$(VENV)\Scripts\activate
+else
+    RM = rm -rf
+
+	#it will need to be completed
+	PATH_TO_PYTHON_VENV = $(PROJECT-NAME)-venv/
+
+	RUN = python$(VERSION) __main__.py POSTGRES_PASSWORD $(POSTGRES_PASSWORD) POSTGRES_PASSWORD_USER $(POSTGRES_PASSWORD_USER) POSTGRES_PASSWORD_PASSWORD $(POSTGRES_PASSWORD_PASSWORD)
+	SETUP-VENV = python$(VERSION) -m venv $(VENV)
+	RUN-VENV = $(ACTIVATE-VENV-MSG) "source $(VENV)/bin/activate"
+endif
+
+init:
+	$(SETUP-VENV)
+	$(RUN)
+	docker-compose -f $(PATH_TO_DOCKER-COMPOSE) up -d
+
+database-dump:
+	docker exec -t $(CONTAINER_NAME) pg_dump -U $(DATABASE_USER) $(DATABASE_NAME) > $(PATH-TO-DUMP)

@@ -41,7 +41,6 @@ setup:
 	$(SETUP-VENV)
 	@echo *****$(RUN-VENV)*****
 	@echo *****make pip-i*****
-	@echo *****docker-compose up -d*****
 	@echo *****$(DEACTIVATE-VENV-MSG)*****
 
 pip-i:
@@ -51,8 +50,6 @@ run:
 	uvicorn $(PROJECT-NAME).__main__:app --host $(HOST) --port $(PORT)
 test:
 	pytest
-database-dump:
-	docker exec -t $(CONTAINER_NAME) pg_dump -U $(DATABASE_USERS) $(DATABASE_NAME) > $(PATH-TO-DUMP)
 
 clean:
 	$(RM) $(INFO)

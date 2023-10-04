@@ -2,6 +2,7 @@ import argparse
 import dotenv
 
 PATH_TO_PGSQL_DOT_ENV = "docker/.POSTGRESQL.env"
+DATABASE_DUMP = "docker/dumps/pgsql.sql"
 
 dotenv.load_dotenv()
 
@@ -16,8 +17,6 @@ args = parser.parse_args()
 def setup_database():
     if args.POSTGRES_PASSWORD:
         dotenv.set_key(PATH_TO_PGSQL_DOT_ENV, "POSTGRES_PASSWORD", args.POSTGRES_PASSWORD, quote_mode="never")
-
-    file_name = "docker/dumps/pgsql.sql"
 
     with open(file_name, 'r') as file:
         lines = file.readlines()
