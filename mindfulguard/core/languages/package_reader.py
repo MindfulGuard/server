@@ -5,7 +5,7 @@ from typing import Any
 
 class Files:
     def __init__(self):
-        self.__PATH_TO_LANGUAGE_PACK:str = "mypass/core/languages/package/"
+        self.__PATH_TO_LANGUAGE_PACK:str = "mindfulguard/core/languages/package/"
     def __get_file_names(self)->list[str]:
         """
         returns an array with the names of files contained in the package folder.\n

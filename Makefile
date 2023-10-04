@@ -18,6 +18,8 @@ CONTAINER_NAME = docker-postgresql-1
 DATABASE_USERS = mypass
 DATABASE_NAME = mypass
 PATH-TO-DUMP = docker/dumps/pgsql.sql
+DOCKER_WORK_DIR = docker
+DOCKER_COMPOSE_YML= $(DOCKER_WORK_DIR)/docker-compose.yml
 
 ifeq ($(OS),Windows_NT)
     RM = rmdir /s /q
@@ -41,6 +43,7 @@ setup:
 	$(SETUP-VENV)
 	@echo *****$(RUN-VENV)*****
 	@echo *****make pip-i*****
+	@echo *****docker-compose -f $(DOCKER_COMPOSE_YML) up -d*****
 	@echo *****$(DEACTIVATE-VENV-MSG)*****
 
 pip-i:
