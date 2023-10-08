@@ -51,4 +51,6 @@ jobs:
           pip install -e .
           ls -las
       - name: Running Tests
-        run: pytest
+        run: |
+          /home/runner/work/server/server
+          pytest
