@@ -1,5 +1,5 @@
 import logging
-from server.mindfulguard.database.postgresql.connection import Connection
+from mindfulguard.database.postgresql.connection import Connection
 
 import pytest
 
