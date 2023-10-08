@@ -11,6 +11,7 @@ setup(
         'fastapi[all]',
         'tomli',
         'pytest',
+        'pytest-asyncio',
         'cryptography',
         'minio' 
     ],
