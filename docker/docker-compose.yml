@@ -11,20 +11,45 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+     - app-network
   
   minio:
-    image: quay.io/minio/minio
-    restart: always
+    image: minio/minio:latest
     container_name: minio
-    env_file:
-      - .MINIO.env
+    restart: unless-stopped
+    command: server --console-address ":9001" /data/
     ports:
       - "9000:9000"
-      #client
-      - "9090:9090"
+      - "9001:9001"
+    environment:
+      - .MINIO.env
     volumes:
       - ../minio-data:/data
-    command: server /data --console-address ":9090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  mindfulguard_server:
+      image: mindfulguard/server:dev
+      container_name: mindfulguard_server
+      restart: always
+      env_file:
+        - .SERVER.env
+      ports:
+        - 80:8080
+      depends_on:
+        - postgresql
+      networks:
+        - app-network
+      working_dir: /opt/.mindfulguard
+      command: ["uvicorn", "mindfulguard.__main__:app", "--host", "0.0.0.0", "--port", "8080"]
+      
+networks:
+ app-network:
+   driver: bridge
 
 volumes:
   minio:
