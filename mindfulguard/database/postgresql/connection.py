@@ -5,7 +5,7 @@ from mindfulguard.core.configuration import *
 
 class Config:
     def get_host(self)->str:
-        return "postgresql"
+        return os.environ.get('DATABASE_HOST', 'localhost')
     def get_port(self)->str:
         return os.environ.get('DATABASE_PORT', '5432')
     def get_database(self)->str:
