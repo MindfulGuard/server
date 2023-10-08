@@ -52,5 +52,4 @@ jobs:
           ls -las
       - name: Running Tests
         run: |
-          cd /home/runner/work/server/server
-          pytest
+          pytest -rA
