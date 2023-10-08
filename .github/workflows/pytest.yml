@@ -28,8 +28,10 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: cd server
+
       - uses: actions/checkout@v4
+      - name: Change working directory to project root
+        run: cd server
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
