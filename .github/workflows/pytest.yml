@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, development, temp_dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, development ]
 
 jobs:
 
@@ -33,7 +33,6 @@ jobs:
       DATABASE_PASSWORD: mindfulguard_password
       
     steps:
-
       - uses: actions/checkout@v4
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -53,5 +52,4 @@ jobs:
           pip install -e .
       - name: Running Tests
         run: |
-          ls -las
           python -m pytest -rA
