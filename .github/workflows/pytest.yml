@@ -52,4 +52,4 @@ jobs:
       - name: Running Tests
         run: |
           ls -las
-          pytest -rA
+          python -m pytest -rA
