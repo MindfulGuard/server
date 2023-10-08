@@ -38,10 +38,11 @@ jobs:
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
       - name: Setup Environment Variables
+        env:
+          DATABASE_PORT: "5432"
+          DATABASE_USER: "mindfulguard"
+          DATABASE_PASSWORD: "mindfulguard_password"
         run: |
-          DATABASE_PORT='5432'
-          DATABASE_USER='mindfulguard'
-          DATABASE_PASSWORD='mindfulguard_password'
           echo $DATABASE_PORT
           echo $DATABASE_USER
           echo $DATABASE_PASSWORD
