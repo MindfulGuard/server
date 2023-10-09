@@ -33,4 +33,4 @@ async def test_authentication():
 
     assert __sign_up_OK == OK
     assert __sign_up_OK == OK
-    assert __sign_up_INTERNAL_SERVER_ERROR == OK
+    assert __sign_up_INTERNAL_SERVER_ERROR == INTERNAL_SERVER_ERROR
