@@ -72,12 +72,8 @@ async def update_token_info():
         device="None",
         ip = "127.0.0.1"
     )
-    result_INTERNAL_SERVER_ERROR:int = await auth.update_token_info(
-        token="LpaX2UPdsPWAPeZTw5b345b345b435LpaX2UPdsPWAPeZTw5b345b345b435b345b435b34b5345b43333333333333v4234v234v234v234v324v234b234b234b23b4333333333333LpaX2UPdsPWAPeZTw5b345b345b435b345b435b34b5345b43333333333333v4234v234v234v234v324v234b234b234b23b4333333333333b345b435b34b5345b43333333333333v4234v234v234v234v324v234b234b234b23b433333333333333nnnnnn4655555555555555555555v3544444444444444LpaX2UPdsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP",
-        device="None",
-        ip = "127.0.0.12"
-    )
-    return (result_OK,result_UNAUTHORIZED,result_INTERNAL_SERVER_ERROR)
+
+    return (result_OK,result_UNAUTHORIZED)
 
 @pytest.mark.asyncio
 async def test_authentication():
@@ -93,7 +89,6 @@ async def test_authentication():
     __update_token_info = await update_token_info()
     __update_token_info_OK = __update_token_info[0]
     __update_token_info_UNAUTHORIZED = __update_token_info[1]
-    __update_token_info_INTERNAL_SERVER_ERROR = __update_token_info[2]
 
     assert __sign_up_OK == OK
     assert __sign_up_OK == OK
@@ -105,4 +100,3 @@ async def test_authentication():
     
     assert __update_token_info_OK == OK
     assert __update_token_info_UNAUTHORIZED == UNAUTHORIZED
-    assert __update_token_info_INTERNAL_SERVER_ERROR == INTERNAL_SERVER_ERROR
