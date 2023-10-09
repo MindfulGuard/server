@@ -134,7 +134,7 @@ async def test_authentication():
     assert __update_token_info_OK == OK
     assert __update_token_info_UNAUTHORIZED == UNAUTHORIZED
 
-    assert __get_secret_code_OK[1] == OK
+    assert __get_secret_code_OK[0] == OK
     assert __get_secret_code_UNAUTHORIZED[1] == UNAUTHORIZED
 
     backup_codes:list[int] = __get_secret_code_OK[0][0]['backup_codes']
