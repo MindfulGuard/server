@@ -36,7 +36,7 @@ jobs:
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
-          sudp apt-get install --yes postgresql-client
+          sudo apt-get install --yes postgresql-client
       - name: Setup Database
         run: psql -f docker/dumps/pgsql.sql mindfulguard_production
       - uses: actions/checkout@v4
