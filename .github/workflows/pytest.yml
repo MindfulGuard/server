@@ -39,7 +39,7 @@ jobs:
           sudo apt-get install --yes postgresql-client
       - name: Setup Database
         run: |
-          ls -las
+          pwd
           psql -h localhost -d mindfulguard_production -U mindfulguard -f docker/dumps/pgsql.sql
         env:
           PGPASSWORD: mindfulguard_password
