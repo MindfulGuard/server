@@ -120,7 +120,6 @@ async def test_authentication():
 
     __get_secret_code = await get_secret_code()
     __get_secret_code_OK = __get_secret_code[0]
-    backup_codes:list[int] = __get_secret_code_OK[0][0]['backup_codes']
     __get_secret_code_UNAUTHORIZED = __get_secret_code[1]
 
     
@@ -137,6 +136,8 @@ async def test_authentication():
 
     assert __get_secret_code_OK[1] == OK
     assert __get_secret_code_UNAUTHORIZED[1] == UNAUTHORIZED
+
+    backup_codes:list[int] = __get_secret_code_OK[0][0]['backup_codes']
 
     assert 53464 in backup_codes 
     assert 434768 not in backup_codes
