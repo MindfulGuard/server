@@ -37,13 +37,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes postgresql-client
+      - uses: actions/checkout@v4
       - name: Setup Database
         run: |
           pwd
           psql -h localhost -d mindfulguard_production -U mindfulguard -f docker/dumps/pgsql.sql
         env:
           PGPASSWORD: mindfulguard_password
-      - uses: actions/checkout@v4
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
