@@ -33,6 +33,8 @@ jobs:
       DATABASE_PASSWORD: mindfulguard_password
       
     steps:
+      - name: Setup Database
+        run: psql -f docker/dumps/pgsql.sql mindfulguard_production
       - uses: actions/checkout@v4
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
