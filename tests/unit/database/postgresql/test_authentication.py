@@ -13,7 +13,7 @@ async def sign_up():
         secret_string="LpaX2UPdsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP",
         reg_ip="127.0.0.1",
         secret_code=totp.generate_secret_code(),
-        backup_codes=totp.generate_backup_codes(6)
+        backup_codes=[53464,75686,423436,765767,98788,234513]
     )
 
     result_INTERNAL_SERVER_ERROR:int = await auth.sign_up(
@@ -75,6 +75,34 @@ async def update_token_info():
 
     return (result_OK,result_UNAUTHORIZED)
 
+async def get_secret_code():
+    auth = Authentication()
+    result_OK = await auth.get_secret_code(
+        login = "8bm&bng34_-54b",
+        secret_string= "LpaX2UPddsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP"
+    )
+    result_UNAUTHORIZED = await auth.get_secret_code(
+        login = "8b5m&bng34_-54b",
+        secret_string= "jpag2UPddsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP"
+    )
+
+    return (result_OK,result_UNAUTHORIZED)
+
+async def update_reserve_codes(new_backup_codes:list[int]):
+    auth = Authentication()
+    result_OK:int = await auth.update_reserve_codes(
+        login="8bm&bng34_-54b",
+        secret_string="LpaX2UPddsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP",
+        reserve_codes=new_backup_codes
+    )
+
+    result_NOT_FOUND:int = await auth.update_reserve_codes(
+        login="fbh&bngh4_-5gfdb",
+        secret_string="jpaX2UPddsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP",
+        reserve_codes=new_backup_codes
+    )
+    return (result_OK,result_NOT_FOUND)
+
 @pytest.mark.asyncio
 async def test_authentication():
     __sign_up = await sign_up()
@@ -90,6 +118,12 @@ async def test_authentication():
     __update_token_info_OK = __update_token_info[0]
     __update_token_info_UNAUTHORIZED = __update_token_info[1]
 
+    __get_secret_code = await get_secret_code()
+    __get_secret_code_OK = __get_secret_code[0]
+    backup_codes:list[int] = __get_secret_code_OK[0][0]['backup_codes']
+    __get_secret_code_UNAUTHORIZED = __get_secret_code[1]
+
+    
     assert __sign_up_OK == OK
     assert __sign_up_OK == OK
     assert __sign_up_INTERNAL_SERVER_ERROR == INTERNAL_SERVER_ERROR
@@ -100,3 +134,19 @@ async def test_authentication():
     
     assert __update_token_info_OK == OK
     assert __update_token_info_UNAUTHORIZED == UNAUTHORIZED
+
+    assert __get_secret_code_OK[1] == OK
+    assert __get_secret_code_UNAUTHORIZED[1] == UNAUTHORIZED
+
+    assert 53464 in backup_codes 
+    assert 434768 not in backup_codes
+    
+    if 53464 in backup_codes:
+        backup_codes.remove(53464)
+
+    __update_reserve_codes = await update_reserve_codes(backup_codes)
+    __update_reserve_codes_OK = __update_reserve_codes[0]
+    __update_reserve_codes_NOT_FOUND = __update_reserve_codes[1]
+
+    assert __update_reserve_codes_OK == OK
+    assert __update_reserve_codes_NOT_FOUND == NOT_FOUND
