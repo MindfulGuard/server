@@ -78,8 +78,8 @@ async def update_token_info():
 async def get_secret_code():
     auth = Authentication()
     result_OK = await auth.get_secret_code(
-        login = "8bm&bng34_-54b",
-        secret_string= "LpaX2UPddsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP"
+        login = "8bm&bn34_-54b",
+        secret_string= "LpaX2UPdsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP"
     )
     result_UNAUTHORIZED = await auth.get_secret_code(
         login = "8b5m&bng34_-54b",
@@ -91,8 +91,8 @@ async def get_secret_code():
 async def update_reserve_codes(new_backup_codes:list[int]):
     auth = Authentication()
     result_OK:int = await auth.update_reserve_codes(
-        login="8bm&bng34_-54b",
-        secret_string="LpaX2UPddsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP",
+        login="8bm&bn34_-54b",
+        secret_string="LpaX2UPdsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP",
         reserve_codes=new_backup_codes
     )
 
