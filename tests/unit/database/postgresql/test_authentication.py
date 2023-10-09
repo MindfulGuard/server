@@ -32,7 +32,7 @@ async def sign_in():
     result_OK = await auth.sign_in(
         login="8bm&bn34_-54b",
         secret_string="LpaX2UPdsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP",
-        token=security.generate_512_bit_token_string(),
+        token="cknBVpiJ1VFSUTBhhfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgRMLSWb5piJJZBYJm",
         device="None",
         ip="127.0.0.1",
         expiration=60,
@@ -60,7 +60,25 @@ async def sign_in():
     )
     return (result_OK,result_NOT_FOUND,result_INTERNAL_SERVER_ERROR)
 
-@pytest.mark.authentication
+async def update_token_info():
+    auth = Authentication()
+    result_OK:int = await auth.update_token_info(
+        token="cknBVpiJ1VFSUTBhhfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgRMLSWb5piJJZBYJm",
+        device="None",
+        ip = "127.0.0.1"
+    )
+    result_UNAUTHORIZED:int = await auth.update_token_info(
+        token="cknBVpiJ1VFSUTBfdfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgRMLSWb5piJJZBYJm",
+        device="None",
+        ip = "127.0.0.1"
+    )
+    result_INTERNAL_SERVER_ERROR:int = await auth.update_token_info(
+        token="LpaX2UPdsPWAPeZTw5b345b345b435b345b435b34b5345b43333333333333v4234v234v234v234v324v234b234b234b23b433333333333333nnnnnn4655555555555555555555v3544444444444444LpaX2UPdsPWAPeZTwTt22Wog2yTQ984xBgHNylbnNRrhw2A7eDrhmc1aJrKi74rP",
+        device="None",
+        ip = "127.0.0.1"
+    )
+    return (result_OK,result_UNAUTHORIZED,result_INTERNAL_SERVER_ERROR)
+
 @pytest.mark.asyncio
 async def test_authentication():
     __sign_up = await sign_up()
@@ -72,6 +90,11 @@ async def test_authentication():
     __sign_in_NOT_FOUND = __sign_in[1]
     __sign_in_INTERNAL_SERVER_ERROR = __sign_in[2]
 
+    __update_token_info = await update_token_info()
+    __update_token_info_OK = __update_token_info[0]
+    __update_token_info_UNAUTHORIZED = __update_token_info[1]
+    __update_token_info_INTERNAL_SERVER_ERROR = __update_token_info[2]
+
     assert __sign_up_OK == OK
     assert __sign_up_OK == OK
     assert __sign_up_INTERNAL_SERVER_ERROR == INTERNAL_SERVER_ERROR
@@ -79,4 +102,7 @@ async def test_authentication():
     assert __sign_in_OK == OK
     assert __sign_in_NOT_FOUND == NOT_FOUND
     assert __sign_in_INTERNAL_SERVER_ERROR == INTERNAL_SERVER_ERROR
-
+    
+    assert __update_token_info_OK == OK
+    assert __update_token_info_UNAUTHORIZED == UNAUTHORIZED
+    assert __update_token_info_INTERNAL_SERVER_ERROR == INTERNAL_SERVER_ERROR
