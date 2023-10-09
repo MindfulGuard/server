@@ -38,7 +38,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes postgresql-client
       - name: Setup Database
-        run: psql -h localhost -d mindfulguard_production -U mindfulguard -W -w mindfulguard_password -f docker/dumps/pgsql.sql mindfulguard_production
+        run: psql -h localhost -d mindfulguard_production -U mindfulguard -W mindfulguard_password -f docker/dumps/pgsql.sql mindfulguard_production
       - uses: actions/checkout@v4
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
