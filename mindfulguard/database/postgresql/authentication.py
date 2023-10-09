@@ -90,6 +90,8 @@ class Authentication:
                 return OK
             else:
                 return NOT_FOUND
+        except asyncpg.exceptions.DataError:
+            return INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return INTERNAL_SERVER_ERROR
         finally:
