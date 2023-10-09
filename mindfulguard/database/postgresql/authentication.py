@@ -17,6 +17,8 @@ class Authentication:
                 return NOT_FOUND
             else:
                 return INTERNAL_SERVER_ERROR
+        except asyncpg.exceptions.DataError:
+            return INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.UniqueViolationError as e:
