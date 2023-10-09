@@ -52,4 +52,4 @@ jobs:
           pip install -e .
       - name: Running Tests
         run: |
-          python -m pytest -rA
+          python -m pytest -q --all
