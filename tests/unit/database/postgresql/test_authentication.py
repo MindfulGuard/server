@@ -127,7 +127,7 @@ async def sign_out(token_id:str):
 
     result_UNAUTHORIZED = await auth.sign_out(
         token="qqnBVpiJ1VFSUTBhhfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgrMLScb5niJJhBYfm",
-        token_id = ""
+        token_id = "8be9ff5d-20dc-4479-b215-b6ebf316ecdf"
     )
 
     return (result_OK,result_NOT_FOUND,result_UNAUTHORIZED)
