@@ -93,7 +93,7 @@ async def create_item(safe_id:str):
         token="T3h1IcrTxOz5taUZYFFcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPmq",
         safe_id=safe_id,
         title = "Title1",
-        item= {"example1":"example"},
+        item= '{"example1":"example"}',
         notes = "My first item",
         tags= ["tag1","tag2"],
         category="LOGIN"
@@ -102,7 +102,7 @@ async def create_item(safe_id:str):
         token="g3s1IcrTxOz5tafZYFhcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPgg",
         safe_id=safe_id,
         title = "Title1",
-        item= {"example1":"example"},
+        item= '{"example1":"example"}',
         notes = "My first item",
         tags= ["tag1","tag2"],
         category="LOGIN"
