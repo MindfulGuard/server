@@ -153,7 +153,7 @@ async def test_authentication():
     
     __get_tokens = await get_tokens()
     __get_tokens_OK = __get_tokens[0]
-    __get_tokens_UNAUTHORIZED = __get_tokens[0]
+    __get_tokens_UNAUTHORIZED = __get_tokens[1]
 
     __sign_out = await sign_out(
         token_id=__get_tokens_OK[0][0]['id']
