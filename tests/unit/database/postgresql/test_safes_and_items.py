@@ -138,7 +138,7 @@ async def test_safe_item():
     __get_safes = await get_safes()
     __get_safes_OK = __get_safes[0]
     __get_safes_UNAUTHORIZED = __get_safes[1]
-    get_safe_id = __get_safes_OK[0][0][0]['id']
+    get_safe_id = __get_safes_OK[0][0]['id']
 
     __create_item = await create_item(get_safe_id)
     __create_item_OK = __create_item[0]

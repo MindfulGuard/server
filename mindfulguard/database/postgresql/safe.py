@@ -55,7 +55,7 @@ class Safe:
                     'count_items':record['r_count']
                 }
                 value_list.append(value_dict)
-
+            print(value_list)
             if not value_list:
                 return ([], OK)
 
