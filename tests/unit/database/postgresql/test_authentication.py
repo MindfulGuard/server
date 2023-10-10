@@ -194,6 +194,5 @@ async def test_authentication():
     __sign_out_OK:int = __sign_out[0]
 
     assert __sign_out_OK == OK
-    assert __sign_out_OK == UNAUTHORIZED
 
     assert __get_tokens_OK[1] == UNAUTHORIZED
