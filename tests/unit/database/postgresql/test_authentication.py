@@ -103,6 +103,35 @@ async def update_reserve_codes(new_backup_codes:list[int]):
     )
     return (result_OK,result_NOT_FOUND)
 
+async def get_tokens():
+    auth = Authentication()
+    result_OK = await auth.get_tokens(
+        token="cknBVpiJ1VFSUTBhhfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgRMLSWb5piJJZBYJm"
+    )
+    result_UNAUTHORIZED = await auth.get_tokens(
+        token="cknBVpiJ1VFjfTBhhfEsnSq8ehAckqfQKImprXQQ2KhEhMbgRMLSWb5piJJZBYJm"
+    )
+    return (result_OK,result_UNAUTHORIZED)
+
+async def sign_out(token_id:str):
+    auth = Authentication()
+    result_OK = await auth.sign_out(
+        token="cknBVpiJ1VFSUTBhhfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgRMLSWb5piJJZBYJm",
+        token_id = token_id
+    )
+
+    result_NOT_FOUND = await auth.sign_out(
+        token="qqnBVpiJ1VFSUTBhhfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgrMLScb5niJJhBYfm",
+        token_id = "8be9ff5d-20dc-4479-b215-b6ebf316ecdf"
+    )
+
+    result_UNAUTHORIZED = await auth.sign_out(
+        token="qqnBVpiJ1VFSUTBhhfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgrMLScb5niJJhBYfm",
+        token_id = ""
+    )
+
+    return (result_OK,result_NOT_FOUND,result_UNAUTHORIZED)
+
 @pytest.mark.asyncio
 async def test_authentication():
     __sign_up = await sign_up()
@@ -121,6 +150,17 @@ async def test_authentication():
     __get_secret_code = await get_secret_code()
     __get_secret_code_OK = __get_secret_code[0]
     __get_secret_code_UNAUTHORIZED = __get_secret_code[1]
+    
+    __get_tokens = await get_tokens()
+    __get_tokens_OK = __get_tokens[0]
+    __get_tokens_UNAUTHORIZED = __get_tokens[0]
+
+    __sign_out = await sign_out(
+        token_id=__get_tokens_OK[0][0]['id']
+    )
+    __sign_out_OK:int = __sign_out[0]
+    __sign_out_NOT_FOUND:int  = __sign_out[1]
+    __sign_out_UNAUTHORIZED:int  = __sign_out[2]
 
     
     assert __sign_up_OK == OK
@@ -151,3 +191,10 @@ async def test_authentication():
 
     assert __update_reserve_codes_OK == OK
     assert __update_reserve_codes_NOT_FOUND == NOT_FOUND
+
+    assert __get_tokens_OK[1] == OK
+    assert __get_tokens_UNAUTHORIZED[1] == UNAUTHORIZED
+
+    assert __sign_out_NOT_FOUND == NOT_FOUND
+    assert __sign_out_OK == OK
+    assert __sign_out_UNAUTHORIZED == UNAUTHORIZED
