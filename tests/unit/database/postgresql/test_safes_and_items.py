@@ -246,8 +246,8 @@ async def test_safe_item():
     assert __create_item_OK == OK
     assert __create_item_UNAUTHORIZED == UNAUTHORIZED
 
-    assert __get_item_OK[3] == OK
-    assert __get_item_UNAUTHORIZED[3] == UNAUTHORIZED
+    assert __get_item_OK == OK
+    assert __get_item_UNAUTHORIZED == UNAUTHORIZED
 
     #assert __update_item_OK == OK
     #assert __update_item_UNAUTHORIZED == UNAUTHORIZED
