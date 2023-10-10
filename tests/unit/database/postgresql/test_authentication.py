@@ -121,16 +121,11 @@ async def sign_out(token_id:str):
     )
 
     result_NOT_FOUND = await auth.sign_out(
-        token="qqnBVpiJ1VFSUTBhhfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgrMLScb5niJJhBYfm",
+        token="cknBVpiJ1VFSUTBhhfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgRMLSWb5piJJZBYJm",
         token_id = "8be9ff5d-20dc-4479-b215-b6ebf316ecdf"
     )
 
-    result_UNAUTHORIZED = await auth.sign_out(
-        token="qqnBVpiJ1VFSUTBhhfEsQSq8ehAZkqfQKImprXQQ2KhEhMbgrMLScb5niJJhBYfm",
-        token_id = "8be9ff5d-20dc-4479-b215-b6ebf316ecdf"
-    )
-
-    return (result_OK,result_NOT_FOUND,result_UNAUTHORIZED)
+    return (result_OK,result_NOT_FOUND)
 
 @pytest.mark.asyncio
 async def test_authentication():
@@ -160,7 +155,6 @@ async def test_authentication():
     )
     __sign_out_OK:int = __sign_out[0]
     __sign_out_NOT_FOUND:int  = __sign_out[1]
-    __sign_out_UNAUTHORIZED:int  = __sign_out[2]
 
     
     assert __sign_up_OK == OK
@@ -197,4 +191,6 @@ async def test_authentication():
 
     assert __sign_out_NOT_FOUND == NOT_FOUND
     assert __sign_out_OK == OK
-    assert __sign_out_UNAUTHORIZED == UNAUTHORIZED
+    assert __sign_out_OK == UNAUTHORIZED
+
+    assert __get_tokens_OK[1] == UNAUTHORIZED
