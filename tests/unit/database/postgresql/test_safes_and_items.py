@@ -221,8 +221,8 @@ async def test_safe_item():
     __create_item_UNAUTHORIZED = __create_item[1]
 
     __get_item = await get_item()
-    __get_item_OK = __get_item[0][3]
-    __get_item_UNAUTHORIZED = __get_item[1][3]
+    __get_item_OK = __get_item[0]
+    __get_item_UNAUTHORIZED = __get_item[1]
     #get_item_id = __get_item_OK[0][0]['items'][0]['id']
 
     #__update_item = await update_item(get_safe_id,get_item_id)
@@ -246,8 +246,8 @@ async def test_safe_item():
     assert __create_item_OK == OK
     assert __create_item_UNAUTHORIZED == UNAUTHORIZED
 
-    assert __get_item_OK == OK
-    assert __get_item_UNAUTHORIZED == UNAUTHORIZED
+    assert __get_item_OK[3] == OK
+    assert __get_item_UNAUTHORIZED[3] == UNAUTHORIZED
 
     #assert __update_item_OK == OK
     #assert __update_item_UNAUTHORIZED == UNAUTHORIZED

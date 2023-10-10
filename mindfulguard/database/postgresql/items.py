@@ -154,6 +154,7 @@ class Item:
             
             if not result_dict:
                 return ([],[],[],OK)
+            print(json.loads(result_json))
             return (json.loads(result_json), tags_list,favorites_list,OK)
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return ([],[],[],INTERNAL_SERVER_ERROR)
