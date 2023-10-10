@@ -3,6 +3,7 @@ from mindfulguard.core import security
 from mindfulguard.core.response_status_codes import *
 from mindfulguard.core.security.totp import Totp
 from mindfulguard.database.postgresql.authentication import Authentication
+from mindfulguard.database.postgresql.items import Item
 from mindfulguard.database.postgresql.safe import Safe
 
 
@@ -75,6 +76,39 @@ async def create_safe():
     )
     return (result_OK,result_UNAUTHORIZED)
 
+async def get_safes():
+    safe = Safe()
+    result_OK = await safe.get(
+        token="T3h1IcrTxOz5taUZYFFcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPmq",
+    )
+    result_UNAUTHORIZED = await safe.get(
+        token="g3s1IcrTxOz5tafZYFhcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPgg",
+    )
+    return (result_OK,result_UNAUTHORIZED)
+
+async def create_item(safe_id:str):
+    item = Item()
+    result_OK = await item.create(
+        token="T3h1IcrTxOz5taUZYFFcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPmq",
+        safe_id=safe_id,
+        title = "Title1",
+        item= {"example1":"example"},
+        notes = "My first item",
+        tags= ["tag1","tag2"],
+        category="LOGIN"
+    )
+    result_UNAUTHORIZED = await item.create(
+        token="g3s1IcrTxOz5tafZYFhcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPgg",
+        safe_id=safe_id,
+        title = "Title1",
+        item= {"example1":"example"},
+        notes = "My first item",
+        tags= ["tag1","tag2"],
+        category="LOGIN"
+    )
+
+    return (result_OK,result_UNAUTHORIZED)
+
 @pytest.mark.asyncio
 async def test_authentication():
     __sign_up = await sign_up()
@@ -100,5 +134,20 @@ async def test_safe_item():
     __create_safe_OK = __create_safe[0]
     __create_safe_UNAUTHORIZED = __create_safe[1]
 
+    __get_safes = await get_safes()
+    __get_safes_OK = __get_safes[0]
+    __get_safes_UNAUTHORIZED = __get_safes[1]
+    get_safe_id = __get_safes_OK[0][0]['id']
+
+    __create_item = await create_item(get_safe_id)
+    __create_item_OK = __create_item[0]
+    __create_item_UNAUTHORIZED = __create_item[1]
+
     assert __create_safe_OK == OK
-    assert __create_safe_UNAUTHORIZED == UNAUTHORIZED 
+    assert __create_safe_UNAUTHORIZED == UNAUTHORIZED
+
+    assert __get_safes_OK[1] == OK
+    assert __get_safes_UNAUTHORIZED[1] == UNAUTHORIZED
+
+    assert __create_item_OK == OK
+    assert __create_item_UNAUTHORIZED == UNAUTHORIZED
