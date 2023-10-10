@@ -146,15 +146,6 @@ async def test_authentication():
     __get_secret_code_OK = __get_secret_code[0]
     __get_secret_code_UNAUTHORIZED = __get_secret_code[1]
     
-    __get_tokens = await get_tokens()
-    __get_tokens_OK = __get_tokens[0]
-    __get_tokens_UNAUTHORIZED = __get_tokens[1]
-
-    __sign_out = await sign_out(
-        token_id=__get_tokens_OK[0][0]['id']
-    )
-    __sign_out_OK:int = __sign_out[0]
-    __sign_out_NOT_FOUND:int  = __sign_out[1]
 
     
     assert __sign_up_OK == OK
@@ -185,6 +176,16 @@ async def test_authentication():
 
     assert __update_reserve_codes_OK == OK
     assert __update_reserve_codes_NOT_FOUND == NOT_FOUND
+
+    __get_tokens = await get_tokens()
+    __get_tokens_OK = __get_tokens[0]
+    __get_tokens_UNAUTHORIZED = __get_tokens[1]
+
+    __sign_out = await sign_out(
+        token_id=__get_tokens_OK[0][0]['id']
+    )
+    __sign_out_OK:int = __sign_out[0]
+    __sign_out_NOT_FOUND:int  = __sign_out[1]
 
     assert __get_tokens_OK[1] == OK
     assert __get_tokens_UNAUTHORIZED[1] == UNAUTHORIZED
