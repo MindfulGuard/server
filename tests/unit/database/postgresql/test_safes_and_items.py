@@ -86,6 +86,28 @@ async def get_safes():
     )
     return (result_OK,result_UNAUTHORIZED)
 
+async def update_safe(safe_id:str):
+    safe = Safe()
+    result_OK = await safe.update(
+        token="T3h1IcrTxOz5taUZYFFcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPmq",
+        id=safe_id,
+        name="Updated Safe 1",
+        description="Hello updated Safe 1"
+    )
+    result_UNAUTHORIZED = await safe.update(
+        token="g3s1IcrTxOz5tafZYFhcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPgg",
+        id="1668cdc1-ce94-4599-81db-67890752a172",
+        name="Safe 1",
+        description="Hello Safe 1"
+    )
+    result_INTERNAL_SERVER_ERROR = await safe.update(
+        token="T3h1IcrTxOz5taUZYFFcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPmq",
+        id="1668cdc1-ce94-4599-81db-67890752a172",
+        name="Safe 1",
+        description="Hello Safe 1"
+    )
+    return (result_OK,result_UNAUTHORIZED,result_INTERNAL_SERVER_ERROR)
+
 async def create_item(safe_id:str):
     print(safe_id)
     item = Item()
@@ -109,6 +131,55 @@ async def create_item(safe_id:str):
     )
 
     return (result_OK,result_UNAUTHORIZED)
+
+async def get_item():
+    item = Item()
+    result_OK = await item.get(
+        token="T3h1IcrTxOz5taUZYFFcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPmq",
+    )
+    result_UNAUTHORIZED = await item.get(
+        token="g3s1IcrTxOz5tafZYFhcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPgg",
+    )
+
+    return (result_OK,result_UNAUTHORIZED)    
+
+async def update_item(safe_id:str,item_id:str):
+    item = Item()
+    result_OK = await item.update(
+        token="T3h1IcrTxOz5taUZYFFcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPmq",
+        safe_id=safe_id,
+        item_id=item_id,
+        title = "Updated Title1",
+        item= '{"example1_updated":"example_updated"}',
+        notes = "My updated item",
+        tags= ["tag1","tag2","tag3"],
+    )
+    result_UNAUTHORIZED = await item.update(
+        token="g3s1IcrTxOz5tafZYFhcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPgg",
+        safe_id=safe_id,
+        item_id=item_id,
+        title = "Title1",
+        item= '{"example1":"example"}',
+        notes = "My first item",
+        tags= ["tag1","tag2"],
+    )
+
+    return (result_OK,result_UNAUTHORIZED) 
+
+async def set_favorite_item(safe_id:str,item_id:str):
+    item = Item()
+    result_OK = await item.set_favorite(
+        token="T3h1IcrTxOz5taUZYFFcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPmq",
+        safe_id=safe_id,
+        item_id=item_id,
+    )
+    result_UNAUTHORIZED = await item.set_favorite(
+        token="g3s1IcrTxOz5tafZYFhcODSA71b34EeFf2QZ9IEU3t5feVKpvFfZm00Xp5E4hPgg",
+        safe_id=safe_id,
+        item_id=item_id,
+    )
+
+    return (result_OK,result_UNAUTHORIZED) 
 
 @pytest.mark.asyncio
 async def test_authentication():
@@ -140,9 +211,27 @@ async def test_safe_item():
     __get_safes_UNAUTHORIZED = __get_safes[1]
     get_safe_id = __get_safes_OK[0][0]['id']
 
+    __update_safe = await update_safe(get_safe_id)
+    __update_safe_OK = __update_safe[0]
+    __update_safe_UNAUTHORIZED = __update_safe[1]
+    __update_safe_INTERNAL_SERVER_ERROR = __update_safe[2]
+
     __create_item = await create_item(get_safe_id)
     __create_item_OK = __create_item[0]
     __create_item_UNAUTHORIZED = __create_item[1]
+
+    __get_item = await get_item()
+    __get_item_OK = __get_item[0]
+    __get_item_UNAUTHORIZED = __get_item[1]
+    get_item_id = __get_item_OK[0][0]['id']
+
+    __update_item = await update_item(get_safe_id,get_item_id)
+    __update_item_OK =  __update_item[0]
+    __update_item_UNAUTHORIZED = __update_item[1]
+
+    __set_favorite_item = await set_favorite_item(get_safe_id,get_item_id)
+    __set_favorite_item_OK = __set_favorite_item[0]
+    __set_favorite_item_UNAUTHORIZED = __set_favorite_item[1]
 
     assert __create_safe_OK == OK
     assert __create_safe_UNAUTHORIZED == UNAUTHORIZED
@@ -150,5 +239,18 @@ async def test_safe_item():
     assert __get_safes_OK[1] == OK
     assert __get_safes_UNAUTHORIZED[1] == UNAUTHORIZED
 
+    assert __update_safe_OK == OK
+    assert __update_safe_UNAUTHORIZED == UNAUTHORIZED
+    assert __update_safe_INTERNAL_SERVER_ERROR == INTERNAL_SERVER_ERROR
+
     assert __create_item_OK == OK
     assert __create_item_UNAUTHORIZED == UNAUTHORIZED
+
+    assert __get_item_OK[3] == OK
+    assert __get_item_UNAUTHORIZED[3] == UNAUTHORIZED
+
+    assert __update_item_OK == OK
+    assert __update_item_UNAUTHORIZED == UNAUTHORIZED
+
+    assert __set_favorite_item_OK == OK
+    assert __set_favorite_item_UNAUTHORIZED == UNAUTHORIZED 
