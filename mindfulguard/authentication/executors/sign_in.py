@@ -1,4 +1,3 @@
-from mindfulguard.core.configuration import *
 from mindfulguard.core.response_status_codes import *
 import mindfulguard.core.security as security
 import mindfulguard.core.security.totp as secure_totp

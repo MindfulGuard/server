@@ -5,17 +5,14 @@ import uuid
 
 from fastapi import Request
 
-import mindfulguard.core.configuration as configuration
-
 
 class Validation:
     def validate_login(self,login:str)->bool:
         """
         Can only be present: hyphen, underscore, Latin characters only
         """
-        config = configuration.ServerConfiguration()
-        length = configuration.Authentication(config).public().lengths().get_login_length()
-        return bool(re.compile(r'^[A-Za-z0-9_-]{2,'+str(length)+'}$').match(login))
+
+        return bool(re.compile(r'^[A-Za-z0-9_-]{2,50}$').match(login))
         
     def validate_secret_string(self,secret_string:str)->bool:
         if len(secret_string) == 64:

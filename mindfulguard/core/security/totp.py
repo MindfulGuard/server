@@ -1,6 +1,7 @@
 import random
 import pyotp
 
+NUMBER_OF_BACKUP_CODES = 6
 
 class Totp:
     def __init__(self,secret_code:str):

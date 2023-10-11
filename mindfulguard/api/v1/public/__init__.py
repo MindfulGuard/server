@@ -8,4 +8,4 @@ router = APIRouter()
 @router.get("/configuration")
 async def get_config_auth(response:Response):
     config = Configuration()
-    return config.get(response)
+    return await config.get(response)

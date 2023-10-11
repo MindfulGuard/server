@@ -1,8 +1,6 @@
 import os
 import asyncpg
 
-from mindfulguard.core.configuration import *
-
 class Config:
     def get_host(self)->str:
         return os.environ.get('DATABASE_HOST', 'localhost')

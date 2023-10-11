@@ -1,17 +1,17 @@
 from pydantic import BaseModel, validator, constr
+from mindfulguard.core.response_status_codes import INTERNAL_SERVER_ERROR
+from mindfulguard.database.postgresql.settings import Settings
 
-from mindfulguard.items.models import InitConf
+import mindfulguard.items.models as const
 
 """
 Attention "pylance" may swear with the error "Call expression not allowed in type expression", but the code remains working
 """
 
-init = InitConf()
-
 class Fields(BaseModel):
     type: constr(min_length=1, max_length=20)
-    label:constr(min_length=0, max_length=init.get().lengths().get_label_length())
-    value:constr(min_length=0, max_length=init.get().lengths().get_value_length())
+    label:constr(min_length=0, max_length=const.LABEL_LENGTH)
+    value:constr(min_length=0, max_length=const.VALUE_LENGTH)
 
     @validator("type")
     def type_in_types(cls, value):
@@ -22,7 +22,7 @@ class Fields(BaseModel):
 
 
 class Sections(BaseModel):
-    section:constr(min_length=0, max_length=init.get().lengths().get_section_length())
+    section:constr(min_length=0, max_length=const.SECTION_LENGTH)
     fields:list[Fields]
 
     @validator("fields")
@@ -33,16 +33,16 @@ class Sections(BaseModel):
         return value
 
 class Item(BaseModel):
-    title:constr(min_length=0, max_length=init.get().lengths().get_title_length())
+    title:constr(min_length=0, max_length=const.TITLE_LENGTH)
     category:constr(min_length=0, max_length=20)
-    notes:constr(min_length=0, max_length=init.get().lengths().get_notes_length())
+    notes:constr(min_length=0, max_length=const.NOTES_LENGTH)
     tags:list[str]
     sections:list[Sections]
 
     @validator("sections")
     def validate_sections(cls, value):
         init_count = 0
-        sections = init.get().lengths().get_sections_array_length()
+        sections = const.SECTIONS_ARRAY_LENGTH
         if len(value) > sections:
             raise ValueError(f"'{value}' exceeded the maximum number of sections")
         
@@ -54,16 +54,19 @@ class Item(BaseModel):
         return value
     
     @validator("category")
-    def category_in_categories(cls, value):
-        categories = init.get().categories().get_array()
+    async def category_in_categories(cls, value):
+        category_array =  await Settings().get()
+        if category_array[1] == INTERNAL_SERVER_ERROR:
+            raise SystemError(f"Server error")
+        categories = category_array[0]['item_categories']
         if value not in categories:
             raise ValueError(f"'{value}' is not an acceptable category")
         return value
 
     @validator("tags")
     def validate_tags(cls, value):
-        tags_length = init.get().lengths().get_tags_length()
-        max_tags_length = init.get().lengths().get_tags_array_length()
+        tags_length = const.TAGS_LENGTH
+        max_tags_length = const.TAGS_ARRAY_LENGTH
 
         if len(value) > max_tags_length:
             raise ValueError(f"The number of tags exceeds the maximum of {max_tags_length} allowed tags")

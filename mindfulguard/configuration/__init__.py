@@ -11,10 +11,10 @@ class Configuration:
         self.__lang = Language()
         self.__json_responses = Responses(self.__lang)
 
-    def get(self,response:Response):
+    async def get(self,response:Response):
         config = Get().execute()
-        authentication = config.authentication()
-        item =config.item()
+        authentication = await config.authentication()
+        item = await config.item()
         status_code:int = authentication[1]
 
         response.status_code = status_code

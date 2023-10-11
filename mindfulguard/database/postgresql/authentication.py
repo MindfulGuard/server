@@ -15,6 +15,8 @@ class Authentication:
                 return CONFLICT
             elif value == -2 or value == -3 or value == -4:
                 return NOT_FOUND
+            elif value == -5:
+                return SERVICE_UNAVAILABLE
             else:
                 return INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.DataError:

@@ -1,7 +1,9 @@
-import mindfulguard.core.configuration as configuration
-
-class InitConf:
-    def __init__(self):
-        self.__config = configuration.ServerConfiguration()
-    def get(self):
-        return configuration.Item(self.__config)
+TITLE_LENGTH = 1024
+NOTES_LENGTH = 1024
+TAGS_ARRAY_LENGTH = 11
+TAGS_LENGTH = 256
+SECTIONS_ARRAY_LENGTH = 64
+SECTION_LENGTH = 256
+FIELDS_ARRAY_LENGTH = 64
+LABEL_LENGTH = 64
+VALUE_LENGTH = 1024

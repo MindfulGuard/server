@@ -453,9 +453,16 @@ declare
     user_id_insert UUID;
     code_id_insert UUID;
     current_timeu BIGINT;
+    is_registration BOOLEAN;
 BEGIN
 
 current_timeu := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+SELECT st_value::BOOLEAN INTO is_registration FROM st_settings WHERE st_id = '498e9042-1492-44d8-8697-76b9a73967ec';
+
+IF is_registration IS FALSE OR is_registration IS NULL THEN
+    RETURN -5;
+END IF;
 
 SELECT u_id INTO user_id FROM u_users WHERE u_login = $1 AND u_secret_string = $2 AND u_confirm = FALSE;
 IF user_id IS NULL THEN
@@ -821,6 +828,19 @@ CREATE TABLE public.s_safes (
 ALTER TABLE public.s_safes OWNER TO mindfulguard;
 
 --
+-- Name: st_settings; Type: TABLE; Schema: public; Owner: mindfulguard
+--
+
+CREATE TABLE public.st_settings (
+    st_id uuid NOT NULL,
+    st_key character varying NOT NULL,
+    st_value character varying NOT NULL
+);
+
+
+ALTER TABLE public.st_settings OWNER TO mindfulguard;
+
+--
 -- Name: t_tokens; Type: TABLE; Schema: public; Owner: mindfulguard
 --
 
@@ -880,6 +900,18 @@ COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_update
 
 
 --
+-- Data for Name: st_settings; Type: TABLE DATA; Schema: public; Owner: mindfulguard
+--
+
+COPY public.st_settings (st_id, st_key, st_value) FROM stdin;
+1e187a16-4e75-42f2-93a4-caf003cec774	password_rule	^(?=.*[A-Z])(?=.*[a-z])(?=.*\\\\d)(?=.*[\\\\W]).{8,64}$
+057327e8-1f62-4d70-af07-623a62d6f2fe	item_categories	["LOGIN","PASSWORD","API_CREDENTIAL","SERVER","DATABASE","CREDIT_CARD","MEMBERSHIP","PASSPORT","SOFTWARE_LICENSE","OUTDOOR_LICENSE","SECURE_NOTE","WIRELESS_ROUTER","BANK_ACCOUNT","DRIVER_LICENSE","IDENTITY","REWARD_PROGRAM","DOCUMENT","EMAIL_ACCOUNT","SOCIAL_SECURITY_NUMBER","MEDICAL_RECORD","SSH_KEY"]
+25bf1152-0507-4ebc-8c46-f297c07e5f37	item_types	["STRING","PASSWORD","EMAIL","CONCEALED","URL","OTP","DATE","MONTH_YEAR","MENU","FILE"]
+498e9042-1492-44d8-8697-76b9a73967ec	registration	true
+\.
+
+
+--
 -- Data for Name: t_tokens; Type: TABLE DATA; Schema: public; Owner: mindfulguard
 --
 
@@ -925,6 +957,22 @@ ALTER TABLE ONLY public.r_records
 
 ALTER TABLE ONLY public.s_safes
     ADD CONSTRAINT s_safes_pkey PRIMARY KEY (s_id);
+
+
+--
+-- Name: st_settings st_settings_pk; Type: CONSTRAINT; Schema: public; Owner: mindfulguard
+--
+
+ALTER TABLE ONLY public.st_settings
+    ADD CONSTRAINT st_settings_pk PRIMARY KEY (st_id);
+
+
+--
+-- Name: st_settings st_settings_pk2; Type: CONSTRAINT; Schema: public; Owner: mindfulguard
+--
+
+ALTER TABLE ONLY public.st_settings
+    ADD CONSTRAINT st_settings_pk2 UNIQUE (st_key);
 
 
 --

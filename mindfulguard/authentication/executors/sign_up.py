@@ -1,7 +1,7 @@
 from mindfulguard import utils
-from mindfulguard.core import configuration, security
+from mindfulguard.core import security
 from mindfulguard.core.response_status_codes import *
-from mindfulguard.core.security.totp import Totp
+from mindfulguard.core.security.totp import NUMBER_OF_BACKUP_CODES, Totp
 from mindfulguard.database.postgresql import authentication
 
 
@@ -16,13 +16,11 @@ class SignUp:
         """
         valid = utils.Validation()
         print(valid.validate_secret_string(secret_string),valid.validate_login(login))
-        if self.__permission() == False:
-            return (None,None,SERVICE_UNAVAILABLE)
-        elif valid.validate_secret_string(secret_string) == False or valid.validate_login(login)==False:
+        if valid.validate_secret_string(secret_string) == False or valid.validate_login(login)==False:
             return (None,None,BAD_REQUEST)
         totp = Totp("")
         secret_code = totp.generate_secret_code()
-        backup_codes = totp.generate_backup_codes(self.__get_reserve_codes_length())
+        backup_codes = totp.generate_backup_codes(NUMBER_OF_BACKUP_CODES)
         return (secret_code,backup_codes, await authentication.Authentication().sign_up(
             login,
             security.sha256s(secret_string),
@@ -30,10 +28,3 @@ class SignUp:
             secret_code,
             backup_codes
         ))
-    def __permission(self)->bool:
-        server_config = configuration.ServerConfiguration()
-        return configuration.Authentication(server_config).get_registration()
-    
-    def __get_reserve_codes_length(self)->int:
-        server_config = configuration.ServerConfiguration()
-        return configuration.Authentication(server_config).totp().lengths().get_reserve_codes_length()

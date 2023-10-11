@@ -1,5 +1,7 @@
-from mindfulguard.core.configuration import Authentication, Item, ServerConfiguration
 from mindfulguard.core.response_status_codes import *
+from mindfulguard.database.postgresql.settings import Settings
+
+import ast
 
 class Get:
     def execute(self):
@@ -7,25 +9,19 @@ class Get:
 
 class ReadConfigs():
     def __init__(self):
-        self.__server_conf = ServerConfiguration()
-        self.__auth_conf = Authentication(self.__server_conf)
-        self.__item_conf = Item(self.__server_conf)
+        self.__settings = Settings()
     
-    def authentication(self):
+    async def authentication(self):
+        password_rule = await self.__settings.get()
         return ({
-            "pbkdf2":{
-            "SHA":self.__auth_conf.public().configuration().pbkdf2().get_sha(),
-            "iterations":self.__auth_conf.public().configuration().pbkdf2().get_iterations()
+            "password_rule": password_rule[0]['password_rule']
             },
-            "aes256":{
-                "mode":self.__auth_conf.public().configuration().get_aes_mode()
-            },
-            "password_rule":self.__auth_conf.public().configuration().get_password_rule()
-            },
-            OK)
+            password_rule[1])
     
-    def item(self):
+    async def item(self):
+        item = await self.__settings.get()
         return ({
-            "categories":self.__item_conf.categories().get_array(),
-            "types":self.__item_conf.types().get_array()
-        },OK)
+            "categories":ast.literal_eval(item[0]['item_categories']),
+            "types":ast.literal_eval(item[0]['item_types'])
+        },
+        item[1])
