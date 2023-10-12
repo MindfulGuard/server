@@ -12,9 +12,10 @@ def is_dict(variable:dict)->bool:
     return False
 
 def files():
-    files = Files()
-    file_names:list[str] = files.__get_file_names()
-    msg:dict[str, Any] = files.get("server_error")
+    __files = Files()
+    file_names:list[str] = __files.__get_file_names()
+    
+    msg:dict[str, Any] = __files.get("server_error")
 
     return (is_list(file_names),is_dict(msg))
 
