@@ -9,7 +9,6 @@ setup(
         'asyncpg',
         'pycryptodome',
         'fastapi[all]',
-        'tomli',
         'pytest',
         'pytest-asyncio',
         'cryptography',
