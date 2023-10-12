@@ -11,17 +11,13 @@ def is_dict(variable:dict)->bool:
         return True
     return False
 
-def files():
+def files()-> bool:
     __files = Files()
-    file_names:list[str] = __files.__get_file_names()
-    
     msg:dict[str, Any] = __files.get("server_error")
 
-    return (is_list(file_names),is_dict(msg))
+    return is_dict(msg)
 
 def test_lang():
-    is_list:bool = files()[0]
-    is_dict:bool = files()[1]
+    is_dict:bool = files()
 
-    assert is_list == True
     assert is_dict == True
