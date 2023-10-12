@@ -1,4 +1,4 @@
-from pyparsing import Any
+from typing import Any
 from mindfulguard.core.languages.package_reader import Files
 
 def is_list(variable:list)->bool:
