@@ -36,19 +36,11 @@ class Validations:
     
     def validate_description(self):
         valid:bool = self.__validation.validate_description("""
-        Has exposed far. 
-        Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced. Peculiar assure collecting linen china. Truth unsatiable joy appetite possible direct unpleasing each. Otherwise difficult relied pleasant preferred rich right reserved large sufficient weeks these letter sensible. 
-        Ham warmly looked general eldest replying never scale. Indulged ignorant whether sportsman daughters admiration show. Perfectly visitor opinions may blessing unpleasing that better fruit household explained offer need his. Suspicion giving out suitable whose ﻿no devonshire mind behind. Domestic made necessary how shewing high. 
-        In mirth noise need manners down wonder shameless view purse detract. Call cordially speedily letter advantages some first from likewise summer. Started misery with books remarkably name. Servants tended away pianoforte received moments enough dwelling arranging prepared after. Viewing sense convinced hung concealed maids extended comparison agreed society soon none just marriage wise misery bringing. 
+        Has exposed far.  Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced.
         """)
 
         not_valid:bool = self.__validation.validate_description("""
-        Learning own met bachelor rapturous than considered windows tedious bore like resolution arrived ferrars feebly good. 
-        Valley be introduced difficult things. Amounted viewing affection put admitting introduced men beyond. Court resolving hold marry mother result performed roused unwilling know fanny pianoforte plate new enough. Children cordial welcome set by who mother hung vexed regular. Staying warrant none doors brother pursuit immediate cousin pain shameless. 
-        Began distant wound. Do better know branched voice day goodness heard improved. Any waited since direct breeding diminution excellent mistaken horrible songs future parlors examine. Introduced mistaken marianne alteration horrible lasting newspaper graceful do into. Subjects all difficult or. 
-        Sense so preference differed suffer alone fat. Chief hills outweigh offence. Hand dine produced friendship into answer besides hope. Felicity order eagerness sitting contented attempted tried respect share our. Formerly announcing eldest they some eyes. 
-        Solicitude friendly matter denoting entered screened suppose all case celebrated use none. Provided forbade household rest view before pure times sooner visit blessing. Delivered expect sixteen smallness elinor resources oppose several ignorant. Forming property account placing cottage children smile feelings believed  certainly five bore winding. Absolute discovery horrible too attention assistance call greater edward times morning. 
-        Formed cheered period speaking are solicitude means cottage fine worth size party course theirs. The continue those fat colonel consulted except nay every gone started prospect motionless differed daughter. Hardly whose seems maids hundred general get carriage others suppose consisted length men. Know estate viewing their arrival. 
+        Has exposed far.  Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced. Peculiar assure collecting linen china. Truth unsatiable joy appetite possible direct unpleasing each. Otherwise difficult relied pleasant preferred rich right reserved large sufficient weeks these letter sensible.
         """)
         return (valid,not_valid)
 
@@ -59,23 +51,11 @@ class Validations:
     
     def is_user_agent(self):
         valid:bool = self.__validation.validate_user_agent("""
-        Has exposed far. 
-        Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced. Peculiar assure collecting linen china. Truth unsatiable joy appetite possible direct unpleasing each. Otherwise difficult relied pleasant preferred rich right reserved large sufficient weeks these letter sensible. 
-        Ham warmly looked general eldest replying never scale. Indulged ignorant whether sportsman daughters admiration show. Perfectly visitor opinions may blessing unpleasing that better fruit household explained offer need his. Suspicion giving out suitable whose ﻿no devonshire mind behind. Domestic made necessary how shewing high. 
-        In mirth noise need manners down wonder shameless view purse detract. Call cordially speedily letter advantages some first from likewise summer. Started misery with books remarkably name. Servants tended away pianoforte received moments enough dwelling arranging prepared after. Viewing sense convinced hung concealed maids extended comparison agreed society soon none just marriage wise misery bringing. 
+        Has exposed far.  Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced.
         """)
 
         not_valid:bool = self.__validation.validate_user_agent("""
-        Learning own met bachelor rapturous than considered windows tedious bore like resolution arrived ferrars feebly good. 
-        Valley be introduced difficult things. Amounted viewing affection put admitting introduced men beyond. Court resolving hold marry mother result performed roused unwilling know fanny pianoforte plate new enough. Children cordial welcome set by who mother hung vexed regular. Staying warrant none doors brother pursuit immediate cousin pain shameless. 
-        Began distant wound. Do better know branched voice day goodness heard improved. Any waited since direct breeding diminution excellent mistaken horrible songs future parlors examine. Introduced mistaken marianne alteration horrible lasting newspaper graceful do into. Subjects all difficult or. 
-        Sense so preference differed suffer alone fat. Chief hills outweigh offence. Hand dine produced friendship into answer besides hope. Felicity order eagerness sitting contented attempted tried respect share our. Formerly announcing eldest they some eyes. 
-        Solicitude friendly matter denoting entered screened suppose all case celebrated use none. Provided forbade household rest view before pure times sooner visit blessing. Delivered expect sixteen smallness elinor resources oppose several ignorant. Forming property account placing cottage children smile feelings believed  certainly five bore winding. Absolute discovery horrible too attention assistance call greater edward times morning. 
-        Formed cheered period speaking are solicitude means cottage fine worth size party course theirs. The continue those fat colonel consulted except nay every gone started prospect motionless differed daughter. Hardly whose seems maids hundred general get carriage others suppose consisted length men. Know estate viewing their arrival.
-        Has exposed far. 
-        Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced. Peculiar assure collecting linen china. Truth unsatiable joy appetite possible direct unpleasing each. Otherwise difficult relied pleasant preferred rich right reserved large sufficient weeks these letter sensible. 
-        Ham warmly looked general eldest replying never scale. Indulged ignorant whether sportsman daughters admiration show. Perfectly visitor opinions may blessing unpleasing that better fruit household explained offer need his. Suspicion giving out suitable whose ﻿no devonshire mind behind. Domestic made necessary how shewing high. 
-        In mirth noise need manners down wonder shameless view purse detract. Call cordially speedily letter advantages some first from likewise summer. Started misery with books remarkably name. Servants tended away pianoforte received moments enough dwelling arranging prepared after. Viewing sense convinced hung concealed maids extended comparison agreed society soon none just marriage wise misery bringing.  
+        Has exposed far.  Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced. Peculiar assure collecting linen china. Truth unsatiable joy appetite possible direct unpleasing each. Otherwise difficult relied pleasant preferred rich right reserved large sufficient weeks these letter sensible.
         """)
         return (valid,not_valid)
     
