@@ -35,13 +35,9 @@ class Validations:
         return (valid,not_valid)
     
     def validate_description(self):
-        valid:bool = self.__validation.validate_description("""
-        Has exposed far.  Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced.
-        """)
+        valid:bool = self.__validation.validate_description("Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced.")
 
-        not_valid:bool = self.__validation.validate_description("""
-        Has exposed far.  Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced. Peculiar assure collecting linen china. Truth unsatiable joy appetite possible direct unpleasing each. Otherwise difficult relied pleasant preferred rich right reserved large sufficient weeks these letter sensible.
-        """)
+        not_valid:bool = self.__validation.validate_description("Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced. Peculiar assure collecting linen china. Truth unsatiable joy appetite possible direct unpleasing each. Otherwise difficult relied pleasant preferred rich right reserved large sufficient weeks these letter sensible.")
         return (valid,not_valid)
 
     def is_TOTP_code(self):
@@ -50,9 +46,7 @@ class Validations:
         return (valid,not_valid)
     
     def is_user_agent(self):
-        valid:bool = self.__validation.validate_user_agent("""
-        Has exposed far.  Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced.
-        """)
+        valid:bool = self.__validation.validate_user_agent("Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced.")
 
         not_valid:bool = self.__validation.validate_user_agent("""
         Has exposed far.  Over game disposing viewing me age smiling position agreeable. Very nothing exertion decisively barton one solid colonel year told chamber smart dwelling introduced. Peculiar assure collecting linen china. Truth unsatiable joy appetite possible direct unpleasing each. Otherwise difficult relied pleasant preferred rich right reserved large sufficient weeks these letter sensible.
