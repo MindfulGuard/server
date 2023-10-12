@@ -9,7 +9,7 @@ def totp():
 
     for item in backup_codes:
         if len(str(item)) == 6:
-            length_item = True
+            length_items = True
 
     verifier = Totp(secret_code)
     one_time_code:str = verifier.get()
