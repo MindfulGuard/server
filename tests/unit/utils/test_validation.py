@@ -54,8 +54,8 @@ class Validations:
         return (valid,not_valid)
     
     def is_json(self):
-        valid:bool = self.__validation.validate_json("{'key1':'value1','key2':'value2'}")
-        not_valid:bool = self.__validation.validate_json("{'key1':'value1','key1':'value2',[4,5,5,6,3,6,3]}")
+        valid:bool = self.__validation.validate_json('{"key1":"value1","key2":"value2"}')
+        not_valid:bool = self.__validation.validate_json('{"key1":"value1","key1":"value2",[4,5,5,6,3,6,3]}')
         return (valid,not_valid)
 
 
