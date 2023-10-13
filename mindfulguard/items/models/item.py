@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator, constr
+from pydantic import BaseModel, field_validator, constr
 from mindfulguard.core.response_status_codes import INTERNAL_SERVER_ERROR
 from mindfulguard.database.postgresql.settings import Settings
 
@@ -13,7 +13,7 @@ class Fields(BaseModel):
     label:constr(min_length=0, max_length=const.LABEL_LENGTH)
     value:constr(min_length=0, max_length=const.VALUE_LENGTH)
 
-    @validator("type")
+    @field_validator("type")
     def type_in_types(cls, value):
         categories = init.get().types().get_array()
         if value not in categories:
@@ -25,7 +25,7 @@ class Sections(BaseModel):
     section:constr(min_length=0, max_length=const.SECTION_LENGTH)
     fields:list[Fields]
 
-    @validator("fields")
+    @field_validator("fields")
     def fields_(cls, value):
         length = init.get().lengths().get_fields_array_length()
         if len(value) > length:
@@ -39,7 +39,7 @@ class Item(BaseModel):
     tags:list[str]
     sections:list[Sections]
 
-    @validator("sections")
+    @field_validator("sections")
     def validate_sections(cls, value):
         init_count = 0
         sections = const.SECTIONS_ARRAY_LENGTH
@@ -53,7 +53,7 @@ class Item(BaseModel):
             raise ValueError("There must be exactly one 'INIT' section")
         return value
     
-    @validator("category")
+    @field_validator("category")
     async def category_in_categories(cls, value):
         category_array =  await Settings().get()
         if category_array[1] == INTERNAL_SERVER_ERROR:
@@ -63,7 +63,7 @@ class Item(BaseModel):
             raise ValueError(f"'{value}' is not an acceptable category")
         return value
 
-    @validator("tags")
+    @field_validator("tags")
     def validate_tags(cls, value):
         tags_length = const.TAGS_LENGTH
         max_tags_length = const.TAGS_ARRAY_LENGTH
