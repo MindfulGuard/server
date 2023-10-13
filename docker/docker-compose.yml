@@ -13,24 +13,6 @@ services:
       - 5432:5432
     networks:
      - app-network
-  
-  minio:
-    image: minio/minio:latest
-    container_name: minio
-    restart: unless-stopped
-    command: server --console-address ":9001" /data/
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      - .MINIO.env
-    volumes:
-      - ../minio-data:/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
 
   mindfulguard_server:
       image: mindfulguard/server:dev
