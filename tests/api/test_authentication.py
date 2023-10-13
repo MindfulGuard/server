@@ -2,7 +2,7 @@ import hashlib
 from http.client import BAD_REQUEST, OK
 from fastapi.testclient import TestClient
 from mindfulguard.__main__ import app
-from tests.api.secure import AES_256, PbkdF2HMAC
+from tests.api.secure.secure import AES_256, PbkdF2HMAC
 
 client = TestClient(app)
 
