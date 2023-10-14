@@ -59,7 +59,23 @@ def get_secret_string():
     secret_string.update(PASSWORD.encode('utf-8'))
     secret_string.update(SALT.encode('utf-8'))
     return secret_string
- 
+
+def test_get_secret_string():
+    def secret_string_not_valid():
+        def validate_password(password:str)->bool:
+            return bool(re.compile(get_password_rule()).match(password))
+        if validate_password("ERROR") == False:
+            secret_string = hashlib.sha256()
+        secret_string = hashlib.sha256()
+        secret_string.update(LOGIN.encode('utf-8'))
+        secret_string.update(PASSWORD.encode('utf-8'))
+        secret_string.update(SALT.encode('utf-8'))
+        return secret_string
+
+    assert secret_string_not_valid().hexdigest() == ""
+    assert get_secret_string != ""
+    
+
 def registration():
     secret_string:str = get_secret_string().hexdigest()
 
