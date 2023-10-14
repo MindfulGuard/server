@@ -427,14 +427,7 @@
     ```json
     {
         "authentication": {
-            "pbkdf2": {
-                "SHA": "sha256",
-                "iterations": 10000
-            },
-            "aes256": {
-                "mode": "GCM"
-            },
-            "password_rule": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[\\W]).{8,64}$"
+            "password_rule": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\\\d)(?=.*[\\\\W]).{8,64}$"
         },
         "item": {
             "categories": [
