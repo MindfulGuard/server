@@ -1,5 +1,6 @@
 import hashlib
 from http.client import BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED
+from os import replace
 import re
 from fastapi.testclient import TestClient
 from mindfulguard.__main__ import app
@@ -46,7 +47,10 @@ SALT = "617eb042-3dd3-4ace-b69e-65df5e8db514"
 
 def get_password_rule()->str:
     response_OK = client.get("/v1/public/configuration", headers=without_token)
-    return response_OK.json()["authentication"]["password_rule"]
+    rule = response_OK.json()["authentication"]["password_rule"]
+    rule = rule.replace("\\\\", "/")
+    rule = rule.replace("////", "/")
+    return rule
 
 def get_secret_string()->str:
     def validate_password(password:str)->bool:
