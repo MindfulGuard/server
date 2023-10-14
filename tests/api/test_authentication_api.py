@@ -3,6 +3,7 @@ from http.client import BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED
 from os import replace
 import re
 from fastapi.testclient import TestClient
+from httpcore import stream
 from mindfulguard.__main__ import app
 from tests.api.secure.secure import AES_256, PbkdF2HMAC
 from tests.api.secure.totp_client import TotpClient
@@ -64,9 +65,6 @@ def get_secret_string()->str:
     secret_string.update(SALT.encode('utf-8'))
     return secret_string.hexdigest()
 
-def test_secret_string():
-    assert get_secret_string() != "", get_password_rule()
-
 def registration():
     secret_string:str = get_secret_string()
 
@@ -124,6 +122,18 @@ def get_session_tokens(token:str):
 
     return(response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
 
+def log_out(token:str,token_id:str):
+    response_OK = client.delete(AUTH_PATH_V1+f"/sign_out/{token_id}", headers=with_token_OK(token))
+    response_BAD_REQUEST = client.delete(AUTH_PATH_V1+"/sign_out/12345v98324vn7293", headers=with_token_OK(token))
+    response_UNAUTHORIZED = client.delete(
+        AUTH_PATH_V1+"/sign_out/d5120a75-54a8-4840-8db1-8b31865407fb",
+        headers=with_token_UNAUTHORIZED
+    )
+    return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
+
+def test_secret_string():
+    assert get_secret_string() != "", get_password_rule()
+
 def test_authentication():
     password_rule = client.get("/v1/public/configuration", headers=without_token)
 
@@ -144,8 +154,14 @@ def test_authentication():
 
     __get_session_tokens = get_session_tokens(token)
     __get_session_tokens_OK = __get_session_tokens[0]
+    token_id:str = __get_session_tokens_OK.json()['list'][0]['id']
     __get_session_tokens_BAD_REQUEST = __get_session_tokens[1]
     __get_session_tokens_UNAUTHORIZED = __get_session_tokens[2]
+
+    __log_out = log_out(token,token_id)
+    __log_out_OK = __log_out[0]
+    __log_out_BAD_REQUEST = __log_out[1]
+    __log_out_BAD_UNAUTHORIZED = __log_out[2]
 
     assert password_rule.status_code == OK
 
@@ -161,3 +177,7 @@ def test_authentication():
     assert is_list(__get_session_tokens_OK.json()["list"]) == True, __get_session_tokens_OK.json()["list"]
     assert __get_session_tokens_BAD_REQUEST.status_code == BAD_REQUEST
     assert __get_session_tokens_UNAUTHORIZED.status_code == UNAUTHORIZED
+
+    assert __get_session_tokens_OK.status_code == OK
+    assert __log_out_BAD_REQUEST.status_code == BAD_REQUEST
+    assert __log_out_BAD_UNAUTHORIZED.status_code == UNAUTHORIZED
