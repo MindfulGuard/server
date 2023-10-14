@@ -1,18 +1,41 @@
 import hashlib
-from http.client import BAD_REQUEST, NOT_FOUND, OK
+from http.client import BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED
 from fastapi.testclient import TestClient
 from mindfulguard.__main__ import app
 from tests.api.secure.secure import AES_256, PbkdF2HMAC
 from tests.api.secure.totp_client import TotpClient
+from tests.api.utils import is_list
 
 client = TestClient(app)
 
 AUTH_PATH_V1 = "/v1/auth"
 
-headers1 = {
+without_token = {
     'User-Agent': 'python:3.10/windows',
     'Content-Type': 'application/x-www-form-urlencoded',
     'X-Real-IP': '127.0.0.1'
+}
+
+TOKEN = ""
+with_token_OK = {
+    'User-Agent': 'python:3.10/windows',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'X-Real-IP': '127.0.0.1',
+    'Authorization': 'Bearer '+TOKEN
+}
+
+with_token_BAD_REQUEST = {
+    'User-Agent': 'python:3.10/windows',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'X-Real-IP': '127.0.0.1',
+    'Authorization': '54385vn9384'
+}
+
+with_token_UNAUTHORIZED = {
+    'User-Agent': 'python:3.10/windows',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'X-Real-IP': '127.0.0.1',
+    'Authorization': 'Bearer xqdwu8tPKvnFBPZiQzGanMZ2UM8b8ALJVikZ6iTNK0RdxehS4AUiYy9sgP7Ys7OULF6FsJekTB5XARFzOTolTgR8WTJqw85AhylCS3WxWA6Gr7D5zeHM7VmWT2KpbPzO'
 }
 
 LOGIN = "useR123_-"
@@ -38,10 +61,10 @@ def registration():
         "secret_string": "v4234v32b32",
     }
 
-    response_ok = client.post(AUTH_PATH_V1+ "/sign_up", data=data_ok, headers=headers1)
-    response_bad_request = client.post(AUTH_PATH_V1+ "/sign_up", data=data_bad_request, headers=headers1)
+    response_OK = client.post(AUTH_PATH_V1+ "/sign_up", data=data_ok, headers=without_token)
+    response_BAD_REQUEST = client.post(AUTH_PATH_V1+ "/sign_up", data=data_bad_request, headers=without_token)
 
-    return (response_ok,response_bad_request)
+    return (response_OK,response_BAD_REQUEST)
 
 
 """
@@ -70,11 +93,18 @@ def log_in(code:str,type:str):
         "expiration": 100 #minutes
     }
 
-    response_ok_basic = client.post(AUTH_PATH_V1+ f"/sign_in?type={type}", data=data_ok, headers=headers1)
-    response_bad_request = client.post(AUTH_PATH_V1+ f"/sign_in?type={type}", data=data_bad_request, headers=headers1)
-    response_not_found = client.post(AUTH_PATH_V1+ f"/sign_in?type={type}", data=data_not_found, headers=headers1)
+    response_OK_basic = client.post(AUTH_PATH_V1+ f"/sign_in?type={type}", data=data_ok, headers=without_token)
+    response_BAD_REQUEST = client.post(AUTH_PATH_V1+ f"/sign_in?type={type}", data=data_bad_request, headers=without_token)
+    response_NOT_FOUND= client.post(AUTH_PATH_V1+ f"/sign_in?type={type}", data=data_not_found, headers=without_token)
 
-    return (response_ok_basic,response_bad_request,response_not_found)
+    return (response_OK_basic,response_BAD_REQUEST,response_NOT_FOUND)
+
+def get_session_tokens():
+    response_OK = client.get(AUTH_PATH_V1+"/sessions", headers=with_token_OK)
+    response_BAD_REQUEST = client.get(AUTH_PATH_V1+"/sessions", headers=with_token_BAD_REQUEST)
+    response_UNAUTHORIZED = client.get(AUTH_PATH_V1+"/sessions", headers=with_token_UNAUTHORIZED)
+
+    return(response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
 
 def test_authentication():
     __registration = registration()
@@ -91,11 +121,23 @@ def test_authentication():
     __log_in_basic_BAD_REQUEST = __log_in_basic[1]
     __log_in_basic_NOT_FOUND = __log_in_basic[2]
 
+    global TOKEN
+    TOKEN = __log_in_basic_OK.json()["token"]
+
+    __get_session_tokens = get_session_tokens()
+    __get_session_tokens_OK = __get_session_tokens[0]
+    __get_session_tokens_BAD_REQUEST = __get_session_tokens[1]
+    __get_session_tokens_UNAUTHORIZED = __get_session_tokens[2]
+
     assert __registration_OK.status_code == OK
     assert __registration_BAD_REQUEST.status_code == BAD_REQUEST
 
     assert __log_in_basic_OK.status_code == OK
     assert __log_in_backup_OK.status_code == OK
     assert __log_in_basic_BAD_REQUEST.status_code == BAD_REQUEST
-    assert __log_in_backup_OK.status_code == NOT_FOUND
     assert __log_in_basic_NOT_FOUND.status_code == NOT_FOUND
+
+    assert __get_session_tokens_OK.status_code == OK
+    assert is_list(__get_session_tokens_OK.json()["list"]) == True, __get_session_tokens_OK.json()["list"]
+    assert __get_session_tokens_BAD_REQUEST.status_code == BAD_REQUEST
+    assert __get_session_tokens_UNAUTHORIZED.status_code == UNAUTHORIZED
