@@ -42,7 +42,7 @@ with_token_UNAUTHORIZED = {
 }
 
 LOGIN = "useR123_-"
-PASSWORD = "Aa1!2Bb3Cc4Dd5EeFhIiJjKkLlMmNnOoPSsTtUuVvWwXxYyZz!@#12345890"
+PASSWORD = "Jnnnj#43n434njkvkjnlzNV^%"
 SALT = "617eb042-3dd3-4ace-b69e-65df5e8db514"
 
 def get_password_rule()->str:
