@@ -87,7 +87,7 @@ def test_authentication():
     __log_in_backup = log_in(backup_code,TYPE_BACKUP)
     __log_in_basic_OK = __log_in_basic[0]
     __log_in_backup_OK = __log_in_backup[0]
-    __log_in_basic_bad_request = __log_in_basic[0]
+    __log_in_basic_bad_request = __log_in_basic[1]
 
     assert __registration_OK.status_code == OK
     assert __registration_BAD_REQUEST.status_code == BAD_REQUEST
