@@ -178,6 +178,6 @@ def test_authentication():
     assert __get_session_tokens_BAD_REQUEST.status_code == BAD_REQUEST
     assert __get_session_tokens_UNAUTHORIZED.status_code == UNAUTHORIZED
 
-    assert __get_session_tokens_OK.status_code == OK
+    assert __log_out_OK.status_code == OK
     assert __log_out_BAD_REQUEST.status_code == BAD_REQUEST
     assert __log_out_BAD_UNAUTHORIZED.status_code == UNAUTHORIZED
