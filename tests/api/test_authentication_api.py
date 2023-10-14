@@ -1,5 +1,5 @@
 import hashlib
-from http.client import BAD_REQUEST, OK
+from http.client import BAD_REQUEST, NOT_FOUND, OK
 from fastapi.testclient import TestClient
 from mindfulguard.__main__ import app
 from tests.api.secure.secure import AES_256, PbkdF2HMAC
@@ -72,8 +72,9 @@ def log_in(code:str,type:str):
 
     response_ok_basic = client.post(AUTH_PATH_V1+ f"/sign_in?type={type}", data=data_ok, headers=headers1)
     response_bad_request = client.post(AUTH_PATH_V1+ f"/sign_in?type={type}", data=data_bad_request, headers=headers1)
+    response_not_found = client.post(AUTH_PATH_V1+ f"/sign_in?type={type}", data=data_not_found, headers=headers1)
 
-    return (response_ok_basic,response_bad_request)
+    return (response_ok_basic,response_bad_request,response_not_found)
 
 def test_authentication():
     __registration = registration()
@@ -87,11 +88,14 @@ def test_authentication():
     __log_in_backup = log_in(backup_code,TYPE_BACKUP)
     __log_in_basic_OK = __log_in_basic[0]
     __log_in_backup_OK = __log_in_backup[0]
-    __log_in_basic_bad_request = __log_in_basic[1]
+    __log_in_basic_BAD_REQUEST = __log_in_basic[1]
+    __log_in_basic_NOT_FOUND = __log_in_basic[2]
 
     assert __registration_OK.status_code == OK
     assert __registration_BAD_REQUEST.status_code == BAD_REQUEST
 
     assert __log_in_basic_OK.status_code == OK
     assert __log_in_backup_OK.status_code == OK
-    assert __log_in_basic_bad_request.status_code == BAD_REQUEST
+    assert __log_in_basic_BAD_REQUEST.status_code == BAD_REQUEST
+    assert __log_in_backup_OK.status_code == NOT_FOUND
+    assert __log_in_basic_NOT_FOUND.status_code == NOT_FOUND
