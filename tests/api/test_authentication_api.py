@@ -48,36 +48,20 @@ def get_password_rule()->str:
     response_OK = client.get("/v1/public/configuration", headers=without_token)
     return response_OK.json()["authentication"]["password_rule"]
 
-def get_secret_string():
+def get_secret_string()->str:
     def validate_password(password:str)->bool:
         return bool(re.compile(get_password_rule()).match(password))
 
     if validate_password(PASSWORD) == False:
-        return hashlib.sha256()
+        return ""
     secret_string = hashlib.sha256()
     secret_string.update(LOGIN.encode('utf-8'))
     secret_string.update(PASSWORD.encode('utf-8'))
     secret_string.update(SALT.encode('utf-8'))
-    return secret_string
-
-def test_get_secret_string():
-    def secret_string_not_valid():
-        def validate_password(password:str)->bool:
-            return bool(re.compile(get_password_rule()).match(password))
-        if validate_password("ERROR") == False:
-            secret_string = hashlib.sha256()
-        secret_string = hashlib.sha256()
-        secret_string.update(LOGIN.encode('utf-8'))
-        secret_string.update(PASSWORD.encode('utf-8'))
-        secret_string.update(SALT.encode('utf-8'))
-        return secret_string
-
-    assert secret_string_not_valid().hexdigest() == ""
-    assert get_secret_string != ""
-    
+    return secret_string.hexdigest()
 
 def registration():
-    secret_string:str = get_secret_string().hexdigest()
+    secret_string:str = get_secret_string()
 
     data_ok = {
         "login": LOGIN,
@@ -100,7 +84,7 @@ These constants are used to tell the function which type of confirmation code to
 TYPE_BASIC = "basic"
 TYPE_BACKUP = "backup"
 def log_in(code:str,type:str):
-    secret_string:str = get_secret_string().hexdigest()
+    secret_string:str = get_secret_string()
     data_ok = {
         "login": LOGIN,
         "secret_string": secret_string,
