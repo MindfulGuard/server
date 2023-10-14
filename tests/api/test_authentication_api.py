@@ -1,5 +1,6 @@
 import hashlib
 from http.client import BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED
+import re
 from fastapi.testclient import TestClient
 from mindfulguard.__main__ import app
 from tests.api.secure.secure import AES_256, PbkdF2HMAC
@@ -43,7 +44,16 @@ LOGIN = "useR123_-"
 PASSWORD = "Nnnj43nv3_--v43%>_34"
 SALT = "617eb042-3dd3-4ace-b69e-65df5e8db514"
 
+def get_password_rule()->str:
+    response_OK = client.get("/v1/public/configuration", headers=without_token)
+    return response_OK.json()["authentication"]["password_rule"]
+
 def get_secret_string():
+    def validate_password(password:str)->bool:
+        return bool(re.compile(get_password_rule()).match(password))
+
+    if validate_password(PASSWORD) == False:
+        return hashlib._Hash(data=b"")
     secret_string = hashlib.sha256()
     secret_string.update(LOGIN.encode('utf-8'))
     secret_string.update(PASSWORD.encode('utf-8'))
@@ -108,6 +118,8 @@ def get_session_tokens(token:str):
     return(response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
 
 def test_authentication():
+    password_rule = client.get("/v1/public/configuration", headers=without_token)
+
     __registration = registration()
     __registration_OK = __registration[0]
     secret_code:str = __registration_OK.json()["secret_code"]
@@ -127,6 +139,8 @@ def test_authentication():
     __get_session_tokens_OK = __get_session_tokens[0]
     __get_session_tokens_BAD_REQUEST = __get_session_tokens[1]
     __get_session_tokens_UNAUTHORIZED = __get_session_tokens[2]
+
+    assert password_rule.status_code == OK
 
     assert __registration_OK.status_code == OK
     assert __registration_BAD_REQUEST.status_code == BAD_REQUEST
