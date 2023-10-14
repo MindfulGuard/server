@@ -60,6 +60,9 @@ def get_secret_string()->str:
     secret_string.update(SALT.encode('utf-8'))
     return secret_string.hexdigest()
 
+def test_secret_string():
+    assert get_secret_string() != "", get_secret_string()
+
 def registration():
     secret_string:str = get_secret_string()
 
