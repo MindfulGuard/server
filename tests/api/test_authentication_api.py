@@ -53,7 +53,7 @@ def get_secret_string():
         return bool(re.compile(get_password_rule()).match(password))
 
     if validate_password(PASSWORD) == False:
-        return hashlib._Hash(data=b"")
+        return hashlib.sha256()
     secret_string = hashlib.sha256()
     secret_string.update(LOGIN.encode('utf-8'))
     secret_string.update(PASSWORD.encode('utf-8'))
