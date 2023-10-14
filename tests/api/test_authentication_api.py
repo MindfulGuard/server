@@ -61,7 +61,7 @@ def get_secret_string()->str:
     return secret_string.hexdigest()
 
 def test_secret_string():
-    assert get_secret_string() != "", get_secret_string()
+    assert get_secret_string() != "", get_password_rule()
 
 def registration():
     secret_string:str = get_secret_string()
