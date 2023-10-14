@@ -16,13 +16,14 @@ without_token = {
     'X-Real-IP': '127.0.0.1'
 }
 
-TOKEN = ""
-with_token_OK = {
-    'User-Agent': 'python:3.10/windows',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'X-Real-IP': '127.0.0.1',
-    'Authorization': 'Bearer '+TOKEN
-}
+def with_token_OK(token:str)-> dict[str, str]:
+    with_token_OK = {
+        'User-Agent': 'python:3.10/windows',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Real-IP': '127.0.0.1',
+        'Authorization': 'Bearer '+token
+    }
+    return with_token_OK
 
 with_token_BAD_REQUEST = {
     'User-Agent': 'python:3.10/windows',
@@ -99,8 +100,8 @@ def log_in(code:str,type:str):
 
     return (response_OK_basic,response_BAD_REQUEST,response_NOT_FOUND)
 
-def get_session_tokens():
-    response_OK = client.get(AUTH_PATH_V1+"/sessions", headers=with_token_OK)
+def get_session_tokens(token:str):
+    response_OK = client.get(AUTH_PATH_V1+"/sessions", headers=with_token_OK(token))
     response_BAD_REQUEST = client.get(AUTH_PATH_V1+"/sessions", headers=with_token_BAD_REQUEST)
     response_UNAUTHORIZED = client.get(AUTH_PATH_V1+"/sessions", headers=with_token_UNAUTHORIZED)
 
@@ -117,14 +118,12 @@ def test_authentication():
     __log_in_basic = log_in(totp_client.get(),TYPE_BASIC)
     __log_in_backup = log_in(backup_code,TYPE_BACKUP)
     __log_in_basic_OK = __log_in_basic[0]
+    token:str = __log_in_basic_OK.json()["token"]
     __log_in_backup_OK = __log_in_backup[0]
     __log_in_basic_BAD_REQUEST = __log_in_basic[1]
     __log_in_basic_NOT_FOUND = __log_in_basic[2]
 
-    global TOKEN
-    TOKEN = __log_in_basic_OK.json()["token"]
-
-    __get_session_tokens = get_session_tokens()
+    __get_session_tokens = get_session_tokens(token)
     __get_session_tokens_OK = __get_session_tokens[0]
     __get_session_tokens_BAD_REQUEST = __get_session_tokens[1]
     __get_session_tokens_UNAUTHORIZED = __get_session_tokens[2]
