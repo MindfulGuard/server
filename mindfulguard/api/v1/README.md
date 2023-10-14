@@ -427,7 +427,7 @@
     ```json
     {
         "authentication": {
-            "password_rule": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\\\d)(?=.*[\\\\W]).{8,64}$"
+            "password_rule": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[\\W]).{8,64}$"
         },
         "item": {
             "categories": [
