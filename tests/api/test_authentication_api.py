@@ -48,7 +48,7 @@ SALT = "617eb042-3dd3-4ace-b69e-65df5e8db514"
 def get_password_rule()->str:
     response_OK = client.get("/v1/public/configuration", headers=without_token)
     rule = response_OK.json()["authentication"]["password_rule"]
-    rule = rule.replace("\\\\", "/")
+    rule = rule.replace("\\\\", "\\")
     rule = rule.replace("////", "/")
     return rule
 
