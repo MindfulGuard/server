@@ -1,5 +1,5 @@
 import hashlib
-from http.client import BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED
+from http.client import BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED, UNPROCESSABLE_ENTITY
 import re
 
 from fastapi.testclient import TestClient
@@ -182,6 +182,93 @@ def update_safe(token:str,safe_id:str,name:str,description:str):
     )
     return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
 
+def create_item(token:str,safe_id:str):
+    header_with_token_OK = {
+        'User-Agent': 'python:3.10/windows',
+        'Content-Type': 'application/json',
+        'X-Real-IP': '127.0.0.1',
+        'Authorization': 'Bearer '+token
+    }
+
+    data_ok = {
+        "title":"Title",
+        "category":"LOGIN",
+        "notes":"There should be notes here",
+        "tags":["the values in the tags must be of the string type","tag2"],
+        "sections":[
+            {
+            "section":"INIT",
+            "fields":[
+                {
+                "type":"STRING",
+                "label":"login",
+                "value":"user1"
+                },
+                {
+                "type":"PASSWORD",
+                "label":"password",
+                "value":"12345"
+                }
+            ]
+            }
+        ]
+    }
+    data_unprocessable_content = {
+        "title":"Title",
+        "category":"NOT_LOGIN",
+        "notes":"There should be notes here",
+        "tags":["the values in the tags must be of the string type","tag2"],
+        "sections":[
+            {
+            "section":"INI",
+            "fields":[
+                {
+                "type":"STRING",
+                "label":"login",
+                "value":"user1"
+                },
+                {
+                "type":"PASSWORD",
+                "label":"password",
+                "value":"12345"
+                }
+            ]
+            },
+            {
+            "section":"Other sections",
+            "fields":[
+                {
+                "type":"URL",
+                "label":"title",
+                "value":"https://example.com"
+                },
+                {
+                "type":"EMAIL",
+                "label":"email",
+                "value":"user@example.com"
+                }
+            ]
+            }
+        ]
+    }
+
+    response_OK = client.post(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item",
+        data=data_ok,
+        headers=header_with_token_OK
+    )
+    response_UNPROCESSABLE_CONTENT = client.post(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item",
+        data=data_unprocessable_content,
+        headers=header_with_token_OK
+    )
+    response_UNAUTHORIZED = client.post(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item",
+        data=data_ok,
+        headers=with_token_UNAUTHORIZED
+    )
+    return (response_OK,response_UNPROCESSABLE_CONTENT,response_UNAUTHORIZED)
+
 def encrypt_string(password:str,salt:str,text:str):
     private_key = PbkdF2HMAC().encrypt(
         password=password,
@@ -277,6 +364,14 @@ def test_safe_and_items():
     __update_safe_BAD_REQUEST = __update_safe[1]
     __update_safe_UNAUTHORIZED = __update_safe[2]
 
+    __create_item = create_item(
+        token=token1,
+        safe_id=safe_id
+    )
+    __create_item_OK = __create_item[0]
+    __create_item_UNPROCESSABLE_CONTENT = __create_item[1]
+    __create_item_UNAUTHORIZED = __create_item[2]
+
     assert __registration1_OK.status_code == OK
     assert ____registration1_BAD_REQUEST.status_code == BAD_REQUEST
 
@@ -297,3 +392,7 @@ def test_safe_and_items():
     assert __update_safe_OK.status_code == OK
     assert __update_safe_BAD_REQUEST.status_code == BAD_REQUEST
     assert __update_safe_UNAUTHORIZED.status_code == UNAUTHORIZED
+
+    assert __create_item_OK.status_code == OK
+    assert __create_item_UNPROCESSABLE_CONTENT.status_code == UNPROCESSABLE_ENTITY
+    assert __create_item_UNAUTHORIZED.status_code == UNAUTHORIZED
