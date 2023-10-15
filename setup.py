@@ -9,6 +9,7 @@ setup(
         'asyncpg',
         'pycryptodome',
         'fastapi[all]',
+        'pydantic-async-validation',
         'pytest',
         'pytest-asyncio',
         'cryptography',

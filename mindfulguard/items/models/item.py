@@ -2,37 +2,41 @@ from pydantic import BaseModel, field_validator, constr
 from mindfulguard.core.response_status_codes import INTERNAL_SERVER_ERROR
 from mindfulguard.database.postgresql.settings import Settings
 
+from pydantic_async_validation import async_field_validator, AsyncValidationModelMixin
+
 import mindfulguard.items.models as const
 
 """
 Attention "pylance" may swear with the error "Call expression not allowed in type expression", but the code remains working
 """
 
-class Fields(BaseModel):
+class Fields(AsyncValidationModelMixin,BaseModel):
     type: constr(min_length=1, max_length=20)
     label:constr(min_length=0, max_length=const.LABEL_LENGTH)
     value:constr(min_length=0, max_length=const.VALUE_LENGTH)
 
-    @field_validator("type")
-    def type_in_types(cls, value):
-        categories = init.get().types().get_array()
-        if value not in categories:
+    @async_field_validator("type")
+    async def type_in_types(self, value)-> None:
+        types_array =  await Settings().get()
+        types = types_array[0]['item_types']
+        if types_array[1] == INTERNAL_SERVER_ERROR:
+            raise ValueError("Server error")
+        if value not in types:
             raise ValueError(f"'{value}' is not an acceptable type")
-        return value
 
 
-class Sections(BaseModel):
+class Sections(AsyncValidationModelMixin, BaseModel):
     section:constr(min_length=0, max_length=const.SECTION_LENGTH)
     fields:list[Fields]
 
     @field_validator("fields")
     def fields_(cls, value):
-        length = init.get().lengths().get_fields_array_length()
+        length = const.FIELDS_ARRAY_LENGTH
         if len(value) > length:
             raise ValueError(f"'{value}' exceeding the length of the array")
         return value
 
-class Item(BaseModel):
+class Item(AsyncValidationModelMixin,BaseModel):
     title:constr(min_length=0, max_length=const.TITLE_LENGTH)
     category:constr(min_length=0, max_length=20)
     notes:constr(min_length=0, max_length=const.NOTES_LENGTH)
@@ -52,16 +56,15 @@ class Item(BaseModel):
         if init_count != 1:
             raise ValueError("There must be exactly one 'INIT' section")
         return value
-    
-    @field_validator("category")
-    async def category_in_categories(cls, value):
-        category_array =  await Settings().get()
+        
+    @async_field_validator("category")
+    async def category_in_categories(self, value)-> None:
+        category_array = await Settings().get()
         if category_array[1] == INTERNAL_SERVER_ERROR:
-            raise SystemError(f"Server error")
+            raise ValueError("Server error")
         categories = category_array[0]['item_categories']
         if value not in categories:
             raise ValueError(f"'{value}' is not an acceptable category")
-        return value
 
     @field_validator("tags")
     def validate_tags(cls, value):

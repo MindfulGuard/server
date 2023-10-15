@@ -3,6 +3,7 @@ from fastapi import APIRouter, Header, Path, Request, Response
 from mindfulguard.authentication import Authentication
 import mindfulguard.items as items
 from mindfulguard.items.models.item import Item 
+from pydantic_async_validation.fastapi import ensure_request_validation_errors
 
 router = APIRouter()
 
@@ -15,6 +16,8 @@ async def create_item(
     user_agent: Annotated[str, Header()],
     token: str = Header(default=None, alias="Authorization"),
 ):
+    with ensure_request_validation_errors():
+        await json.model_async_validate()
     auth = Authentication()
     obj = items.Item()
     await auth.update_token_info(token, user_agent, request)
@@ -30,6 +33,8 @@ async def update_item(
     user_agent: Annotated[str, Header()],
     token: str = Header(default=None, alias="Authorization"),
 ):
+    with ensure_request_validation_errors():
+        await json.model_async_validate()
     auth = Authentication()
     obj = items.Item()
     await auth.update_token_info(token, user_agent, request)
