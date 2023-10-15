@@ -146,6 +146,42 @@ def create_safe(token:str,name:str,description:str):
     )
     return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
 
+def get_safes_and_items(token:str):
+    response_OK = client.get(SAFE_AND_ITEM_PATH_V1+"/all/item", headers=with_token_OK(token))
+    response_UNAUTHORIZED = client.get(SAFE_AND_ITEM_PATH_V1+"/all/item", headers=with_token_UNAUTHORIZED)
+    return (response_OK,response_UNAUTHORIZED)
+
+def update_safe(token:str,safe_id:str,name:str,description:str):
+    data_ok = {
+        "name": name,
+        "description": description,
+    }
+    data_bad_request = {
+        "name": "0vEzEFk2BGtUcGKUFFXMVp7ESIsZmLw3Ii7VrfbfDsaUMYscnGS5DI9zqveiqBxvL59UQrCAf5KcyxB6k3gW779ckkFVd5v8Km4Fa4yXWMzmTlNbdlfFWF0CstjsaHFll8yNAsPwrd09V05cb1DpFL6QlKiPVuYG8vyd8QQqa06vdNiN2EP5hbwW3SDSDGhL1IrGrzGgShJNcFhgfoZaOdzlBFsr6VKZkl9hwMr668gAvQZ4r1Mqs07sjyZZud2UTg4Y7fMHnJiRva4oOfkE6TjuAUUmTJaQXw66Gjo3b4SAQBa1wEfQysBGnIbnHUiTpMNyiYTLMINYrqohgHYn0QlPqN72PUMDUENspCUHAZthAxONwCyVPAZE5Uzkpec2TXIXJKzFqAJyORECgfO4qqbWIVeQxCA6vERzsLIY08P6GWKUto8qaRZ9COvrFVd0bTmJxp7Xr6nuCY4IbbLhScjW780wpNGcabYKgDoHgMTinozHZ9DVlEvJisqV2OLcuRHvNrTH7x1TtekS3Xl5dGxJOrNsq3zKoRwWCSQhdFlQT7GR8WD7boIJZAaX3ENWOMRlRAIxsk0kAtZZv9r9h7uSVCmhTYczfeJ872HmaYgMLC5OJ8l7s2HTDmVrVUzPOG9g4avPtwzrEeCu9ezBwWXuTvGFDImxlYUcsqcQlqpxmBdaWrY3zdtkaeib",
+        "description": "0vEzEFk2BGtUcGKUFFXMVp7ESIsZmLw3Ii7VrfbfDsaUMYscnGS5DI9zqveiqBxvL59UQrCAf5KcyxB6k3gW779ckkFVd5v8Km4Fa4yXWMzmTlNbdlfFWF0CstjsaHFll8yNAsPwrd09V05cb1DpFL6QlKiPVuYG8vyd8QQqa06vdNiN2EP5hbwW3SDSDGhL1IrGrzGgShJNcFhgfoZaOdzlBFsr6VKZkl9hwMr668gAvQZ4r1Mqs07sjyZZud2UTg4Y7fMHnJiRva4oOfkE6TjuAUUmTJaQXw66Gjo3b4SAQBa1wEfQysBGnIbnHUiTpMNyiYTLMINYrqohgHYn0QlPqN72PUMDUENspCUHAZthAxONwCyVPAZE5Uzkpec2TXIXJKzFqAJyORECgfO4qqbWIVeQxCA6vERzsLIY08P6GWKUto8qaRZ9COvrFVd0bTmJxp7Xr6nuCY4IbbLhScjW780wpNGcabYKgDoHgMTinozHZ9DVlEvJisqV2OLcuRHvNrTH7x1TtekS3Xl5dGxJOrNsq3zKoRwWCSQhdFlQT7GR8WD7boIJZAaX3ENWOMRlRAIxsk0kAtZZv9r9h7uSVCmhTYczfeJ872HmaYgMLC5OJ8l7s2HTDmVrVUzPOG9g4avPtwzrEeCu9ezBwWXuTvGFDImxlYUcsqcQlqpxmBdaWrY3zdtkaeib",
+    }
+    data_unauthorized = {
+        "name": "Hello",
+        "description": "Hello",
+    }
+
+    response_OK = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}",
+        data=data_ok,
+        headers=with_token_OK(token)
+    )
+    response_BAD_REQUEST = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}",
+        data=data_bad_request,
+        headers=with_token_OK(token)
+    )
+    response_UNAUTHORIZED = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}",
+        data=data_unauthorized,
+        headers=with_token_UNAUTHORIZED
+    )
+    return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
+
 def encrypt_string(password:str,salt:str,text:str):
     private_key = PbkdF2HMAC().encrypt(
         password=password,
@@ -204,10 +240,31 @@ def test_safe_and_items():
 
     NAME1 = "Safe 1"
     DESCRIPTION1 = "Description 1" 
-    __create_safe = create_safe(token=token1,name=NAME1,description=DESCRIPTION1)
+    __create_safe = create_safe(
+        token=token1,
+        name=NAME1,
+        description=encrypt_string(PASSWORD1,SALT1,DESCRIPTION1)
+    )
     __create_safe_OK = __create_safe[0]
     __create_safe_BAD_REQUEST = __create_safe[1]
     __create_safe_UNAUTHORIZED = __create_safe[2]
+
+    __get_safes_and_items = get_safes_and_items(token=token1)
+    __get_safes_and_items_OK = __get_safes_and_items[0]
+    safe_id:str = __get_safes_and_items_OK.json()['safes'][0]['id']
+    __get_safes_and_items_UNAUTHORIZED = __get_safes_and_items[1]
+
+    UPDATED_NAME1 = "Updated "+NAME1
+    UPDATED_DESCRIPTION1 = "Updated "+DESCRIPTION1
+    __update_safe = update_safe(
+        token=token1,
+        safe_id=safe_id,
+        name=UPDATED_NAME1,
+        description=encrypt_string(PASSWORD1,SALT1,UPDATED_DESCRIPTION1)
+    )
+    __update_safe_OK = __update_safe[0]
+    __update_safe_BAD_REQUEST = __update_safe[1]
+    __update_safe_UNAUTHORIZED = __update_safe[2]
 
     assert __registration1_OK.status_code == OK
     assert ____registration1_BAD_REQUEST.status_code == BAD_REQUEST
@@ -219,3 +276,10 @@ def test_safe_and_items():
     assert __create_safe_OK.status_code == OK
     assert __create_safe_BAD_REQUEST.status_code == BAD_REQUEST
     assert __create_safe_UNAUTHORIZED.status_code == UNAUTHORIZED
+
+    assert __get_safes_and_items_OK.status_code == OK
+    assert __get_safes_and_items_UNAUTHORIZED.status_code == UNAUTHORIZED
+
+    assert __update_safe_OK.status_code == OK
+    assert __update_safe_BAD_REQUEST.status_code == BAD_REQUEST
+    assert __update_safe_UNAUTHORIZED.status_code == UNAUTHORIZED
