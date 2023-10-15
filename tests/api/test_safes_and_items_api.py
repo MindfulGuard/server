@@ -42,9 +42,9 @@ with_token_UNAUTHORIZED = {
     'Authorization': 'Bearer xqdwu8tPKvnFBPZiQzGanMZ2UM8b8ALJVikZ6iTNK0RdxehS4AUiYy9sgP7Ys7OULF6FsJekTB5XARFzOTolTgR8WTJqw85AhylCS3WxWA6Gr7D5zeHM7VmWT2KpbPzO'
 }
 
-LOGIN1 = "useR123_-"
-PASSWORD1 = "Jnnnj#43n434njkvkjnlzNV^%"
-SALT1 = "617eb042-3dd3-4ace-b69e-65df5e8db514"
+LOGIN1 = "UFnvjknn_-23"
+PASSWORD1 = "#j98j(VJ(BNJNNKVJNvnx"
+SALT1 = "167f8252-5bfc-4cce-b2d0-41c22406c50d"
 
 def get_password_rule()->str:
     response_OK = client.get("/v1/public/configuration", headers=without_token)
