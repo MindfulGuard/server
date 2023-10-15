@@ -5,6 +5,7 @@ import re
 from fastapi.testclient import TestClient
 
 from mindfulguard.__main__ import app
+from tests.api.secure.secure import AES_256, PbkdF2HMAC
 from tests.api.secure.totp_client import TotpClient
 
 
@@ -144,6 +145,47 @@ def create_safe(token:str,name:str,description:str):
         headers=with_token_UNAUTHORIZED
     )
     return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
+
+def encrypt_string(password:str,salt:str,text:str):
+    private_key = PbkdF2HMAC().encrypt(
+        password=password,
+        salt=salt.encode('utf-8')
+    )
+    aes256 = AES_256()
+    cipher:str = aes256.encrypt(private_key,text)
+    return cipher
+
+def decrypt_string(private_key:str,cipher_text:str):
+    try:
+        aes256 = AES_256()
+        decrypt_text:str = aes256.decrypt(
+            private_key=private_key.encode('utf-8'),
+            ciphertext=cipher_text
+        )
+        return decrypt_text
+    except Exception as e:
+        print(e)
+        return ""
+def test_encrypt_decrypt_string():
+    text = "Hello world"
+    cipher:str = encrypt_string(
+        password=PASSWORD1,
+        salt=SALT1,
+        text=text
+    )
+
+    private_key = PbkdF2HMAC().encrypt(
+        password=PASSWORD1,
+        salt=SALT1.encode('utf-8')
+    )
+    decrypt_text = decrypt_string(
+        private_key=str(private_key),
+        cipher_text=cipher
+    )
+
+    assert cipher!="",cipher
+    assert private_key!="",private_key
+    assert decrypt_text==text,decrypt_text
 
 def test_safe_and_items():
     __registration1 = registration(LOGIN1,PASSWORD1,SALT1)
