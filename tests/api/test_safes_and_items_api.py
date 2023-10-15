@@ -251,6 +251,7 @@ def test_safe_and_items():
 
     __get_safes_and_items = get_safes_and_items(token=token1)
     __get_safes_and_items_OK = __get_safes_and_items[0]
+    cipher_description = __get_safes_and_items_OK.json()['safes'][0]['description']
     safe_id:str = __get_safes_and_items_OK.json()['safes'][0]['id']
     __get_safes_and_items_UNAUTHORIZED = __get_safes_and_items[1]
 
@@ -262,6 +263,16 @@ def test_safe_and_items():
         name=UPDATED_NAME1,
         description=encrypt_string(PASSWORD1,SALT1,UPDATED_DESCRIPTION1)
     )
+
+    private_key:bytes = PbkdF2HMAC().encrypt(
+        password=PASSWORD1,
+        salt=SALT1.encode('utf-8')
+    )
+    decrypt_text = decrypt_string(
+        private_key=private_key,
+        cipher_text=cipher_description
+    )
+
     __update_safe_OK = __update_safe[0]
     __update_safe_BAD_REQUEST = __update_safe[1]
     __update_safe_UNAUTHORIZED = __update_safe[2]
@@ -279,6 +290,8 @@ def test_safe_and_items():
 
     assert __get_safes_and_items_OK.status_code == OK
     assert __get_safes_and_items_UNAUTHORIZED.status_code == UNAUTHORIZED
+
+    assert decrypt_text != '',decrypt_text
 
     assert __update_safe_OK.status_code == OK
     assert __update_safe_BAD_REQUEST.status_code == BAD_REQUEST
