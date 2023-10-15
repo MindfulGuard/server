@@ -1,5 +1,5 @@
 import hashlib
-from http.client import BAD_REQUEST, NOT_FOUND, OK
+from http.client import BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED
 import re
 
 from fastapi.testclient import TestClient
@@ -114,6 +114,36 @@ def log_in(login:str,password:str,salt:str,code:str,type:str):
 
     return (response_OK_basic,response_BAD_REQUEST,response_NOT_FOUND)
 
+def create_safe(token:str,name:str,description:str):
+    data_ok = {
+        "name": name,
+        "description": description,
+    }
+    data_bad_request = {
+        "name": "0vEzEFk2BGtUcGKUFFXMVp7ESIsZmLw3Ii7VrfbfDsaUMYscnGS5DI9zqveiqBxvL59UQrCAf5KcyxB6k3gW779ckkFVd5v8Km4Fa4yXWMzmTlNbdlfFWF0CstjsaHFll8yNAsPwrd09V05cb1DpFL6QlKiPVuYG8vyd8QQqa06vdNiN2EP5hbwW3SDSDGhL1IrGrzGgShJNcFhgfoZaOdzlBFsr6VKZkl9hwMr668gAvQZ4r1Mqs07sjyZZud2UTg4Y7fMHnJiRva4oOfkE6TjuAUUmTJaQXw66Gjo3b4SAQBa1wEfQysBGnIbnHUiTpMNyiYTLMINYrqohgHYn0QlPqN72PUMDUENspCUHAZthAxONwCyVPAZE5Uzkpec2TXIXJKzFqAJyORECgfO4qqbWIVeQxCA6vERzsLIY08P6GWKUto8qaRZ9COvrFVd0bTmJxp7Xr6nuCY4IbbLhScjW780wpNGcabYKgDoHgMTinozHZ9DVlEvJisqV2OLcuRHvNrTH7x1TtekS3Xl5dGxJOrNsq3zKoRwWCSQhdFlQT7GR8WD7boIJZAaX3ENWOMRlRAIxsk0kAtZZv9r9h7uSVCmhTYczfeJ872HmaYgMLC5OJ8l7s2HTDmVrVUzPOG9g4avPtwzrEeCu9ezBwWXuTvGFDImxlYUcsqcQlqpxmBdaWrY3zdtkaeib",
+        "description": "0vEzEFk2BGtUcGKUFFXMVp7ESIsZmLw3Ii7VrfbfDsaUMYscnGS5DI9zqveiqBxvL59UQrCAf5KcyxB6k3gW779ckkFVd5v8Km4Fa4yXWMzmTlNbdlfFWF0CstjsaHFll8yNAsPwrd09V05cb1DpFL6QlKiPVuYG8vyd8QQqa06vdNiN2EP5hbwW3SDSDGhL1IrGrzGgShJNcFhgfoZaOdzlBFsr6VKZkl9hwMr668gAvQZ4r1Mqs07sjyZZud2UTg4Y7fMHnJiRva4oOfkE6TjuAUUmTJaQXw66Gjo3b4SAQBa1wEfQysBGnIbnHUiTpMNyiYTLMINYrqohgHYn0QlPqN72PUMDUENspCUHAZthAxONwCyVPAZE5Uzkpec2TXIXJKzFqAJyORECgfO4qqbWIVeQxCA6vERzsLIY08P6GWKUto8qaRZ9COvrFVd0bTmJxp7Xr6nuCY4IbbLhScjW780wpNGcabYKgDoHgMTinozHZ9DVlEvJisqV2OLcuRHvNrTH7x1TtekS3Xl5dGxJOrNsq3zKoRwWCSQhdFlQT7GR8WD7boIJZAaX3ENWOMRlRAIxsk0kAtZZv9r9h7uSVCmhTYczfeJ872HmaYgMLC5OJ8l7s2HTDmVrVUzPOG9g4avPtwzrEeCu9ezBwWXuTvGFDImxlYUcsqcQlqpxmBdaWrY3zdtkaeib",
+    }
+    data_unauthorized = {
+        "name": "Hello",
+        "description": "Hello",
+    }
+
+    response_OK = client.post(
+        SAFE_AND_ITEM_PATH_V1,
+        data=data_ok,
+        headers=with_token_OK(token)
+    )
+    response_BAD_REQUEST = client.post(
+        SAFE_AND_ITEM_PATH_V1,
+        data=data_bad_request,
+        headers=with_token_OK(token)
+    )
+    response_UNAUTHORIZED = client.post(
+        SAFE_AND_ITEM_PATH_V1,
+        data=data_unauthorized,
+        headers=with_token_UNAUTHORIZED
+    )
+    return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
 
 def test_safe_and_items():
     __registration1 = registration(LOGIN1,PASSWORD1,SALT1)
@@ -128,9 +158,20 @@ def test_safe_and_items():
     __log_in1_BAD_REQUEST = __log_in1[1]
     __log_in1_NOT_FOUND = __log_in1[2]
 
+    NAME1 = "Safe 1"
+    DESCRIPTION1 = "Description 1" 
+    __create_safe = create_safe(token=token1,name=NAME1,description=DESCRIPTION1)
+    __create_safe_OK = __create_safe[0]
+    __create_safe_BAD_REQUEST = __create_safe[1]
+    __create_safe_UNAUTHORIZED = __create_safe[2]
+
     assert __registration1_OK.status_code == OK
     assert ____registration1_BAD_REQUEST.status_code == BAD_REQUEST
 
     assert __log_in1_OK.status_code == OK
     assert __log_in1_BAD_REQUEST.status_code == BAD_REQUEST
     assert __log_in1_NOT_FOUND.status_code == NOT_FOUND
+
+    assert __create_safe_OK.status_code == OK
+    assert __create_safe_BAD_REQUEST.status_code == BAD_REQUEST
+    assert __create_safe_UNAUTHORIZED.status_code == UNAUTHORIZED
