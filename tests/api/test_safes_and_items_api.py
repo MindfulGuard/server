@@ -155,16 +155,16 @@ def encrypt_string(password:str,salt:str,text:str):
     cipher:str = aes256.encrypt(private_key,text)
     return cipher
 
-def decrypt_string(private_key:str,cipher_text:str):
+def decrypt_string(private_key:bytes,cipher_text:str):
     try:
         aes256 = AES_256()
         decrypt_text:str = aes256.decrypt(
-            private_key=private_key.encode('utf-8'),
+            private_key=private_key,
             ciphertext=cipher_text
         )
         return decrypt_text
     except Exception as e:
-        print(e)
+        print(f"Error during decryption: {e}")
         return ""
 
 def test_encrypt_decrypt_string():
@@ -175,17 +175,18 @@ def test_encrypt_decrypt_string():
         text=text
     )
 
-    private_key = PbkdF2HMAC().encrypt(
+    private_key:bytes = PbkdF2HMAC().encrypt(
         password=PASSWORD1,
         salt=SALT1.encode('utf-8')
     )
+
     decrypt_text = decrypt_string(
-        private_key=private_key.hex(),
+        private_key=private_key,
         cipher_text=cipher
     )
 
     assert cipher!="",cipher
-    assert private_key!="",private_key
+    assert private_key!=b"",private_key
     assert decrypt_text==text,decrypt_text
 
 def test_safe_and_items():
