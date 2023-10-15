@@ -268,7 +268,7 @@ def test_safe_and_items():
         password=PASSWORD1,
         salt=SALT1.encode('utf-8')
     )
-    decrypt_text = decrypt_string(
+    decrypt_description = decrypt_string(
         private_key=private_key,
         cipher_text=cipher_description
     )
@@ -291,7 +291,8 @@ def test_safe_and_items():
     assert __get_safes_and_items_OK.status_code == OK
     assert __get_safes_and_items_UNAUTHORIZED.status_code == UNAUTHORIZED
 
-    assert decrypt_text != '',decrypt_text
+    assert decrypt_description != '',decrypt_description
+    assert decrypt_description == DESCRIPTION1,decrypt_description
 
     assert __update_safe_OK.status_code == OK
     assert __update_safe_BAD_REQUEST.status_code == BAD_REQUEST
