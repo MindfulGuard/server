@@ -192,7 +192,7 @@ def create_item(token:str,safe_id:str):
 
     header_with_token_UNAUTHORIZED = {
         'User-Agent': 'python:3.10/windows',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
         'X-Real-IP': '127.0.0.1',
         'Authorization': 'Bearer xqdwu8tPKvnFBPZiQzGanMZ2UM8b8ALJVikZ6iTNK0RdxehS4AUiYy9sgP7Ys7OULF6FsJekTB5XARFzOTolTgR8WTJqw85AhylCS3WxWA6Gr7D5zeHM7VmWT2KpbPzO'
     }
