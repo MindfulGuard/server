@@ -182,7 +182,7 @@ def update_safe(token:str,safe_id:str,name:str,description:str):
     )
     return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
 
-def create_item(token:str,safe_id:str):
+def create_item(password:str,salt:str,token:str,safe_id:str):
     header_with_token_OK = {
         'User-Agent': 'python:3.10/windows',
         'Content-Type': 'application/json',
@@ -200,7 +200,7 @@ def create_item(token:str,safe_id:str):
     data_ok = {
         "title":"Title",
         "category":"LOGIN",
-        "notes":"There should be notes here",
+        "notes":encrypt_string(password,salt,"There should be notes here"),
         "tags":["the values in the tags must be of the string type","tag2"],
         "sections":[
             {
@@ -209,12 +209,12 @@ def create_item(token:str,safe_id:str):
                 {
                 "type":"STRING",
                 "label":"login",
-                "value":"user1"
+                "value":encrypt_string(password,salt,"user1")
                 },
                 {
                 "type":"PASSWORD",
                 "label":"password",
-                "value":"12345"
+                "value":encrypt_string(password,salt,"12345")
                 }
             ]
             },
@@ -224,12 +224,12 @@ def create_item(token:str,safe_id:str):
                 {
                 "type":"URL",
                 "label":"title",
-                "value":"https://example.com"
+                "value":encrypt_string(password,salt,"https://example.com")
                 },
                 {
                 "type":"EMAIL",
                 "label":"email",
-                "value":"user@example.com"
+                "value":encrypt_string(password,salt,"user@example.com")
                 }
             ]
             }
@@ -388,6 +388,8 @@ def test_safe_and_items():
     __update_safe_UNAUTHORIZED = __update_safe[2]
 
     __create_item = create_item(
+        password=PASSWORD1,
+        salt=SALT1,
         token=token1,
         safe_id=safe_id
     )
