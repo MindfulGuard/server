@@ -210,9 +210,25 @@ def create_item(token:str,safe_id:str):
                 "value":"12345"
                 }
             ]
+            },
+            {
+            "section":"Other sections",
+            "fields":[
+                {
+                "type":"URL",
+                "label":"title",
+                "value":"https://example.com"
+                },
+                {
+                "type":"EMAIL",
+                "label":"email",
+                "value":"user@example.com"
+                }
+            ]
             }
         ]
     }
+
     data_unprocessable_content = {
         "title":"Title",
         "category":"NOT_LOGIN",
