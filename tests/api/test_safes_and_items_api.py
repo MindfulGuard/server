@@ -166,6 +166,7 @@ def decrypt_string(private_key:str,cipher_text:str):
     except Exception as e:
         print(e)
         return ""
+
 def test_encrypt_decrypt_string():
     text = "Hello world"
     cipher:str = encrypt_string(
@@ -179,7 +180,7 @@ def test_encrypt_decrypt_string():
         salt=SALT1.encode('utf-8')
     )
     decrypt_text = decrypt_string(
-        private_key=str(private_key),
+        private_key=private_key.hex(),
         cipher_text=cipher
     )
 
