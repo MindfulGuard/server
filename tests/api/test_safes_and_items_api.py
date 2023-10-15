@@ -270,17 +270,17 @@ def create_item(token:str,safe_id:str):
 
     response_OK = client.post(
         SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item",
-        data=data_ok,
+        json=data_ok,
         headers=header_with_token_OK
     )
     response_UNPROCESSABLE_CONTENT = client.post(
         SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item",
-        data=data_unprocessable_content,
+        json=data_unprocessable_content,
         headers=header_with_token_OK
     )
     response_UNAUTHORIZED = client.post(
         SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item",
-        data=data_ok,
+        json=data_ok,
         headers=with_token_UNAUTHORIZED
     )
     return (response_OK,response_UNPROCESSABLE_CONTENT,response_UNAUTHORIZED)
