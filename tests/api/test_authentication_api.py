@@ -1,11 +1,8 @@
 import hashlib
 from http.client import BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED
-from os import replace
 import re
 from fastapi.testclient import TestClient
-from httpcore import stream
 from mindfulguard.__main__ import app
-from tests.api.secure.secure import AES_256, PbkdF2HMAC
 from tests.api.secure.totp_client import TotpClient
 from tests.api.utils import is_list
 
