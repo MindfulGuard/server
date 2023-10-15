@@ -409,6 +409,6 @@ def test_safe_and_items():
     assert __update_safe_BAD_REQUEST.status_code == BAD_REQUEST
     assert __update_safe_UNAUTHORIZED.status_code == UNAUTHORIZED
 
-    assert __create_item_OK.status_code == OK
+    assert __create_item_OK.status_code == OK,__create_item_OK.json()
     assert __create_item_UNPROCESSABLE_CONTENT.status_code == UNPROCESSABLE_ENTITY
     assert __create_item_UNAUTHORIZED.status_code == UNAUTHORIZED
