@@ -477,7 +477,6 @@ def test_safe_and_items():
     __get_safes_and_items = get_safes_and_items(token=token1)
     __get_safes_and_items_OK = __get_safes_and_items[0]
     cipher_description = __get_safes_and_items_OK.json()['safes'][0]['description']
-    item_id:str = __get_safes_and_items_OK.json()['list'][0]['items'][0]['id']
     safe_id:str = __get_safes_and_items_OK.json()['safes'][0]['id']
     __get_safes_and_items_UNAUTHORIZED = __get_safes_and_items[1]
 
@@ -512,7 +511,7 @@ def test_safe_and_items():
     __create_item_OK = __create_item[0]
     __create_item_UNPROCESSABLE_CONTENT = __create_item[1]
     __create_item_UNAUTHORIZED = __create_item[2]
-
+    item_id:str = __get_safes_and_items_OK.json()['list'][0]['items'][0]['id']
     __update_item = update_item(
         password=PASSWORD1,
         salt=SALT1,
