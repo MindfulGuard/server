@@ -1,5 +1,5 @@
 import hashlib
-from http.client import BAD_REQUEST, NOT_FOUND, OK, UNAUTHORIZED, UNPROCESSABLE_ENTITY
+from http.client import BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNAUTHORIZED, UNPROCESSABLE_ENTITY
 import re
 
 from fastapi.testclient import TestClient
@@ -292,6 +292,121 @@ def create_item(password:str,salt:str,token:str,safe_id:str):
     )
     return (response_OK,response_UNPROCESSABLE_CONTENT,response_UNAUTHORIZED)
 
+def update_item(password:str,salt:str,token:str,safe_id:str,item_id:str):
+    header_with_token_OK = {
+        'User-Agent': 'python:3.10/windows',
+        'Content-Type': 'application/json',
+        'X-Real-IP': '127.0.0.1',
+        'Authorization': 'Bearer '+token
+    }
+
+    header_with_token_UNAUTHORIZED = {
+        'User-Agent': 'python:3.10/windows',
+        'Content-Type': 'application/json',
+        'X-Real-IP': '127.0.0.1',
+        'Authorization': 'Bearer xqdwu8tPKvnFBPZiQzGanMZ2UM8b8ALJVikZ6iTNK0RdxehS4AUiYy9sgP7Ys7OULF6FsJekTB5XARFzOTolTgR8WTJqw85AhylCS3WxWA6Gr7D5zeHM7VmWT2KpbPzO'
+    }
+
+    data_ok = {
+        "title":"Updated Title :D",
+        "category":"LOGIN",
+        "notes":encrypt_string(password,salt,"There should be notes here"),
+        "tags":["tag4","tag)0"],
+        "sections":[
+            {
+            "section":"INIT",
+            "fields":[
+                {
+                "type":"STRING",
+                "label":"login",
+                "value":encrypt_string(password,salt,"not_user")
+                },
+                {
+                "type":"PASSWORD",
+                "label":"password",
+                "value":encrypt_string(password,salt,"543534534423423")
+                }
+            ]
+            },
+            {
+            "section":"Updated Other sections",
+            "fields":[
+                {
+                "type":"URL",
+                "label":"title",
+                "value":encrypt_string(password,salt,"https://example.com")
+                },
+                {
+                "type":"EMAIL",
+                "label":"email",
+                "value":encrypt_string(password,salt,"user@example.com")
+                }
+            ]
+            }
+        ]
+    }
+
+    data_unprocessable_content = {
+        "title":"Title",
+        "category":"NOT_LOGIN",
+        "notes":"There should be notes here",
+        "tags":["the values in the tags must be of the string type","tag2"],
+        "sections":[
+            {
+            "section":"INI",
+            "fields":[
+                {
+                "type":"STRING",
+                "label":"login",
+                "value":"user1"
+                },
+                {
+                "type":"PASSWORD",
+                "label":"password",
+                "value":"12345"
+                }
+            ]
+            },
+            {
+            "section":"Other sections",
+            "fields":[
+                {
+                "type":"URL",
+                "label":"title",
+                "value":"https://example.com"
+                },
+                {
+                "type":"EMAIL",
+                "label":"email",
+                "value":"user@example.com"
+                }
+            ]
+            }
+        ]
+    }
+
+    response_OK = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item/{item_id}",
+        json=data_ok,
+        headers=header_with_token_OK
+    )
+    response_UNPROCESSABLE_CONTENT = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item/{item_id}",
+        json=data_unprocessable_content,
+        headers=header_with_token_OK
+    )
+    response_UNAUTHORIZED = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item/{item_id}",
+        json=data_ok,
+        headers=header_with_token_UNAUTHORIZED
+    )
+    response_INTERNAL_SERVER_ERROR = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item/9738e160-241c-4dbb-8dac-91c330aa5489",
+        json=data_ok,
+        headers=header_with_token_UNAUTHORIZED
+    )
+    return (response_OK,response_UNPROCESSABLE_CONTENT,response_UNAUTHORIZED,response_INTERNAL_SERVER_ERROR)
+
 def encrypt_string(password:str,salt:str,text:str):
     private_key = PbkdF2HMAC().encrypt(
         password=password,
@@ -362,6 +477,7 @@ def test_safe_and_items():
     __get_safes_and_items = get_safes_and_items(token=token1)
     __get_safes_and_items_OK = __get_safes_and_items[0]
     cipher_description = __get_safes_and_items_OK.json()['safes'][0]['description']
+    item_id:str = __get_safes_and_items_OK.json()['list'][0]['items'][0]['id']
     safe_id:str = __get_safes_and_items_OK.json()['safes'][0]['id']
     __get_safes_and_items_UNAUTHORIZED = __get_safes_and_items[1]
 
@@ -397,6 +513,18 @@ def test_safe_and_items():
     __create_item_UNPROCESSABLE_CONTENT = __create_item[1]
     __create_item_UNAUTHORIZED = __create_item[2]
 
+    __update_item = update_item(
+        password=PASSWORD1,
+        salt=SALT1,
+        token=token1,
+        safe_id=safe_id,
+        item_id=item_id
+    )
+    __update_item_OK = __update_item[0]
+    __update_item_UNPROCESSABLE_CONTENT = __update_item[1]
+    __update_item_UNAUTHORIZED = __update_item[2]
+    __update_item_INTERNAL_SERVER_ERROR = __update_item[3]
+
     assert __registration1_OK.status_code == OK
     assert ____registration1_BAD_REQUEST.status_code == BAD_REQUEST
 
@@ -421,3 +549,8 @@ def test_safe_and_items():
     assert __create_item_OK.status_code == OK,__create_item_OK
     assert __create_item_UNPROCESSABLE_CONTENT.status_code == UNPROCESSABLE_ENTITY
     assert __create_item_UNAUTHORIZED.status_code == UNAUTHORIZED
+
+    assert __update_item_OK.status_code == OK
+    assert __update_item_UNPROCESSABLE_CONTENT.status_code == UNPROCESSABLE_ENTITY
+    assert __update_item_UNAUTHORIZED.status_code == UNAUTHORIZED
+    assert __update_item_INTERNAL_SERVER_ERROR.status_code == INTERNAL_SERVER_ERROR
