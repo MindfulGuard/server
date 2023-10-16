@@ -403,7 +403,7 @@ def update_item(password:str,salt:str,token:str,safe_id:str,item_id:str):
     response_INTERNAL_SERVER_ERROR = client.put(
         SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item/9738e160-241c-4dbb-8dac-91c330aa5489",
         json=data_ok,
-        headers=header_with_token_UNAUTHORIZED
+        headers=header_with_token_OK
     )
     return (response_OK,response_UNPROCESSABLE_CONTENT,response_UNAUTHORIZED,response_INTERNAL_SERVER_ERROR)
 
