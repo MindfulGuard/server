@@ -511,7 +511,8 @@ def test_safe_and_items():
     __create_item_OK = __create_item[0]
     __create_item_UNPROCESSABLE_CONTENT = __create_item[1]
     __create_item_UNAUTHORIZED = __create_item[2]
-    item_id:str = __get_safes_and_items_OK.json()['list'][0]['items'][0]['id']
+    __get_items = get_safes_and_items(token=token1)[0]
+    item_id:str = __get_items.json()['list'][0]['items'][0]['id']
     __update_item = update_item(
         password=PASSWORD1,
         salt=SALT1,
