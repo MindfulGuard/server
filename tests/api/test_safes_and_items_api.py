@@ -407,6 +407,44 @@ def update_item(password:str,salt:str,token:str,safe_id:str,item_id:str):
     )
     return (response_OK,response_UNPROCESSABLE_CONTENT,response_UNAUTHORIZED,response_INTERNAL_SERVER_ERROR)
 
+def set_favorite(token:str,safe_id:str,item_id:str):
+    response_OK = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item/{item_id}/favorite",
+        headers=with_token_OK(token)
+    )
+    response_BAD_REQUEST = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/52345324-5324534535345/item/berbrewrvevrewvre/favorite",
+        headers=with_token_OK(token)
+    )
+    response_UNAUTHORIZED = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/item/{item_id}/favorite",
+        headers=with_token_UNAUTHORIZED
+    )
+    response_INTERNAL_SERVER_ERROR = client.put(
+        SAFE_AND_ITEM_PATH_V1+f"/1fafbd9c-9c42-4bf7-915e-81f8ad0c4813/item/60bb9659-695e-48dd-a26d-60ff83fffe54/favorite",
+        headers=with_token_OK(token)
+    )
+    return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED,response_INTERNAL_SERVER_ERROR)
+
+def delete_safe(token:str,safe_id:str):
+    response_OK = client.delete(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}",
+        headers=with_token_OK(token)
+    )
+    response_BAD_REQUEST = client.delete(
+        SAFE_AND_ITEM_PATH_V1+f"/52345324-5324534535345",
+        headers=with_token_OK(token)
+    )
+    response_UNAUTHORIZED = client.delete(
+        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}",
+        headers=with_token_UNAUTHORIZED
+    )
+    response_NOT_FOUND = client.delete(
+        SAFE_AND_ITEM_PATH_V1+f"/1fafbd9c-9c42-4bf7-915e-81f8ad0c4813",
+        headers=with_token_OK(token)
+    )
+    return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED,response_NOT_FOUND)
+
 def encrypt_string(password:str,salt:str,text:str):
     private_key = PbkdF2HMAC().encrypt(
         password=password,
@@ -511,6 +549,7 @@ def test_safe_and_items():
     __create_item_OK = __create_item[0]
     __create_item_UNPROCESSABLE_CONTENT = __create_item[1]
     __create_item_UNAUTHORIZED = __create_item[2]
+
     __get_items = get_safes_and_items(token=token1)[0]
     item_id:str = __get_items.json()['list'][0]['items'][0]['id']
     __update_item = update_item(
@@ -524,6 +563,25 @@ def test_safe_and_items():
     __update_item_UNPROCESSABLE_CONTENT = __update_item[1]
     __update_item_UNAUTHORIZED = __update_item[2]
     __update_item_INTERNAL_SERVER_ERROR = __update_item[3]
+
+    __set_favorite = set_favorite(
+        token=token1,
+        safe_id=safe_id,
+        item_id=item_id
+    )
+    __set_favorite_OK = __set_favorite[0]
+    __set_favorite_BAD_REQUEST = __set_favorite[1]
+    __set_favorite_UNAUTHORIZED  = __set_favorite[2]
+    __set_favorite_INTERNAL_SERVER_ERROR = __set_favorite[3]
+
+    __delete_safe = delete_safe(
+        token=token1,
+        safe_id=safe_id
+    )
+    __delete_safe_OK = __delete_safe[0]
+    __delete_safe_BAD_REQUEST = __delete_safe[1]
+    __delete_safe_UNAUTHORIZED = __delete_safe[2]
+    __delete_safe_NOT_FOUND = __delete_safe[3]
 
     assert __registration1_OK.status_code == OK
     assert ____registration1_BAD_REQUEST.status_code == BAD_REQUEST
@@ -554,3 +612,13 @@ def test_safe_and_items():
     assert __update_item_UNPROCESSABLE_CONTENT.status_code == UNPROCESSABLE_ENTITY
     assert __update_item_UNAUTHORIZED.status_code == UNAUTHORIZED
     assert __update_item_INTERNAL_SERVER_ERROR.status_code == INTERNAL_SERVER_ERROR
+
+    assert __set_favorite_OK.status_code == OK
+    assert __set_favorite_BAD_REQUEST.status_code == BAD_REQUEST
+    assert __set_favorite_UNAUTHORIZED.status_code == UNAUTHORIZED
+    assert __set_favorite_INTERNAL_SERVER_ERROR.status_code == INTERNAL_SERVER_ERROR
+
+    assert __delete_safe_OK.status_code == OK
+    assert __delete_safe_BAD_REQUEST.status_code == BAD_REQUEST
+    assert __delete_safe_UNAUTHORIZED.status_code == UNAUTHORIZED
+    assert __delete_safe_NOT_FOUND.status_code == NOT_FOUND
