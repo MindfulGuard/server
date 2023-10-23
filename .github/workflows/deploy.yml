@@ -1,0 +1,112 @@
+name: CI-CD
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgresql:
+        image: postgres:15.4
+        env:
+          POSTGRES_USER: mindfulguard
+          POSTGRES_PASSWORD: mindfulguard_password
+          POSTGRES_DB: mindfulguard_production
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      admin_login: "UserADmin12345_-"
+      admin_password: "AdminPassword_-4234__-43223"
+      DATABASE_PORT: 5432
+      DATABASE_USER: mindfulguard
+      DATABASE_PASSWORD: mindfulguard_password
+      
+    steps:
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - uses: actions/checkout@v4
+      - name: Database Initialization
+        run: |
+          pwd
+          psql -h localhost -d mindfulguard_production -U mindfulguard -f docker/dumps/pgsql.sql
+        env:
+          PGPASSWORD: mindfulguard_password
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          architecture: 'x64'
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Show Environment Variables
+        run: |
+          echo $admin_login
+          echo $admin_password
+          echo $DATABASE_PORT
+          echo $DATABASE_USER
+          echo $DATABASE_PASSWORD
+      - name: Installing dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      - name: Initializing the administrator
+        run: make -f build/Makefile init admin_login="$admin_login" admin_password="$admin_password"
+      - name: Setup service "routines"
+        run: |
+          sudo chmod +x routines/setup_service.sh
+          sudo ./routines/setup_service.sh
+      - name: Running Tests
+        run: |
+          python -m pytest -rA
+
+  deploy:
+    name: Deploy
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ needs.test.result == 'success' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Updating
+        run: |
+          sudo apt-get update
+      
+      - name: Deleting unnecessary files and directories
+        run: sudo rm -rf docker build .github
+
+      - name: Login to GitHub Container Registry
+        run: echo ${{ secrets.ACTIONS }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+      
+      - name: Convert repository owner to lowercase
+        id: convert_repo_owner
+        run: |
+          REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "::set-output name=repo_owner::$REPO_OWNER"
+      
+      - name: Build and Push Docker Container
+        run: |
+          branch_name=$(echo ${{ github.ref }} | sed 's|refs/heads/||' | tr -d -c '[:alnum:]' | tr '[:upper:]' '[:lower:]')
+          echo "Branch name is $branch_name"
+          docker buildx build --push --platform linux/amd64 -t ghcr.io/mindfulguard/server:${branch_name} .
