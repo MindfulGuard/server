@@ -1,0 +1,11 @@
+mindfulguard-venv/
+mindfulguard-build-venv/
+mindfulguard/__pycache__/
+.vscode/
+mindfulguard/.vscode/
+.idea/
+mindfulguard/.idea/
+__pycache__/
+mindfulguard.egg-info/
+.pytest_cache
+minio-data
