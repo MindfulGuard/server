@@ -32,5 +32,4 @@ networks:
    driver: bridge
 
 volumes:
-  minio:
   pgdata:

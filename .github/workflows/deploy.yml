@@ -107,6 +107,6 @@ jobs:
       
       - name: Build and Push Docker Container
         run: |
-          branch_name=$(echo ${{ github.ref }} | sed 's|refs/heads/||' | tr -d -c '[:alnum:]' | tr '[:upper:]' '[:lower:]')
+          branch_name=$(echo ${{ github.ref }} | sed 's|refs/heads/||' | tr '[:upper:]' '[:lower:]')
           echo "Branch name is $branch_name"
           docker buildx build --push --platform linux/amd64 -t ghcr.io/mindfulguard/server:${branch_name} .
