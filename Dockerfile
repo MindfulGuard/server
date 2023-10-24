@@ -6,4 +6,4 @@ COPY . /home/runner/work/server/server
 
 RUN make pip-i
 
-CMD ["bash", "-c", "make run | python -m routines/__main__.py"]
+CMD ["make run | python -m routines/__main__.py"]
