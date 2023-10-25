@@ -49,16 +49,13 @@ class Admin:
             value_dict = {}
             if is_auth != OK:
                 return (value_dict,is_auth)
-            
-            query:str = "" 
+
             if key == "u_id":
-                query = "SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at FROM u_users WHERE u_id = $1;"
+                values = await connection.fetch("SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at FROM u_users WHERE u_id = $1;",value)
             elif key == "u_login":
-                query = "SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at FROM u_users WHERE u_login = $1;"
+                values = await connection.fetch("SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at FROM u_users WHERE u_login = $1;",value)
             else:
-                query = "SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at FROM u_users WHERE True = False;"
-    
-            values = await connection.fetch(query,value)
+                values = await connection.fetch("SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at FROM u_users WHERE True = False;")
 
             for record in values:
                 value_dict = {
