@@ -239,6 +239,53 @@
   | count_users | integer | displays the total number of users | &#10007; | |
   | list | array | the array contains 10 users per page | &#10007; | |
 
+- ## Search Users
+  - ### Request
+  
+  ```http
+  GET /v1/admin/users/search?by=id|username
+  ```
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/x-www-form-urlencoded |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  
+  - ### Responses
+
+  | Status code | Description |
+  | - | - |
+  | [OK](#admin_search_users_200) | | |
+  | [NOT_FOUND](#admin_search_users_404) | | |
+  | [BAD REQUEST](#400) | | |
+  | [UNAUTHORIZED](#401) | | |
+  | [FORBIDDEN](#403) | | |
+  | [INTERNAL_SERVER_ERROR](#500) | | |
+
+    ##### admin_search_users_200
+    ```json
+    {
+        "id": "91ac1500-7567-4021-b87a-156f79c45281",
+        "login": "User_-12345",
+        "ip": "127.0.0.1",
+        "confirm": true,
+        "created_at": 1698245381
+    }
+    ```
+
+    ##### admin_search_users_404
+    ```json
+    {}
+    ```
+
 - ## Get Settings
   - ### Request
   
