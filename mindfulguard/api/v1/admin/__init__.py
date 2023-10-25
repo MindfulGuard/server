@@ -19,6 +19,20 @@ async def get_info(
     admin = Admin()
     return await admin.get_users(token, page, response)
 
+@router.get("/users/search")
+async def search(
+    value: Annotated[str, Form()],
+    user_agent: Annotated[str, Header()],
+    request: Request,
+    response: Response,
+    token: str = Header(default=None, alias="Authorization"),
+    by:str  = Query(),
+):
+    auth = Authentication()
+    await auth.update_token_info(token,user_agent,request)
+    admin = Admin()
+    return await admin.search_users(token, by, value, response)
+
 @router.get("/settings")
 async def get_settings(
     user_agent: Annotated[str, Header()],

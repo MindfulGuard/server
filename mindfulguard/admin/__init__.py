@@ -2,11 +2,11 @@ from typing import Any
 from fastapi import Request, Response
 
 from mindfulguard.admin.executors.settings import GetSettings, UpdateSettings
-from mindfulguard.admin.executors.get_users import GetUsers
+from mindfulguard.admin.executors.get_users import GetUsers, SearchUsers
 from mindfulguard.admin.executors.user_management import CreateUser, DeleteUser
 from mindfulguard.core.languages import Language
 from mindfulguard.core.languages.responses import Responses
-from mindfulguard.core.response_status_codes import BAD_REQUEST, CONFLICT, FORBIDDEN, INTERNAL_SERVER_ERROR, OK, SERVICE_UNAVAILABLE, UNAUTHORIZED
+from mindfulguard.core.response_status_codes import BAD_REQUEST, CONFLICT, FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SERVICE_UNAVAILABLE, UNAUTHORIZED
 import mindfulguard.utils as utils
 
 
@@ -32,6 +32,26 @@ class Admin:
             return self.__json_responses.forbidden()
         elif status_code == OK:
             return {"page":page,"total_pages":total_pages,"total_users":count_users,"list":arr}
+        else:
+            return self.__json_responses.server_error()
+        
+    async def search_users(self,token:str,key:str,value:str,response:Response):
+        obj = await SearchUsers(key,value).execute(token)
+        arr = obj[0]
+        status_code:int = obj[1]
+
+        response.status_code = status_code
+
+        if status_code == BAD_REQUEST:
+            return self.__json_responses.data_not_valid()
+        elif status_code == UNAUTHORIZED:
+            return self.__json_responses.unauthorized()
+        elif status_code == NOT_FOUND:
+            return {"msg":self.__lang.user_not_found()}
+        elif status_code == FORBIDDEN:
+            return self.__json_responses.forbidden()
+        elif status_code == OK:
+            return arr
         else:
             return self.__json_responses.server_error()
         

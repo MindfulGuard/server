@@ -115,7 +115,29 @@ async def get_users():
     )
 
     return (result_FORBIDDEN,result_UNAUTHORIZED,result_OK)
+
+async def search_users():
+    admin = Admin()
     
+    result_OK = await admin.search_users(
+        token=TOKEN,
+        key="username",
+        value=LOGIN
+    )
+
+    result_NOT_FOUND = await admin.search_users(
+        token=TOKEN,
+        key="username",
+        value="hello"
+    )
+
+    result_UNAUTHORIZED = await admin.search_users(
+        token="79238475b98349b579m34v",
+        key="username",
+        value=LOGIN
+    )
+
+    return (result_OK,result_NOT_FOUND,result_UNAUTHORIZED)
 
 @pytest.mark.asyncio
 async def test_admin():
@@ -158,3 +180,12 @@ async def test_admin():
 
     assert __get_users1_UNAUTHORIZED[1] == UNAUTHORIZED
     assert __get_users1_OK[1] == OK
+
+    __search_users = await search_users()
+    __search_users_OK = __search_users[0]
+    __search_users_NOT_FOUND = __search_users[1]
+    __search_users_UNAUTHORIZED = __search_users[2]
+
+    assert __search_users_OK[1] == OK
+    assert __search_users_NOT_FOUND[1] == NOT_FOUND
+    assert __search_users_UNAUTHORIZED[1] == UNAUTHORIZED

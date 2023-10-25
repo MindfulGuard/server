@@ -46,3 +46,26 @@ class GetUsers:
 
     async def __get_pages(self)->int:
         return ceil(await self.__admin_db.get_count_users() / PER_PAGE)
+    
+class SearchUsers:
+    def __init__(self,key:str,value:str):
+        self.__key = key
+        self.__value = value
+        self.__dict = {
+            "id":"u_id",
+            "username":"u_login"
+        }
+        self.__admin_db = Admin()
+
+    async def execute(self,token:str):
+        validation = Validation()
+        tokenf:str = get_authorization_token(token)
+
+        if (
+            validation.validate_token(tokenf) == False
+            or self.__key not in self.__dict
+            or self.__key == "id" and not validation.validate_is_uuid(self.__value)
+        ):
+            return ({},BAD_REQUEST)
+    
+        return await self.__admin_db.search_users(sha256s(tokenf),self.__dict[self.__key],self.__value)

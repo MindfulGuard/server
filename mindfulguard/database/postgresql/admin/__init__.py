@@ -40,6 +40,42 @@ class Admin:
         finally:
             if connection:
                 await connection.close()
+
+    async def search_users(self,token:str,key:str,value:str):
+        connection = None
+        try:
+            connection = await Connection().connect()
+            is_auth:int = await Authentication().is_auth_admin(connection,token)
+            value_dict = {}
+            if is_auth != OK:
+                return (value_dict,is_auth)
+            
+            query:str = "" 
+            if key == "u_id":
+                query = "SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at FROM u_users WHERE u_id = $1;"
+            elif key == "u_login":
+                query = "SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at FROM u_users WHERE u_login = $1;"
+            else:
+                query = "SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at FROM u_users WHERE True = False;"
+    
+            values = await connection.fetch(query,value)
+
+            for record in values:
+                value_dict = {
+                    'id': record['u_id'],
+                    'login': record['u_login'],
+                    'ip': record['u_reg_ip'],
+                    'confirm': record['u_confirm'],
+                    'created_at': record['u_created_at'],
+                }
+            if not values:
+                return ({}, NOT_FOUND)
+            return (value_dict,OK)
+        except asyncpg.exceptions.ConnectionDoesNotExistError:
+            return ({},INTERNAL_SERVER_ERROR)
+        finally:
+            if connection:
+                await connection.close()
     
     async def get_count_users(self)->int:
         connection = None
