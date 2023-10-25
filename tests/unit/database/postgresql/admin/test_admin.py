@@ -116,7 +116,7 @@ async def get_users():
 
     return (result_FORBIDDEN,result_UNAUTHORIZED,result_OK)
 
-async def search_users():
+async def search_users_():
     admin = Admin()
     
     result_OK = await admin.search_users(
@@ -181,7 +181,7 @@ async def test_admin():
     assert __get_users1_UNAUTHORIZED[1] == UNAUTHORIZED
     assert __get_users1_OK[1] == OK
 
-    __search_users = await search_users()
+    __search_users = await search_users_()
     __search_users_OK = __search_users[0]
     __search_users_NOT_FOUND = __search_users[1]
     __search_users_UNAUTHORIZED = __search_users[2]
