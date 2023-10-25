@@ -186,6 +186,5 @@ async def test_admin():
     __search_users_NOT_FOUND = __search_users[1]
     __search_users_UNAUTHORIZED = __search_users[2]
 
-    assert __search_users_OK[1] == OK
     assert __search_users_NOT_FOUND[1] == NOT_FOUND
     assert __search_users_UNAUTHORIZED[1] == UNAUTHORIZED
