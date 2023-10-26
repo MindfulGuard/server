@@ -14,6 +14,10 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
 
+    container:
+      image: quay.io/minio/minio
+      options: --entrypoint server /data --console-address ":9090"
+
     services:
       postgresql:
         image: postgres:15.4
@@ -28,15 +32,15 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      
       minio:
-        image: quay.io/minio/minio
-        ports:
-          - 9000:9000
-        options: --entrypoint server /data --console-address ":9090"
-        env:
-          MINIO_ROOT_USER: rootuser123
-          MINIO_ROOT_PASSWORD: rootpassword123
+          image: quay.io/minio/minio
+          ports:
+            - 9000:9000
+          env:
+            MINIO_ACCESS_KEY: ваш_ключ_доступа
+            MINIO_SECRET_KEY: ваш_секретный_ключ
+          volumes:
+            - ~/minio/data:/data
 
     env:
       admin_login: "UserADmin12345_-"
