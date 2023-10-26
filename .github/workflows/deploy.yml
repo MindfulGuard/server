@@ -28,10 +28,23 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      
+      minio:
+        image: quay.io/minio/minio
+        ports:
+          - 9000:9000
+        env:
+          MINIO_ROOT_USER: rootuser123
+          MINIO_ROOT_PASSWORD: rootpassword123
 
     env:
       admin_login: "UserADmin12345_-"
       admin_password: "AdminPassword_-4234__-43223"
+      minio_host: "localhost:9000"
+      minio_root_access_key: "rootuser123"
+      minio_root_secret_key: "rootpassword123"
+      minio_user_access_key: "useruser123"
+      minio_user_secret_key: "userpassword123"
       DATABASE_PORT: 5432
       DATABASE_USER: mindfulguard
       DATABASE_PASSWORD: mindfulguard_password
@@ -59,6 +72,11 @@ jobs:
         run: |
           echo $admin_login
           echo $admin_password
+          echo $minio_host
+          echo $minio_root_access_key
+          echo $minio_root_secret_key
+          echo $minio_user_access_key
+          echo $minio_user_secret_key
           echo $DATABASE_PORT
           echo $DATABASE_USER
           echo $DATABASE_PASSWORD
@@ -67,7 +85,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
       - name: Initializing the administrator
-        run: make -f build/Makefile init admin_login="$admin_login" admin_password="$admin_password"
+        run: make -f build/Makefile init admin_login="$admin_login" admin_password="$admin_password" minio_hostname="$minio_host" minio_root_access_key="$minio_root_access_key" minio_root_secret_key="$minio_root_secret_key" minio_user_access_key="$minio_user_access_key" minio_user_secret_key="$minio_user_secret_key"
+      - name: Check if MinIO is running
+        run: |
+          timeout=20
+          while ! curl --output /dev/null --silent --head --fail http://localhost:9000 && [ $timeout -gt 0 ]; do
+            echo "Waiting for MinIO to start..."
+            sleep 5
+            timeout=$((timeout-5))
+          done
+      
+          if [ $timeout -le 0 ]; then
+            echo "MinIO did not start within the specified timeout."
+            exit 1
+          fi
       - name: Setup service "routines"
         run: |
           sudo chmod +x routines/setup_service.sh

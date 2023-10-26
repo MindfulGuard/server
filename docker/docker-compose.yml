@@ -26,10 +26,23 @@ services:
         - postgresql
       networks:
         - app-network
-      
+
+  minio:
+    image: quay.io/minio/minio
+    restart: always
+    ports:
+      - 9000:9000
+    volumes:
+      - ~/minio/data:/data
+    env_file:
+      - .MINIO.env
+    networks:
+      - app-network
+
 networks:
  app-network:
    driver: bridge
 
 volumes:
+  minio:
   pgdata:
