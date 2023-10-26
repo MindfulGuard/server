@@ -33,6 +33,7 @@ jobs:
         image: quay.io/minio/minio
         ports:
           - 9000:9000
+        options: --entrypoint server /data --console-address ":9090"
         env:
           MINIO_ROOT_USER: rootuser123
           MINIO_ROOT_PASSWORD: rootpassword123
