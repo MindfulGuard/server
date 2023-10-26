@@ -5,16 +5,16 @@ then
 echo "missing parameters <HOSTNAME> <ROOT_ACCESS_KEY> <ROOT_SECRET_KEY> <USER_ACCESS_KEY> <USER_SECRET_KEY>"
 exit 1
 
-elif ! command -v <mc> &> /dev/null
+elif ! command -v mc &> /dev/null
 then
-    #Install minio client
-    curl https://dl.min.io/client/mc/release/linux-amd64/mc \
+    curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc \
     --create-dirs \
     -o $HOME/minio-binaries/mc
 
     chmod +x $HOME/minio-binaries/mc
     export PATH=$PATH:$HOME/minio-binaries/
 fi
+
 
 hostname = "$1"
 root_access_key = "$2"
