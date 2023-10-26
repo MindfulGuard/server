@@ -34,7 +34,7 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - ~/minio/data:/data
+      - ~/.minio/data:/data
     env_file:
       - .MINIO.env
     networks:
