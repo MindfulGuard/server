@@ -14,10 +14,6 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
 
-    container:
-      image: quay.io/minio/minio
-      options: --entrypoint server /data --console-address ":9090"
-
     services:
       postgresql:
         image: postgres:15.4
@@ -32,16 +28,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      minio:
-          image: quay.io/minio/minio
-          ports:
-            - 9000:9000
-          env:
-            MINIO_ACCESS_KEY: ваш_ключ_доступа
-            MINIO_SECRET_KEY: ваш_секретный_ключ
-          volumes:
-            - ~/minio/data:/data
-
     env:
       admin_login: "UserADmin12345_-"
       admin_password: "AdminPassword_-4234__-43223"
@@ -55,6 +41,8 @@ jobs:
       DATABASE_PASSWORD: mindfulguard_password
       
     steps:
+      - name: Run MinIO Server
+        run: docker run -d --name minio -p 9000:9000 -v ~/minio/data:/data -e MINIO_ACCESS_KEY=$minio_root_access_key -e MINIO_SECRET_KEY=$minio_root_secret_key quay.io/minio/minio server /data --console-address ":9090"
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
