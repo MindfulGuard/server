@@ -80,7 +80,7 @@ jobs:
       - name: Check if MinIO is running
         run: |
           timeout=15
-          while ! curl --output /dev/null --silent --head --fail http://localhost:9000 && [ $timeout -gt 0 ]; do
+          while ! curl http://localhost:9000 && [ $timeout -gt 0 ]; do
             echo "Waiting for MinIO to start..."
             sleep 5
             timeout=$((timeout-5))
