@@ -21,4 +21,4 @@ user_secret_key="$5"
 mc alias set minioadmin $hostname $root_access_key $root_secret_key
 
 mc admin user add minioadmin $user_access_key $user_secret_key
-mc admin policy attach ALIAS readwrite --user=$user_access_key
+mc admin policy attach minioadmin readwrite --user=$user_access_key
