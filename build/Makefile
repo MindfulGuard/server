@@ -47,7 +47,7 @@ else
 	SETUP-VENV = python$(PYTHON_VERSION) -m venv $(VENV)
 	RUN-VENV = $(ACTIVATE-VENV-MSG) "source $(VENV)/bin/activate"
 
-	MINIO_INIT_USER = chmod +x build/scripts/minio_init_user.sh && ./build/scripts/minio_init_user.sh $(minio_hostname) $(minio_root_access_key) $(minio_root_secret_key) $(minio_user_access_key) $(minio_user_secret_key)
+	MINIO_INIT_USER = chmod +x build/scripts/minio_init_user.sh && ./build/scripts/minio_init_user.sh "$(minio_hostname)" "$(minio_root_access_key)" "$(minio_root_secret_key)" "$(minio_user_access_key)" "$(minio_user_secret_key)"
 endif
 
 init:

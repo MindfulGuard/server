@@ -84,21 +84,21 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .
-      - name: Initializing the administrator
-        run: make -f build/Makefile init admin_login="$admin_login" admin_password="$admin_password" minio_hostname="$minio_host" minio_root_access_key="$minio_root_access_key" minio_root_secret_key="$minio_root_secret_key" minio_user_access_key="$minio_user_access_key" minio_user_secret_key="$minio_user_secret_key"
       - name: Check if MinIO is running
         run: |
-          timeout=20
+          timeout=15
           while ! curl --output /dev/null --silent --head --fail http://localhost:9000 && [ $timeout -gt 0 ]; do
             echo "Waiting for MinIO to start..."
             sleep 5
             timeout=$((timeout-5))
           done
-      
+        
           if [ $timeout -le 0 ]; then
             echo "MinIO did not start within the specified timeout."
             exit 1
           fi
+      - name: Initializing the administrator
+        run: make -f build/Makefile init admin_login="$admin_login" admin_password="$admin_password" minio_hostname="$minio_host" minio_root_access_key="$minio_root_access_key" minio_root_secret_key="$minio_root_secret_key" minio_user_access_key="$minio_user_access_key" minio_user_secret_key="$minio_user_secret_key"
       - name: Setup service "routines"
         run: |
           sudo chmod +x routines/setup_service.sh
