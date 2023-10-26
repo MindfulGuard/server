@@ -40,7 +40,7 @@ jobs:
     env:
       admin_login: "UserADmin12345_-"
       admin_password: "AdminPassword_-4234__-43223"
-      minio_host: "localhost:9000"
+      minio_host: "http://localhost:9000"
       minio_root_access_key: "rootuser123"
       minio_root_secret_key: "rootpassword123"
       minio_user_access_key: "useruser123"
