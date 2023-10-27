@@ -1,10 +1,11 @@
 from mindfulguard.authentication.executors import get_authorization_token
-from mindfulguard.core.response_status_codes import BAD_REQUEST, OK
+from mindfulguard.core.response_status_codes import BAD_REQUEST, INTERNAL_SERVER_ERROR, OK
 from mindfulguard.core.security import sha256s
 from mindfulguard.core.security.totp import NUMBER_OF_BACKUP_CODES, Totp
 from mindfulguard.database.postgresql.admin import Admin
 from mindfulguard.database.postgresql.authentication import Authentication
 from mindfulguard.database.postgresql.user.settings import Settings
+from mindfulguard.s3 import S3
 from mindfulguard.utils import Validation
 
 
@@ -71,8 +72,16 @@ class DeleteUser:
         if iadm!=OK:
             return iadm
 
+        search_user= await Admin().search_users(sha256s(tokenf),"u_id",user_id)
+        if search_user[1] != OK:
+            return INTERNAL_SERVER_ERROR
+        get_user_login:str = search_user[0]['login']
         delete:int = await Admin().delete_user_admin(
             user_id
         )
+        s3_ = S3(get_user_login)
 
-        return (delete)
+        if delete == OK:
+            s3_.object().delete_all_objects()
+            s3_.bucket().delete_bucket()
+        return delete

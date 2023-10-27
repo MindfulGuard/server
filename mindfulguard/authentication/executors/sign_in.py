@@ -2,6 +2,7 @@ from mindfulguard.core.response_status_codes import *
 import mindfulguard.core.security as security
 import mindfulguard.core.security.totp as secure_totp
 from mindfulguard.database.postgresql import authentication
+from mindfulguard.s3 import S3
 from mindfulguard.utils import Validation, minutes_to_seconds
 
 TYPE_BACKUP = "backup"
@@ -20,7 +21,8 @@ class SignIn:
         token:str = security.generate_512_bit_token_string()
         if valid.validate_login(login) == False or valid.validate_secret_string(secret_string) == False or expiration <1 or valid.validate_TOTP_code(code) == False:
             return (None,BAD_REQUEST)
-        return (
+
+        returns = (
             token,
             await authentication.Authentication().sign_in(
             login,
@@ -31,7 +33,11 @@ class SignIn:
             minutes_to_seconds(expiration),
             await self.__confirm(login,security.sha256s(secret_string),code,type)
         ))
-    
+        if returns[1] == OK:
+            S3(login).bucket().make_bucket()
+            return returns
+        return returns
+
     async def __confirm(self,login:str,secret_string:str,code:str,type:str):
         if type == TYPE_BASIC:
             return await self.__basic_confirm(login,secret_string,code)

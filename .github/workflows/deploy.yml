@@ -31,11 +31,11 @@ jobs:
     env:
       admin_login: "UserADmin12345_-"
       admin_password: "AdminPassword_-4234__-43223"
-      minio_host: "http://localhost:9000"
+      MINIO_HOSTNAME: "http://localhost:9000"
       minio_root_access_key: "rootuser123"
       minio_root_secret_key: "rootpassword123"
-      minio_user_access_key: "useruser123"
-      minio_user_secret_key: "userpassword123"
+      MINIO_USER_ACCESS_KEY: "useruser123"
+      MINIO_USER_SECRET_KEY: "userpassword123"
       DATABASE_PORT: 5432
       DATABASE_USER: mindfulguard
       DATABASE_PASSWORD: mindfulguard_password
@@ -65,11 +65,11 @@ jobs:
         run: |
           echo $admin_login
           echo $admin_password
-          echo $minio_host
+          echo $MINIO_HOSTNAME
           echo $minio_root_access_key
           echo $minio_root_secret_key
-          echo $minio_user_access_key
-          echo $minio_user_secret_key
+          echo $MINIO_USER_ACCESS_KEY
+          echo $MINIO_USER_SECRET_KEY
           echo $DATABASE_PORT
           echo $DATABASE_USER
           echo $DATABASE_PASSWORD
@@ -91,7 +91,7 @@ jobs:
             exit 1
           fi
       - name: Initializing the administrator
-        run: make -f build/Makefile init admin_login="$admin_login" admin_password="$admin_password" minio_hostname="$minio_host" minio_root_access_key="$minio_root_access_key" minio_root_secret_key="$minio_root_secret_key" minio_user_access_key="$minio_user_access_key" minio_user_secret_key="$minio_user_secret_key"
+        run: make -f build/Makefile init admin_login="$admin_login" admin_password="$admin_password" minio_hostname="$MINIO_HOSTNAME" minio_root_access_key="$minio_root_access_key" minio_root_secret_key="$minio_root_secret_key" minio_user_access_key="$MINIO_USER_ACCESS_KEY" minio_user_secret_key="$MINIO_USER_SECRET_KEY"
       - name: Setup service "routines"
         run: |
           sudo chmod +x routines/setup_service.sh

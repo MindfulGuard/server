@@ -1,5 +1,7 @@
 from mindfulguard.authentication.executors import get_authorization_token
-from mindfulguard.core.response_status_codes import BAD_REQUEST
+from mindfulguard.core.response_status_codes import BAD_REQUEST, OK
+from mindfulguard.database.postgresql.user.information import Information
+from mindfulguard.s3 import S3
 from mindfulguard.user.executors.settings.delete_user import Delete
 from mindfulguard.user.executors.settings.one_time_codes import OneTimeCodes
 from mindfulguard.user.executors.settings.update_secret_string import SecretString
@@ -69,11 +71,15 @@ class UserSettings:
             or validation.validate_TOTP_code(code) == False
         ):
             return BAD_REQUEST
-        
         delet_user = Delete()
-        return await delet_user.execute(
+        result = await delet_user.execute(
             sha256s(tokenf),
             login,
             sha256s(secret_string),
             code
         )
+        if result == OK:
+            s3_ = S3(login)
+            s3_.object().delete_all_objects()
+            s3_.bucket().delete_bucket()
+        return result

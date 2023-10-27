@@ -12,7 +12,7 @@ async def get_info(
     request: Request,
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
-    page:int  = Query()
+    page:int  = Query(..., ge=1)
 ):
     auth = Authentication()
     await auth.update_token_info(token,user_agent,request)
