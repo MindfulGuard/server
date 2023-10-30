@@ -22,7 +22,7 @@ class Get:
         if uinfo[-1] != OK:
             return ({},uinfo[-1])
 
-        response_dict = {"list": []}
+        response_dict = {"files": []}
         safe_id_set = set()
         
         s3 = S3(uinfo[0]['username'])
@@ -39,9 +39,10 @@ class Get:
                     "safe_id": safe_id,
                     "objects": []
                 }
-                response_dict["list"].append(file_info)
-            
+                response_dict["files"].append(file_info)
+
             resp = {
+                "id":raw.object_name.split('/')[-1],
                 "content_path": (raw.object_name).replace(CONTENT_PATH, "safe", 1)+"/content",
                 "name":s3.object().get_stat(raw.object_name).metadata['X-Amz-Meta-Object_name'],
                 "updated_at": int(datetime.datetime.fromisoformat(str(raw.last_modified)).timestamp()),

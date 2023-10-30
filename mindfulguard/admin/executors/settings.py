@@ -29,6 +29,7 @@ class GetSettings:
         scan_time_routines_tokens = await config.scan_time_routines_tokens()
         scan_time_routines_users = await config.scan_time_routines_users()
         confirmation_period = await config.confirmation_period()
+        disk_space_per_user = await config.disk_space_per_user()
 
         return (
             authentication[0],
@@ -38,6 +39,7 @@ class GetSettings:
             scan_time_routines_tokens[0],
             scan_time_routines_users[0],
             confirmation_period[0],
+            disk_space_per_user[0],
             st)
         
 

@@ -41,7 +41,7 @@ class CreateUser:
 
         auth = await Authentication().sign_up(
             login,
-            secret_string,
+            sha256s(secret_string),
             ip,
             confirm,
             secret_code,
@@ -75,7 +75,7 @@ class DeleteUser:
         search_user= await Admin().search_users(sha256s(tokenf),"u_id",user_id)
         if search_user[1] != OK:
             return INTERNAL_SERVER_ERROR
-        get_user_login:str = search_user[0]['login']
+        get_user_login:str = search_user[0]['username']
         delete:int = await Admin().delete_user_admin(
             user_id
         )

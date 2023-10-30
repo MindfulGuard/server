@@ -106,7 +106,7 @@ class Item:
             safes_json = {"safes":safe_get[0]}
             tags_list = {"tags":item_get[1]}
             favorites_list = {"favorites":item_get[2]}
-            files_json = {"files":fget[0]}
+            files_json = fget[0]
             disk_json = {"disk":{"total_space":user_disk[1],"filled_space":user_disk[0]}}
 
             result.update(safes_json)

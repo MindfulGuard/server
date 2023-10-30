@@ -82,7 +82,8 @@ class Admin:
                 "registration_status":st[3],
                 "scan_time_routines_tokens":st[4],
                 "scan_time_routines_users":st[5],
-                "confirmation_period":st[6]
+                "confirmation_period":st[6],
+                "disk_space_per_user":st[7]
             }
         else:
             return self.__json_responses.server_error()#INTERNAL_SERVER_ERROR

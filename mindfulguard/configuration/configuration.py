@@ -53,3 +53,10 @@ class ReadConfigs():
             int(item[0]['confirmation_period']),
             item[1]
         )
+    
+    async def disk_space_per_user(self):
+        item = await self.__settings.get()
+        return (
+            int(item[0]['disk_space_per_user']),
+            item[1]
+        )
