@@ -543,6 +543,10 @@
           "username": "User_-12345",
           "created_at": 1697560563,
           "ip": "127.0.0.1"
+      },
+      "disk": {
+          "total_space": 1073741824,
+          "filled_space": 0
       }
     }
     ```
@@ -1415,6 +1419,23 @@
                     }
                 ]
             }
+        ],
+        "disk": {
+            "total_space": 1073741824,
+            "filled_space": 2543
+        },
+        "files": [
+            {
+                "safe_id": "5e3965f0-b21f-45bf-a824-fdeee57a7f21",
+                "objects": [
+                    {
+                        "content_path": "safe/5e3965f0-b21f-45bf-a824-fdeee57a7f21/aadf327c8267c09d6fffd87a1a80ad3c798469ff332b7a57b9e8c045d46b2af7/content",
+                        "name": "file.txt",
+                        "updated_at": 1698693022,
+                        "size": 2543
+                    }
+                ]
+            }
         ]
     }
     ```
@@ -1429,6 +1450,9 @@
   | favorites | array | contains all the UUIDs of favorites from all the safes | &#10007; | |
   | tags | array | shows all existing tags | &#10007; | |
   | safes | array | contain information about safes | &#10007; | |
+  | disk | object | contains information about the user's file storage, values are in `bytes` | &#10007; | |
+  | files | array | contains information about files | &#10007; | |
+  | safe_id | string | `uuid` of the safe containing the file | &#10007; | |
 
 - ## Move
   - ### Request
@@ -1739,7 +1763,7 @@ sha256(login|password|uuid)
 
 ## Text
 ```python
-private_key = PBKDF2(password, salt = uuid, iterations = 10000, length = 32)
+private_key = PBKDF2(password, salt = uuid, iterations, length = 32)
 ciphertext = aes256_encrypt(text, private_key, mode)
   #!!!attention, 1 character in unencrypted form is equal to 2 in encrypted!!!
   return (iv(32 bytes).hex+cyphertext.hex+tag(32 bytes).hex).to_string() = "e60c203ae89b8ec4cc3d4917..."
