@@ -22,9 +22,6 @@ class GetUsers:
 
         if validation.validate_token(tokenf) == False:
             return (0,0,([],BAD_REQUEST))
-        elif page > pages_db:
-            return (pages_db,await self.__admin_db.get_count_users(),([],OK))
-
 
         return (
         await self.__get_pages(),

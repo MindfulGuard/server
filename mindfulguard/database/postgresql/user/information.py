@@ -29,7 +29,7 @@ class Information:
                 }
             return (value_dict,OK)
         except asyncpg.exceptions.ConnectionDoesNotExistError:
-            return (None,INTERNAL_SERVER_ERROR)
+            return ({},INTERNAL_SERVER_ERROR)
         finally:
             if connection:
                 await connection.close()

@@ -2,7 +2,7 @@ from mindfulguard.core.response_status_codes import *
 import mindfulguard.core.security as security
 import mindfulguard.core.security.totp as secure_totp
 from mindfulguard.database.postgresql import authentication
-from mindfulguard.s3 import S3
+from mindfulguard.core.s3 import S3
 from mindfulguard.utils import Validation, minutes_to_seconds
 
 TYPE_BACKUP = "backup"

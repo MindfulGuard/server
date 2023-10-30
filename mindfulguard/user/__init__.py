@@ -81,7 +81,16 @@ class User:
         response.status_code = status_code
 
         if status_code == OK:
-            return {"tokens":data,"count_tokens":len(data),"information":info}
+            user_disk = await user_info.get_disk_space(info['username'])
+            return {
+                "tokens":data,
+                "count_tokens":len(data),
+                "information":info,
+                "disk":{
+                    "total_space":user_disk[1],
+                    "filled_space":user_disk[0]
+                }
+            }
         elif status_code == BAD_REQUEST:
             return self.__json_responses.data_not_valid()
         elif status_code == UNAUTHORIZED:

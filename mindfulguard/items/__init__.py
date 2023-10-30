@@ -1,7 +1,10 @@
-from fastapi import Request, Response
+import asyncio
+import threading
+from fastapi import Request, Response, UploadFile
 from mindfulguard.core.languages import Language
 from mindfulguard.core.languages.responses import Responses
 from mindfulguard.core.response_status_codes import *
+from mindfulguard.files.executors.get import Get
 from mindfulguard.items.executors.create import Create
 from mindfulguard.items.executors.favorite import Favorite
 from mindfulguard.items.executors.move import Move
@@ -9,6 +12,7 @@ import mindfulguard.safe.executors.get as safe
 import mindfulguard.items.executors.get as item
 from mindfulguard.items.executors.update import Update
 from mindfulguard.items.executors.delete import Delete
+from mindfulguard.user.executors.info import UserInformation
 
 
 class Item:
@@ -57,12 +61,36 @@ class Item:
         else:
             return {"msg":self.__lang.failed_to_update_the_item()}
     
-    async def get(self,token:str,response:Response):
-        obj_item = item.Get()
-        item_get = await obj_item.execute(token)
+    async def get(self, token: str, response: Response):
+        semaphore = asyncio.Semaphore(2)
 
-        obj_safe = safe.Get()
-        safe_get = await obj_safe.execute(token)
+        async def get_item():
+            async with semaphore:
+                obj_item = item.Get()
+                return await obj_item.execute(token)
+
+        async def get_safe():
+            async with semaphore:
+                obj_safe = safe.Get()
+                return await obj_safe.execute(token)
+
+        async def get_files():
+            async with semaphore:
+                return await Get(token).execute()
+
+        async def get_user_info():
+            async with semaphore:
+                user_info = UserInformation()
+                information = await user_info.get_info(token)
+                info = information[0]
+                if information[-1] != OK:
+                    return (0,0)
+                user_disk = await user_info.get_disk_space(info['username'])
+                return user_disk
+
+        item_get, safe_get, fget, user_disk = await asyncio.gather(
+            get_item(), get_safe(), get_files(), get_user_info()
+        )
 
         status_code_item:int = item_get[3]
         status_code_safe:int = safe_get[1]
@@ -78,6 +106,8 @@ class Item:
             safes_json = {"safes":safe_get[0]}
             tags_list = {"tags":item_get[1]}
             favorites_list = {"favorites":item_get[2]}
+            files_json = {"files":fget[0]}
+            disk_json = {"disk":{"total_space":user_disk[1],"filled_space":user_disk[0]}}
 
             result.update(safes_json)
             result.update({"count":len(safe_get[0])})
@@ -85,6 +115,8 @@ class Item:
             result.update(tags_list)
             result.update(favorites_list)
             result.update(item_get[0])
+            result.update(disk_json)
+            result.update(files_json)
 
             response.status_code = OK
             return result

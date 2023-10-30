@@ -1,7 +1,7 @@
 from mindfulguard.authentication.executors import get_authorization_token
 from mindfulguard.core.response_status_codes import BAD_REQUEST, OK
 from mindfulguard.database.postgresql.user.information import Information
-from mindfulguard.s3 import S3
+from mindfulguard.core.s3 import S3
 from mindfulguard.user.executors.settings.delete_user import Delete
 from mindfulguard.user.executors.settings.one_time_codes import OneTimeCodes
 from mindfulguard.user.executors.settings.update_secret_string import SecretString

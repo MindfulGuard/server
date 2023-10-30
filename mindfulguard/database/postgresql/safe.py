@@ -55,7 +55,6 @@ class Safe:
                     'count_items':record['r_count']
                 }
                 value_list.append(value_dict)
-            print(value_list)
             if not value_list:
                 return ([], OK)
 
@@ -96,6 +95,28 @@ class Safe:
                 return UNAUTHORIZED
             elif value == -2:
                 return NOT_FOUND
+            else:
+                return INTERNAL_SERVER_ERROR
+        except asyncpg.exceptions.ConnectionDoesNotExistError:
+            return INTERNAL_SERVER_ERROR
+        finally:
+            if connection:
+                await connection.close()
+
+    async def safe_exist(
+            self,
+            token:str,
+            safe_id:str,
+            ):
+        connection = None
+        try:
+            connection = await Connection().connect()
+            value:int = await connection.fetchval('SELECT safe_and_element_exists($1, $2)',
+                                                token,safe_id)
+            if value == 0:
+                return OK
+            elif value == -1:
+                return UNAUTHORIZED
             else:
                 return INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.ConnectionDoesNotExistError:

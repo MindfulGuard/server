@@ -7,6 +7,7 @@ from mindfulguard.admin.executors.user_management import CreateUser, DeleteUser
 from mindfulguard.core.languages import Language
 from mindfulguard.core.languages.responses import Responses
 from mindfulguard.core.response_status_codes import BAD_REQUEST, CONFLICT, FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SERVICE_UNAVAILABLE, UNAUTHORIZED
+from mindfulguard.core.s3 import S3
 import mindfulguard.utils as utils
 
 
@@ -23,7 +24,7 @@ class Admin:
         status_code:int = obj[2][1]
 
         response.status_code = status_code
-
+        
         if status_code == BAD_REQUEST:
             return self.__json_responses.data_not_valid()
         elif status_code == UNAUTHORIZED:
@@ -31,7 +32,14 @@ class Admin:
         elif status_code == FORBIDDEN:
             return self.__json_responses.forbidden()
         elif status_code == OK:
-            return {"page":page,"total_pages":total_pages,"total_users":count_users,"list":arr}
+            s3 = S3("")
+            return {
+                "page":page,
+                "total_pages":total_pages,
+                "total_users":count_users,
+                "total_storage_size":s3.bucket().total_size,
+                "list":arr
+            }
         else:
             return self.__json_responses.server_error()
         

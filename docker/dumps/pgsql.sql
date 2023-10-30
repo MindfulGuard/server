@@ -444,6 +444,42 @@ $_$;
 ALTER FUNCTION public.move_item_to_new_safe(token character varying, old_safe_id uuid, new_safe_id uuid, item_id uuid) OWNER TO mindfulguard;
 
 --
+-- Name: safe_and_element_exists(character varying, uuid); Type: FUNCTION; Schema: public; Owner: mindfulguard
+--
+
+CREATE FUNCTION public.safe_and_element_exists(token character varying, safe_id uuid) RETURNS integer
+    LANGUAGE plpgsql
+    AS $_$
+declare
+    user_id UUID;
+    _safe_id UUID;
+    timestmp BIGINT;
+begin
+timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+IF user_id IS NULL THEN
+    RETURN -1;
+END IF;
+
+SELECT s_id INTO _safe_id FROM s_safes
+WHERE s_id = $2 AND s_u_id = user_id;
+
+IF _safe_id IS NULL THEN
+    RETURN -2;
+END IF;
+
+CALL update_safe_info($1,$2);
+RETURN 0;
+
+end;
+$_$;
+
+
+ALTER FUNCTION public.safe_and_element_exists(token character varying, safe_id uuid) OWNER TO mindfulguard;
+
+--
 -- Name: sign_in(character varying, character varying, character varying, character varying, inet, bigint, boolean); Type: FUNCTION; Schema: public; Owner: mindfulguard
 --
 
@@ -1064,13 +1100,14 @@ COPY public.s_safes (s_id, s_u_id, s_name, s_description, s_created_at, s_update
 --
 
 COPY public.st_settings (st_id, st_key, st_value) FROM stdin;
-057327e8-1f62-4d70-af07-623a62d6f2fe	item_categories	["LOGIN","PASSWORD","API_CREDENTIAL","SERVER","DATABASE","CREDIT_CARD","MEMBERSHIP","PASSPORT","SOFTWARE_LICENSE","OUTDOOR_LICENSE","SECURE_NOTE","WIRELESS_ROUTER","BANK_ACCOUNT","DRIVER_LICENSE","IDENTITY","REWARD_PROGRAM","DOCUMENT","EMAIL_ACCOUNT","SOCIAL_SECURITY_NUMBER","MEDICAL_RECORD","SSH_KEY"]
 25bf1152-0507-4ebc-8c46-f297c07e5f37	item_types	["STRING","PASSWORD","EMAIL","CONCEALED","URL","OTP","DATE","MONTH_YEAR","MENU","FILE"]
 498e9042-1492-44d8-8697-76b9a73967ec	registration	true
 1e187a16-4e75-42f2-93a4-caf003cec774	password_rule	^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[\\W]).{8,64}$
 3f2385ba-e3c3-4d80-bbe1-3d3746de8d9f	scan_time_routines_tokens	60
 c82d4aeb-b250-4032-a989-15256de626de	scan_time_routines_users	60
 24775562-22d7-4f71-873b-2503ff1135fd	confirmation_period	604800
+057327e8-1f62-4d70-af07-623a62d6f2fe	item_categories	["LOGIN","PASSWORD","API_CREDENTIAL","SERVER","DATABASE","CREDIT_CARD","MEMBERSHIP","PASSPORT","SOFTWARE_LICENSE","OUTDOOR_LICENSE","SECURE_NOTE","WIRELESS_ROUTER","BANK_ACCOUNT","DRIVER_LICENSE","IDENTITY","REWARD_PROGRAM","DOCUMENT","EMAIL_ACCOUNT","SOCIAL_SECURITY_NUMBER","MEDICAL_RECORD","SSH_KEY","OTHER"]
+5c55e596-5b88-40e6-869b-4cb6fb3a931e	disk_space_per_user	1073741824
 \.
 
 

@@ -2,8 +2,6 @@ import os
 import re
 from minio import Minio
 
-PATH_TO_RESOURCES = "/resources/"
-
 class Client:
     def __init__(self):
         def remove_http_https(input_string:str):

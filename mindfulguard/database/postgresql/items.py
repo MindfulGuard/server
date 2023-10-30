@@ -95,8 +95,6 @@ class Item:
             WHERE t.t_token = $1
             AND active_token($1) = True;
             ''',token)
-            print(items)
-
 
             result_dict = {"list": []}
             tags_list:list[str] = []
@@ -154,7 +152,6 @@ class Item:
             
             if not result_dict:
                 return ([],[],[],OK)
-            print(json.loads(result_json))
             return (json.loads(result_json), tags_list,favorites_list,OK)
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return ([],[],[],INTERNAL_SERVER_ERROR)

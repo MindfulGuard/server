@@ -26,7 +26,7 @@ class Admin:
             for record in values:
                 value_dict = {
                     'id': record['u_id'],
-                    'login': record['u_login'],
+                    'username': record['u_login'],
                     'ip': record['u_reg_ip'],
                     'confirm': record['u_confirm'],
                     'created_at': record['u_created_at'],
@@ -60,7 +60,7 @@ class Admin:
             for record in values:
                 value_dict = {
                     'id': record['u_id'],
-                    'login': record['u_login'],
+                    'username': record['u_login'],
                     'ip': record['u_reg_ip'],
                     'confirm': record['u_confirm'],
                     'created_at': record['u_created_at'],

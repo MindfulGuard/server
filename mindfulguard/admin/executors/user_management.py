@@ -5,7 +5,7 @@ from mindfulguard.core.security.totp import NUMBER_OF_BACKUP_CODES, Totp
 from mindfulguard.database.postgresql.admin import Admin
 from mindfulguard.database.postgresql.authentication import Authentication
 from mindfulguard.database.postgresql.user.settings import Settings
-from mindfulguard.s3 import S3
+from mindfulguard.core.s3 import S3
 from mindfulguard.utils import Validation
 
 
