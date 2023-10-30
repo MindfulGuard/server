@@ -1772,11 +1772,11 @@
   
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
-  | files | string | | &#10007 | |
-  | files | string | | &#10007 | |
-  | files | string | | &#10007 | |
-  | files | string | | &#10007 | |
-  | files | string | | &#10007 | |
+  | files | string | | &#10007; | |
+  | files | string | | &#10007; | |
+  | files | string | | &#10007; | |
+  | files | string | | &#10007; | |
+  | files | string | | &#10007; | |
 
   - ### Responses
   **!!!ATTENTION RESPONSES RETURN ONLY CODE STATUS!!!**
