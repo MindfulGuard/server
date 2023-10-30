@@ -1429,6 +1429,7 @@
                 "safe_id": "5e3965f0-b21f-45bf-a824-fdeee57a7f21",
                 "objects": [
                     {
+                        "id":"aadf327c8267c09d6fffd87a1a80ad3c798469ff332b7a57b9e8c045d46b2af7",
                         "content_path": "safe/5e3965f0-b21f-45bf-a824-fdeee57a7f21/aadf327c8267c09d6fffd87a1a80ad3c798469ff332b7a57b9e8c045d46b2af7/content",
                         "name": "file.txt",
                         "updated_at": 1698693022,
@@ -1686,6 +1687,106 @@
       }
     }
     ```
+
+## • Files
+
+- ## Upload Files
+  - ### Request
+  
+  ```http
+  POST /v1/safe/<safe_id>/content
+  ```
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | multipart/form-data |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | files | File | files should be encrypted before sending, names should not be changed, but files should only have names that are supported by ASCII encoding | [&#10003;](#Text) | |
+
+  - ### Responses
+  **!!!ATTENTION RESPONSES RETURN ONLY CODE STATUS!!!**
+
+  | Status code | Description |
+  | - | - |
+  | OK | | |
+  | BAD REQUEST | | |
+  | UNAUTHORIZED | | |
+  | INTERNAL_SERVER_ERROR | | |
+
+- ## Download File
+  - ### Request
+  
+  ```http
+  GET /v1/safe/<safe_id>/<file_name>/content
+  ```
+  [**find out the path to the content here**](#records_get__200)
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+
+  - ### Responses
+  **!!!ATTENTION RESPONSES RETURN ONLY CODE STATUS OR FILE!!!**
+
+  | Status code | Description |
+  | - | - |
+  | OK | | |
+  | BAD REQUEST | | |
+  | UNAUTHORIZED | | |
+  | INTERNAL_SERVER_ERROR | | |
+
+- ## Delete Files
+  - ### Request
+  
+  ```http
+  DELETE /v1/safe/<safe_id>/content
+  ```
+  [**all the information you need can be found here**](#records_get__200)
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/x-www-form-urlencoded |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  **!!!ATTENTION "FILES" IS AN ARRAY!!!**
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | files | string | | &#10007 | |
+  | files | string | | &#10007 | |
+  | files | string | | &#10007 | |
+  | files | string | | &#10007 | |
+  | files | string | | &#10007 | |
+
+  - ### Responses
+  **!!!ATTENTION RESPONSES RETURN ONLY CODE STATUS!!!**
+
+  | Status code | Description |
+  | - | - |
+  | OK | | |
+  | BAD REQUEST | | |
+  | UNAUTHORIZED | | |
+  | INTERNAL_SERVER_ERROR | | |
 
 ## • JSON Responses
 -
