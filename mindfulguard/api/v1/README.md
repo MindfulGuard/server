@@ -213,17 +213,18 @@
         "page": 1,
         "total_pages": 1,
         "total_users": 2,
+        "total_storage_size": 0,
         "list": [
             {
                 "id": "09c14580-b69e-4292-8a1a-4e88256bd6a3",
-                "login": "User423_-",
+                "username": "User423_-",
                 "ip": "127.0.0.1",
                 "confirm": true,
                 "created_at": 1697796126
             },
             {
                 "id": "648ac8c5-2c6f-45a8-a855-fa1d0857598c",
-                "login": "UFser423534_-",
+                "username": "UFser423534_-",
                 "ip": "127.0.0.1",
                 "confirm": false,
                 "created_at": 1697794266
@@ -258,6 +259,7 @@
   
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
+  | value | string | | &#10007; | |
   
   - ### Responses
 
@@ -274,7 +276,7 @@
     ```json
     {
         "id": "91ac1500-7567-4021-b87a-156f79c45281",
-        "login": "User_-12345",
+        "username": "User_-12345",
         "ip": "127.0.0.1",
         "confirm": true,
         "created_at": 1698245381
@@ -283,7 +285,13 @@
 
     ##### admin_search_users_404
     ```json
-    {}
+    {
+        "msg": {
+            "de": "kein Benutzer gefunden",
+            "en": "user not found",
+            "ru": "пользователь не найден"
+        }
+    }
     ```
 
 - ## Get Settings
@@ -358,7 +366,8 @@
         "registration_status": true,
         "scan_time_routines_tokens": 60,
         "scan_time_routines_users": 60,
-        "confirmation_period": 604800
+        "confirmation_period": 604800,
+        "disk_space_per_user": 1073741824
     }
     ```
 
@@ -381,7 +390,7 @@
   
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
-  | value |  |  | &#10007; |
+  | value | string |  | &#10007; |
   
   - ### Responses
 
