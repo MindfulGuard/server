@@ -213,17 +213,18 @@
         "page": 1,
         "total_pages": 1,
         "total_users": 2,
+        "total_storage_size": 0,
         "list": [
             {
                 "id": "09c14580-b69e-4292-8a1a-4e88256bd6a3",
-                "login": "User423_-",
+                "username": "User423_-",
                 "ip": "127.0.0.1",
                 "confirm": true,
                 "created_at": 1697796126
             },
             {
                 "id": "648ac8c5-2c6f-45a8-a855-fa1d0857598c",
-                "login": "UFser423534_-",
+                "username": "UFser423534_-",
                 "ip": "127.0.0.1",
                 "confirm": false,
                 "created_at": 1697794266
@@ -258,6 +259,7 @@
   
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
+  | value | string | | &#10007; | |
   
   - ### Responses
 
@@ -274,7 +276,7 @@
     ```json
     {
         "id": "91ac1500-7567-4021-b87a-156f79c45281",
-        "login": "User_-12345",
+        "username": "User_-12345",
         "ip": "127.0.0.1",
         "confirm": true,
         "created_at": 1698245381
@@ -283,7 +285,13 @@
 
     ##### admin_search_users_404
     ```json
-    {}
+    {
+        "msg": {
+            "de": "kein Benutzer gefunden",
+            "en": "user not found",
+            "ru": "пользователь не найден"
+        }
+    }
     ```
 
 - ## Get Settings
@@ -358,7 +366,8 @@
         "registration_status": true,
         "scan_time_routines_tokens": 60,
         "scan_time_routines_users": 60,
-        "confirmation_period": 604800
+        "confirmation_period": 604800,
+        "disk_space_per_user": 1073741824
     }
     ```
 
@@ -381,7 +390,7 @@
   
   | Parameters | Type | Description | Encrypt |
   | - | - | - | - |
-  | value |  |  | &#10007; |
+  | value | string |  | &#10007; |
   
   - ### Responses
 
@@ -534,6 +543,10 @@
           "username": "User_-12345",
           "created_at": 1697560563,
           "ip": "127.0.0.1"
+      },
+      "disk": {
+          "total_space": 1073741824,
+          "filled_space": 0
       }
     }
     ```
@@ -1406,6 +1419,24 @@
                     }
                 ]
             }
+        ],
+        "disk": {
+            "total_space": 1073741824,
+            "filled_space": 2543
+        },
+        "files": [
+            {
+                "safe_id": "5e3965f0-b21f-45bf-a824-fdeee57a7f21",
+                "objects": [
+                    {
+                        "id":"aadf327c8267c09d6fffd87a1a80ad3c798469ff332b7a57b9e8c045d46b2af7",
+                        "content_path": "safe/5e3965f0-b21f-45bf-a824-fdeee57a7f21/aadf327c8267c09d6fffd87a1a80ad3c798469ff332b7a57b9e8c045d46b2af7/content",
+                        "name": "file.txt",
+                        "updated_at": 1698693022,
+                        "size": 2543
+                    }
+                ]
+            }
         ]
     }
     ```
@@ -1420,6 +1451,9 @@
   | favorites | array | contains all the UUIDs of favorites from all the safes | &#10007; | |
   | tags | array | shows all existing tags | &#10007; | |
   | safes | array | contain information about safes | &#10007; | |
+  | disk | object | contains information about the user's file storage, values are in `bytes` | &#10007; | |
+  | files | array | contains information about files | &#10007; | |
+  | safe_id | string | `uuid` of the safe containing the file | &#10007; | |
 
 - ## Move
   - ### Request
@@ -1654,6 +1688,106 @@
     }
     ```
 
+## • Files
+
+- ## Upload Files
+  - ### Request
+  
+  ```http
+  POST /v1/safe/<safe_id>/content
+  ```
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | multipart/form-data |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | files | File | files should be encrypted before sending, names should not be changed, but files should only have names that are supported by ASCII encoding | [&#10003;](#Text) | |
+
+  - ### Responses
+  **!!!ATTENTION RESPONSES RETURN ONLY CODE STATUS!!!**
+
+  | Status code | Description |
+  | - | - |
+  | OK | | |
+  | BAD REQUEST | | |
+  | UNAUTHORIZED | | |
+  | INTERNAL_SERVER_ERROR | | |
+
+- ## Download File
+  - ### Request
+  
+  ```http
+  GET /v1/safe/<safe_id>/<file_name>/content
+  ```
+  [**find out the path to the content here**](#records_get__200)
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+
+  - ### Responses
+  **!!!ATTENTION RESPONSES RETURN ONLY CODE STATUS OR FILE!!!**
+
+  | Status code | Description |
+  | - | - |
+  | OK | | |
+  | BAD REQUEST | | |
+  | UNAUTHORIZED | | |
+  | INTERNAL_SERVER_ERROR | | |
+
+- ## Delete Files
+  - ### Request
+  
+  ```http
+  DELETE /v1/safe/<safe_id>/content
+  ```
+  [**all the information you need can be found here**](#records_get__200)
+  
+  - Headers
+  
+  | key | value | Description |
+  | - | - | - |
+  | Content-Type | application/x-www-form-urlencoded |  | |
+  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Authorization | Bearer &lt;token> |  | |
+  
+  - Body
+  **!!!ATTENTION "FILES" IS AN ARRAY!!!**
+  
+  | Parameters | Type | Description | Encrypt |
+  | - | - | - | - |
+  | files | string | | &#10007; | |
+  | files | string | | &#10007; | |
+  | files | string | | &#10007; | |
+  | files | string | | &#10007; | |
+  | files | string | | &#10007; | |
+
+  - ### Responses
+  **!!!ATTENTION RESPONSES RETURN ONLY CODE STATUS!!!**
+
+  | Status code | Description |
+  | - | - |
+  | OK | | |
+  | BAD REQUEST | | |
+  | UNAUTHORIZED | | |
+  | INTERNAL_SERVER_ERROR | | |
+
 ## • JSON Responses
 -
   ### *401*
@@ -1730,7 +1864,7 @@ sha256(login|password|uuid)
 
 ## Text
 ```python
-private_key = PBKDF2(password, salt = uuid, iterations = 10000, length = 32)
+private_key = PBKDF2(password, salt = uuid, iterations, length = 32)
 ciphertext = aes256_encrypt(text, private_key, mode)
   #!!!attention, 1 character in unencrypted form is equal to 2 in encrypted!!!
   return (iv(32 bytes).hex+cyphertext.hex+tag(32 bytes).hex).to_string() = "e60c203ae89b8ec4cc3d4917..."
