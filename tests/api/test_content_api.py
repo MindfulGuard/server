@@ -226,33 +226,38 @@ def update_safe(token:str,safe_id:str,name:str,description:str):
     )
     return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED)
 
-def upload_files(token:str, safe_id:str, _files:dict[str, bytes]):
-    response_OK = client.post(
-        SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/content",
-        files=_files,
-        headers = {
-            'User-Agent': 'python:3.10/windows',
-            'Content-Type': 'multipart/form-data',
-            'X-Real-IP': '127.0.0.1',
-            'Authorization': 'Bearer '+token
-        }
-    )
+def upload_files(token:str, safe_id:str):
+    def ok():
+        with open("tests/api/test_data/test_image.jpg", "rb") as file:
+            response = client.post(
+                SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/content",
+                files={"files": ("test_image.jpg", file)},
+                headers = {
+                    'User-Agent': 'python:3.10/windows',
+                    'Content-Type': 'multipart/form-data',
+                    'X-Real-IP': '127.0.0.1',
+                    'Authorization': 'Bearer '+token
+                }
+            )
+        return response.status_code
+    
+    response_OK = ok()
 
     response_BAD_REQUEST = client.post(
         SAFE_AND_ITEM_PATH_V1+f"/423798423423-423--24/content",
-        files=_files,
+        files={"files": ("test_image.jpg", b"")},
         headers=with_token_OK(token)
     )
 
     response_UNAUTHORIZED = client.post(
         SAFE_AND_ITEM_PATH_V1+f"/{safe_id}/content",
-        files=_files,
+        files={"files": ("test_image.jpg", b"")},
         headers=with_token_UNAUTHORIZED
     )
 
     response_INTERNAL_SERVER_ERROR = client.post(
         SAFE_AND_ITEM_PATH_V1+f"/6ca008b3-3f65-487d-b986-fc346f2783d6/content",
-        files=_files,
+        files={"files": ("test_image.jpg", b"")},
         headers=with_token_OK(token)
     )
     return (response_OK,response_BAD_REQUEST,response_UNAUTHORIZED,response_INTERNAL_SERVER_ERROR)
@@ -287,10 +292,8 @@ def test_content():
     __get_safes_and_items_UNAUTHORIZED = __get_safes_and_items[1]
 
     _test_upload_file = Path('tests/api/test_data', 'test_image.jpg')
-    file_hash = hashlib.sha256(_test_upload_file.open('rb').read()).hexdigest()
-    _files = {'files': _test_upload_file.open('rb').read()}
 
-    __upload_files = upload_files(token1,safe_id,_files)
+    __upload_files = upload_files(token1,safe_id)
     __upload_files_OK = __upload_files[0]
     __upload_files_BAD_REQUEST = __upload_files[1]
     __upload_files_UNAUTHORIZED = __upload_files[2]
@@ -310,7 +313,7 @@ def test_content():
     assert __get_safes_and_items_OK.status_code == OK
     assert __get_safes_and_items_UNAUTHORIZED.status_code == UNAUTHORIZED
 
-    assert __upload_files_OK.status_code == OK
+    assert __upload_files_OK == OK
     assert __upload_files_BAD_REQUEST.status_code == BAD_REQUEST
     assert __upload_files_UNAUTHORIZED.status_code == UNAUTHORIZED
     assert __upload_files_INTERNAL_SERVER_ERROR.status_code == INTERNAL_SERVER_ERROR
