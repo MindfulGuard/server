@@ -134,3 +134,41 @@ jobs:
           branch_name=$(echo ${{ github.ref }} | sed 's|refs/heads/||' | tr '[:upper:]' '[:lower:]')
           echo "Branch name is $branch_name"
           docker buildx build --push --platform linux/amd64 -t ghcr.io/mindfulguard/server:${branch_name} .
+
+  release:
+    name: Create Release
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: ${{ needs.deploy.result == 'success' }}
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up Git
+      run: |
+        git config user.name "MindfulGuard"
+        git config user.email "MindfulGuard@example.com"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Get branch name
+      id: branch_name
+      run: echo ::set-output name=branch::$(echo $GITHUB_REF | awk -F'/' '{print $3}')
+
+    - name: Create release directory
+      run: |
+        mkdir build-release
+        cp -r build build-release/
+        cp -r docker build-release/
+        tar -czvf build-release.tar.gz build-release
+      working-directory: ${{ github.workspace }}
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release.tar.gz
+        tag_name: ${{ steps.branch_name.outputs.branch }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
