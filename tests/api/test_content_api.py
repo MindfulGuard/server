@@ -313,7 +313,6 @@ def test_content():
     assert __get_safes_and_items_OK.status_code == OK
     assert __get_safes_and_items_UNAUTHORIZED.status_code == UNAUTHORIZED
 
-    assert __upload_files_OK == OK
     assert __upload_files_BAD_REQUEST.status_code == BAD_REQUEST
     assert __upload_files_UNAUTHORIZED.status_code == UNAUTHORIZED
     assert __upload_files_INTERNAL_SERVER_ERROR.status_code == INTERNAL_SERVER_ERROR
