@@ -150,7 +150,7 @@ jobs:
         git config user.name "MindfulGuard"
         git config user.email "MindfulGuard@example.com"
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.ACTIONS }}
 
     - name: Get branch name
       id: branch_name
@@ -171,4 +171,4 @@ jobs:
         files: build-release.tar.gz
         tag_name: ${{ steps.branch_name.outputs.branch }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.ACTIONS }}
