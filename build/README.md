@@ -40,7 +40,7 @@
 ## Initial setup
 
    ```bash
-   docker-compose -f docker/docker-compose.yml up -d
+   DATABASE_PORT=$DATABASE_PORT DATABASE_USER=$DATABASE_USER DATABASE_HOST=$DATABASE_HOST DATABASE_PASSWORD=$DATABASE_PASSWORD MINIO_HOSTNAME=$MINIO_HOSTNAME MINIO_ROOT_ACCESS_KEY=$MINIO_ROOT_ACCESS_KEY MINIO_ROOT_SECRET_KEY=$MINIO_ROOT_SECRET_KEY MINIO_USER_ACCESS_KEY=$MINIO_USER_ACCESS_KEY MINIO_USER_SECRET_KEY=$MINIO_USER_SECRET_KEY sudo docker-compose -f docker/docker-compose.yml up -d >> /dev/null
    ```
    - LOGIN - must contain no less than 2 and no more than 50 characters, may contain Latin characters, digits, hyphen and underscore
    - PASSWORD - not less than 8 and not more than 64 characters, must have 1 upper case character, 1 lower case character, 1 special character and 1 digit.
