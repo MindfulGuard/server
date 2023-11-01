@@ -31,7 +31,7 @@
    - **IT IS STRONGLY RECOMMENDED TO STORE "LOGIN" AND "PASSWORD" IN A SAFE PLACE AND NOT IN THE ENVIRONMENT.**
      
    ```bash
-   make -f build/Makefile init admin_login=LOGIN admin_password=PASSWORD minio_hostname=<MINIO_HOSTNAME> minio_root_access_key=<MINIO_ROOT_ACCESS_KEY> minio_root_secret_key=<MINIO_ROOT_SECRET_KEY> minio_user_access_key=<MINIO_USER_ACCESS_KEY> minio_user_secret_key=<MINIO_USER_SECRET_KEY>
+   make -f build/Makefile init admin_login=LOGIN admin_password=PASSWORD database_host=<DATABASE_HOST> database_port=<DATABASE_PORT> database_user=<DATABASE_USER> database_password=<DATABASE_PASSWORD> minio_hostname=<MINIO_HOSTNAME> minio_root_access_key=<MINIO_ROOT_ACCESS_KEY> minio_root_secret_key=<MINIO_ROOT_SECRET_KEY> minio_user_access_key=<MINIO_USER_ACCESS_KEY> minio_user_secret_key=<MINIO_USER_SECRET_KEY>
    ```
    - Response
    ```bash
