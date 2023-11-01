@@ -139,7 +139,7 @@ class Run:
         self.__db = Db()
     
     async def execute(self,login:str,password:str):
-        if self.__validate_data(login,password) == False:
+        if await self.__validate_data(login,password) == False:
             return ("","",[])
         elif await self.__db.admin_exist() == False:
             return ("","",[])
