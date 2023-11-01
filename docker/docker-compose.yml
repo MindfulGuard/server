@@ -4,10 +4,6 @@ services:
   postgresql:
     image: postgres:15.4
     restart: always
-    environment:
-      - POSTGRES_DB=mindfulguard_production
-      - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
     volumes:
       - ./dumps/pgsql.sql:/docker-entrypoint-initdb.d/pgsql.sql
       - pgdata:/var/lib/postgresql/data
@@ -20,14 +16,6 @@ services:
       image: ghcr.io/mindfulguard/server:main
       container_name: mindfulguard_server
       restart: always
-      environment:
-        - DATABASE_HOST=${DATABASE_HOST}
-        - DATABASE_PORT=${DATABASE_PORT}
-        - DATABASE_USER=${DATABASE_USER}
-        - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-        - MINIO_HOSTNAME=${MINIO_HOSTNAME}
-        - MINIO_USER_ACCESS_KEY=${MINIO_USER_ACCESS_KEY}
-        - MINIO_USER_SECRET_KEY=${MINIO_USER_SECRET_KEY}
       ports:
         - 80:8080
       depends_on:
@@ -43,9 +31,6 @@ services:
       - 9000:9000
     volumes:
       - ~/.minio/data:/data
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_ACCESS_KEY}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_SECRET_KEY}
     networks:
       - app-network
 
