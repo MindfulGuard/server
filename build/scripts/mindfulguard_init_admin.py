@@ -12,20 +12,25 @@ import pyotp
 parser = argparse.ArgumentParser()
 parser.add_argument('admin_login', type=str, help="Login")
 parser.add_argument('admin_password', type=str, help="Password")
+parser.add_argument('database_host', type=str, help="")
+parser.add_argument('database_port', type=str, help="")
+parser.add_argument('database_user', type=str, help="")
+parser.add_argument('database_password', type=str, help="")
+
 arguments = sys.argv
 args = parser.parse_args()
 
 class Config:
     def get_host(self)->str:
-        return os.environ.get('DATABASE_HOST', 'localhost')
+        return args.database_host
     def get_port(self)->str:
-        return os.environ.get('DATABASE_PORT', '5432')
+        return args.database_port
     def get_database(self)->str:
         return "mindfulguard_production"
     def get_user(self)->str:
-        return os.environ.get('DATABASE_USER', '')
+        return args.database_user
     def get_password(self)->str:
-        return os.environ.get('DATABASE_PASSWORD', '')
+        return args.database_password
 
 class Connection:
     def __init__(self):

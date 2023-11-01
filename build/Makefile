@@ -19,6 +19,10 @@ DOCKER_COMPOSE_YML = $(DOCKER_WORK_DIR)/docker-compose.yml
 
 admin_login =
 admin_password =
+database_host =
+database_port =
+database_user =
+database_password =
 minio_hostname =
 minio_root_access_key =
 minio_root_secret_key =
@@ -53,7 +57,7 @@ endif
 init:
 	$(SETUP-VENV)
 	$(PATH_TO_PIP) install -r build/requirements.txt
-	$(PATH_TO_PYTHON_VENV) build/scripts/mindfulguard_init_admin.py $(admin_login) $(admin_password)
+	$(PATH_TO_PYTHON_VENV) build/scripts/mindfulguard_init_admin.py $(admin_login) $(admin_password) $(database_host) $(database_port) $(database_user) $(database_password)
 	$(MINIO_INIT_USER)
 
 database-dump:
