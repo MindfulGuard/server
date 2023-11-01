@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  postgresql:
+    image: postgres:15.4
+    restart: always
+    env_file:
+      - .POSTGRESQL.env
+    volumes:
+      - ./dumps/pgsql.sql:/docker-entrypoint-initdb.d/pgsql.sql
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+     - app-network
+
+  mindfulguard_server:
+      image: ghcr.io/mindfulguard/server:v0.0.1
+      container_name: mindfulguard_server
+      restart: always
+      env_file:
+        - .SERVER.env
+      ports:
+        - 80:8080
+      depends_on:
+        - postgresql
+      networks:
+        - app-network
+
+  minio:
+    image: quay.io/minio/minio
+    restart: always
+    command: server /data --console-address ":9090"
+    ports:
+      - 9000:9000
+    volumes:
+      - ~/.minio/data:/data
+    env_file:
+      - .MINIO.env
+    networks:
+      - app-network
+
+networks:
+ app-network:
+   driver: bridge
+
+volumes:
+  minio:
+  pgdata:
