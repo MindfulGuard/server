@@ -31,6 +31,12 @@
    export MINIO_USER_ACCESS_KEY="useruser123"
    export MINIO_USER_SECRET_KEY="userpassword123"
    ```
+
+ - To apply the new environment variables, restart your shell or run this command
+  ```bash
+  source ~/.bashrc
+  ```
+    
 ## Initial setup
 
    ```bash
