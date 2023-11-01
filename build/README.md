@@ -39,9 +39,44 @@
     
 ## Initial setup
 
+   - Running PostgreSQL
    ```bash
-   DATABASE_PORT=$DATABASE_PORT DATABASE_USER=$DATABASE_USER DATABASE_HOST=$DATABASE_HOST DATABASE_PASSWORD=$DATABASE_PASSWORD MINIO_HOSTNAME=$MINIO_HOSTNAME MINIO_ROOT_ACCESS_KEY=$MINIO_ROOT_ACCESS_KEY MINIO_ROOT_SECRET_KEY=$MINIO_ROOT_SECRET_KEY MINIO_USER_ACCESS_KEY=$MINIO_USER_ACCESS_KEY MINIO_USER_SECRET_KEY=$MINIO_USER_SECRET_KEY sudo docker-compose -f docker/docker-compose.yml up -d >> /dev/null
+   docker run -d --name postgresql --restart always \
+   -e POSTGRES_DB=mindfulguard_production \
+   -e POSTGRES_USER=$DATABASE_USER \
+   -e POSTGRES_PASSWORD=$DATABASE_PASSWORD \
+   -v ./dumps/pgsql.sql:/docker-entrypoint-initdb.d/pgsql.sql \
+   -v pgdata:/var/lib/postgresql/data \
+   -p 5432:5432 \
+   --network app-network \
+   postgres:15.4
    ```
+
+   - Running "mindfulguard_server"
+   ```bash
+   docker run -d --name mindfulguard_server --restart always \
+   -e DATABASE_HOST=$DATABASE_HOST \
+   -e DATABASE_PORT=$DATABASE_PORT \
+   -e DATABASE_USER=$DATABASE_USER \
+   -e DATABASE_PASSWORD=$DATABASE_PASSWORD \
+   -e MINIO_HOSTNAME=$MINIO_HOSTNAME \
+   -e MINIO_USER_ACCESS_KEY=$MINIO_USER_ACCESS_KEY \
+   -e MINIO_USER_SECRET_KEY=$MINIO_USER_SECRET_KEY \
+   -p 80:8080 \
+   --network app-network \
+   ghcr.io/mindfulguard/server:main
+   ```
+
+   - Running "mindfulguard_server"
+   ```bash
+   docker run -d --name minio --restart always \
+   -e MINIO_ROOT_USER=$MINIO_ROOT_ACCESS_KEY \
+   -e MINIO_ROOT_PASSWORD=$MINIO_ROOT_SECRET_KEY \
+   -p 9000:9000 \
+   -v ~/.minio/data:/data \
+   quay.io/minio/minio server /data --console-address ":9090"
+   ```
+
    - LOGIN - must contain no less than 2 and no more than 50 characters, may contain Latin characters, digits, hyphen and underscore
    - PASSWORD - not less than 8 and not more than 64 characters, must have 1 upper case character, 1 lower case character, 1 special character and 1 digit.
    - **IT IS STRONGLY RECOMMENDED TO STORE "LOGIN" AND "PASSWORD" IN A SAFE PLACE AND NOT IN THE ENVIRONMENT.**
