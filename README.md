@@ -16,7 +16,7 @@ MindfulGuard is a secure and user-friendly password manager with a built-in API 
 
 Before you proceed with the installation and use of "MindfulGuard," please ensure that your system meets the following minimum requirements:
 
-- **Operating System:** The minimum supported operating systems are Windows 10, macOS 10.13, or any Linux distribution compatible with the application.
+- **Operating System:** Supported operating system is any Linux distribution compatible with the application.
 
 - **Hardware Requirements:**
   - Processor with x86_64 architecture support.
