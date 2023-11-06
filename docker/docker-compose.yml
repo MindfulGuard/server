@@ -24,6 +24,7 @@ services:
         - 80:8080
       depends_on:
         - postgresql
+        - minio
       networks:
         - app-network
 
@@ -32,6 +33,7 @@ services:
     restart: always
     command: server /data --console-address ":9090"
     ports:
+      - 9090:9090
       - 9000:9000
     volumes:
       - ~/.minio/data:/data
