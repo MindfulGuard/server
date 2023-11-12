@@ -19,22 +19,22 @@ async def sign_in(
     secret_string:Annotated[str, Form()],
     code:Annotated[str, Form()],
     expiration:Annotated[int, Form()],
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     request: Request,
     response:Response,
     type:str  = Query(min_length=5, max_length=7)
 ):
     auth = Authentication()
-    return await auth.sign_in(login,secret_string,code,type,user_agent,expiration,request,response)
+    return await auth.sign_in(login,secret_string,code,type,device,expiration,request,response)
 
 @router.delete("/sign_out/{id}")
 async def sign_out(
     id:str,
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     request: Request,
     response: Response,
     token: str = Header(default=None, alias="Authorization")
 ):
     auth = Authentication()
-    await auth.update_token_info(token,user_agent,request)
+    await auth.update_token_info(token,device,request)
     return await auth.sign_out(token, id, response)

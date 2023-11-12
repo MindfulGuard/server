@@ -13,14 +13,14 @@ async def create_item(
     json: Item,
     request: Request,
     response: Response,
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     token: str = Header(default=None, alias="Authorization"),
 ):
     with ensure_request_validation_errors():
         await json.model_async_validate()
     auth = Authentication()
     obj = items.Item()
-    await auth.update_token_info(token, user_agent, request)
+    await auth.update_token_info(token, device, request)
     return await obj.create(token, json, safe_id, response)
 
 @router.put("/{safe_id}/item/{item_id}")
@@ -30,26 +30,26 @@ async def update_item(
     json: Item,
     request: Request,
     response: Response,
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     token: str = Header(default=None, alias="Authorization"),
 ):
     with ensure_request_validation_errors():
         await json.model_async_validate()
     auth = Authentication()
     obj = items.Item()
-    await auth.update_token_info(token, user_agent, request)
+    await auth.update_token_info(token, device, request)
     return await obj.update(token, json, safe_id, item_id, response)
 
 @router.get("/all/item")
 async def get_item(
     request: Request,
     response: Response,
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     token: str = Header(default=None, alias="Authorization"),
 ):
     auth = Authentication()
     obj = items.Item()
-    await auth.update_token_info(token, user_agent, request)
+    await auth.update_token_info(token, device, request)
     return await obj.get(token, response)
 
 @router.put("/{from}/{to}/item/{item_id}")
@@ -58,13 +58,13 @@ async def move_item(
     item_id:str,
     request: Request,
     response: Response,
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     old_safe_id:str = Path(alias="from"),
     token: str = Header(default=None, alias="Authorization"),
 ):
     auth = Authentication()
     obj = items.Item()
-    await auth.update_token_info(token, user_agent, request)
+    await auth.update_token_info(token, device, request)
     return await obj.move(token, old_safe_id ,to, item_id, response)
 
 @router.delete("/{safe_id}/item/{item_id}")
@@ -73,12 +73,12 @@ async def delete_item(
     item_id: str,
     request: Request,
     response: Response,
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     token: str = Header(default=None, alias="Authorization"),
 ):
     auth = Authentication()
     obj = items.Item()
-    await auth.update_token_info(token, user_agent, request)
+    await auth.update_token_info(token, device, request)
     return await obj.delete(token, safe_id, item_id, response)
 
 @router.put("/{safe_id}/item/{item_id}/favorite")
@@ -87,10 +87,10 @@ async def favorite(
     item_id: str,
     request: Request,
     response: Response,
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     token: str = Header(default=None, alias="Authorization"),
 ):
     auth = Authentication()
     obj = items.Item()
-    await auth.update_token_info(token, user_agent, request)
+    await auth.update_token_info(token, device, request)
     return await obj.set_favorite(token, safe_id, item_id, response)
