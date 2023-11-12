@@ -12,14 +12,14 @@ AUTH_PATH_V1 = "/v1/auth"
 USER_PATH_V1 = "/v1/user"
 
 without_token = {
-    'User-Agent': 'python:3.10/windows',
+    'Device': 'python:3.10/windows',
     'Content-Type': 'application/x-www-form-urlencoded',
     'X-Real-IP': '127.0.0.1'
 }
 
 def with_token_OK(token:str)-> dict[str, str]:
     with_token_OK = {
-        'User-Agent': 'python:3.10/windows',
+        'Device': 'python:3.10/windows',
         'Content-Type': 'application/x-www-form-urlencoded',
         'X-Real-IP': '127.0.0.1',
         'Authorization': 'Bearer '+token
@@ -27,14 +27,14 @@ def with_token_OK(token:str)-> dict[str, str]:
     return with_token_OK
 
 with_token_BAD_REQUEST = {
-    'User-Agent': 'python:3.10/windows',
+    'Device': 'python:3.10/windows',
     'Content-Type': 'application/x-www-form-urlencoded',
     'X-Real-IP': '127.0.0.1',
     'Authorization': '54385vn9384'
 }
 
 with_token_UNAUTHORIZED = {
-    'User-Agent': 'python:3.10/windows',
+    'Device': 'python:3.10/windows',
     'Content-Type': 'application/x-www-form-urlencoded',
     'X-Real-IP': '127.0.0.1',
     'Authorization': 'Bearer xqdwu8tPKvnFBPZiQzGanMZ2UM8b8ALJVikZ6iTNK0RdxehS4AUiYy9sgP7Ys7OULF6FsJekTB5XARFzOTolTgR8WTJqw85AhylCS3WxWA6Gr7D5zeHM7VmWT2KpbPzO'
