@@ -11,13 +11,13 @@ async def upload_files(
     safe_id: str,
     request:Request,
     response: Response,
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     token: str = Header(default=None, alias="Authorization"),
 ):
     auth = Authentication()
     obj = Files()
     
-    await auth.update_token_info(token, user_agent, request)
+    await auth.update_token_info(token, device, request)
 
     return await obj.put_files(
         token,
@@ -32,13 +32,13 @@ async def download_file(
     file_name:str,
     request:Request,
     response: Response,
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     token:str = Header(default=None, alias="Authorization"),
 ):
     auth = Authentication()
     obj = Files()
     
-    await auth.update_token_info(token, user_agent, request)
+    await auth.update_token_info(token, device, request)
 
     return await obj.download_file(
         token,
@@ -53,13 +53,13 @@ async def delete_files(
     files:Annotated[list[str], Form()],
     request:Request,
     response: Response,
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     token:str = Header(default=None, alias="Authorization"),
 ):
     auth = Authentication()
     obj = Files()
     
-    await auth.update_token_info(token, user_agent, request)
+    await auth.update_token_info(token, device, request)
 
     return await obj.delete_files(
         token,

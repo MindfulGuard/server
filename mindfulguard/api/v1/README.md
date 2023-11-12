@@ -74,7 +74,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   
   - Body
   
@@ -135,7 +135,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -189,7 +189,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -252,7 +252,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -306,7 +306,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -383,7 +383,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -436,7 +436,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -468,7 +468,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -500,7 +500,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -563,6 +563,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -616,6 +617,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -669,6 +671,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -736,7 +739,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -795,7 +798,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -853,7 +856,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -979,6 +982,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/json | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -1085,7 +1089,7 @@
   
   | key | value | Description |
   | - | - | - |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -1475,7 +1479,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -1532,7 +1536,7 @@
   
   | key | value | Description |
   | - | - | - |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Content-Type | application/json | |
   | Authorization | Bearer &lt;token> |  | |
   
@@ -1590,7 +1594,7 @@
   
   | key | value | Description |
   | - | - | - |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Content-Type | application/json | |
   | Authorization | Bearer &lt;token> |  | |
   
@@ -1649,7 +1653,7 @@
   
   | key | value | Description |
   | - | - | - |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -1702,7 +1706,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | multipart/form-data |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -1733,7 +1737,7 @@
   
   | key | value | Description |
   | - | - | - |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body
@@ -1764,7 +1768,7 @@
   | key | value | Description |
   | - | - | - |
   | Content-Type | application/x-www-form-urlencoded |  | |
-  | User-Agent | Chromium/100.0.0 or <Сlient name>/&lt;Version> |  | |
+  | Device | App name version/Device name Version |  | |
   | Authorization | Bearer &lt;token> |  | |
   
   - Body

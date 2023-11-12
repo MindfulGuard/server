@@ -9,7 +9,7 @@ router = APIRouter()
 @router.put("/auth/one_time_code")
 async def settings_update_one_time_code(
     secret_string:Annotated[str, Form()],
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     request: Request,
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
@@ -17,7 +17,7 @@ async def settings_update_one_time_code(
     ):
     auth = Authentication()
     user = User()
-    await auth.update_token_info(token,user_agent,request)
+    await auth.update_token_info(token,device,request)
     return await user.settings_one_time_codes(token,secret_string,type,response)
 
 @router.put("/auth/secret_string")
@@ -26,14 +26,14 @@ async def settings_update_secret_string(
     old_secret_string:Annotated[str, Form()],
     new_secret_string:Annotated[str, Form()],
     code:Annotated[str, Form()],
-    user_agent: Annotated[str, Header()],
+    device: Annotated[str, Header()],
     request: Request,
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
     ):
     auth = Authentication()
     user = User()
-    await auth.update_token_info(token,user_agent,request)
+    await auth.update_token_info(token,device,request)
     return await user.settings_secret_string(
         token,
         login,
