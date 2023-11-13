@@ -1,3 +1,6 @@
+import asyncio
+from asyncore import loop
+from concurrent.futures import ThreadPoolExecutor
 from http.client import NOT_FOUND
 from fastapi import Response
 from mindfulguard.core.languages import Language
@@ -68,27 +71,41 @@ class User:
             self,
             token:str,
             response:Response
-            ):
+    ):
         user_info =  UserInformation()
 
-        tks = await user_info.get_tokens(token)
-        data:list = tks[0]
-        status_code = tks[1]
+        async def get_tokens_async():
+            tks = await user_info.get_tokens(token)
+            return tks[0], tks[1]
 
-        information = await user_info.get_info(token)
-        info = information[0]
+        async def get_information_async():
+            information = await user_info.get_info(token)
+            return information[0]
+
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            tasks = [
+                loop.run_in_executor(executor, get_tokens_async),
+                loop.run_in_executor(executor, get_information_async),
+                loop.run_in_executor(executor, user_info.get_disk_space, info['username'])
+            ]
+
+            # Wait for all tasks to complete
+            results = await asyncio.gather(*tasks)
+
+        data, status_code = results[0]
+        info = results[1]
+        user_disk = results[2]
 
         response.status_code = status_code
 
         if status_code == OK:
-            user_disk = await user_info.get_disk_space(info['username'])
             return {
-                "tokens":data,
-                "count_tokens":len(data),
-                "information":info,
-                "disk":{
-                    "total_space":user_disk[1],
-                    "filled_space":user_disk[0]
+                "tokens": data,
+                "count_tokens": len(data),
+                "information": info,
+                "disk": {
+                    "total_space": user_disk[1],
+                    "filled_space": user_disk[0]
                 }
             }
         elif status_code == BAD_REQUEST:
@@ -97,7 +114,7 @@ class User:
             return self.__json_responses.unauthorized()
         else:
             return self.__json_responses.server_error()
-        
+
     async def delete_user(
         self,
         token:str,
