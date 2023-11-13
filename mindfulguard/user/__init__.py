@@ -84,22 +84,13 @@ class User:
                 information = await user_info.get_info(token)
                 return information[0]
 
-        async def get_disk_space_async():
-            async with semaphore:
-                info = await user_info.get_info(token)
-                if info and info[-1] == OK:
-                    user_disk = await user_info.get_disk_space(info[0]['username'])
-                    return user_disk
-                return None
-
         results = await asyncio.gather(
-            get_tokens_async(), get_information_async(), get_disk_space_async()
+            get_tokens_async(), get_information_async()
         )
 
         # Unpack the results
         tokens, status_code = results[0]
         info = results[1]
-        user_disk = results[2]
 
         response.status_code = status_code
 
@@ -108,10 +99,6 @@ class User:
                 "tokens": tokens,
                 "count_tokens": len(tokens),
                 "information": info,
-                "disk": {
-                    "total_space": user_disk[1] if user_disk else 0,
-                    "filled_space": user_disk[0] if user_disk else 0
-                }
             }
         elif status_code == BAD_REQUEST:
             return self.__json_responses.data_not_valid()

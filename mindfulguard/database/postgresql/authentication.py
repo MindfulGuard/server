@@ -164,8 +164,6 @@ class Authentication:
                 }
                 value_list.append(value_dict)
 
-            print(value_list)
-
             return (value_list,OK)
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return ([],INTERNAL_SERVER_ERROR)
