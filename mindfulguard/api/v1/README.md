@@ -588,10 +588,6 @@ GET /v1/user
       "username": "User_-12345",
       "created_at": 1697560563,
       "ip": "127.0.0.1"
-  },
-  "disk": {
-      "total_space": 1073741824,
-      "filled_space": 0
   }
 }
 
