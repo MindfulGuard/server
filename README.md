@@ -1,6 +1,6 @@
 # MindfulGuard
 
-![Logo]()
+![Logo]() 
 
 MindfulGuard is a secure and user-friendly password manager with a built-in API server. It provides a safe way to store and manage your passwords and personal data.
 
