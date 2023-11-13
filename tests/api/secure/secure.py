@@ -6,7 +6,7 @@ import pyotp
 class PbkdF2HMAC:
     def __init__(self):...
     def encrypt(self, password: str, salt: bytes) -> bytes:
-        kdf = PBKDF2(password, salt, 32, 100000)
+        kdf = PBKDF2(password, salt, 32, 10000)
         return kdf
 
 class AES_256:
