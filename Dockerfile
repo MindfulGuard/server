@@ -21,7 +21,7 @@ WORKDIR /home/runner/work/server
 COPY --from=nextjs /home/runner/work/server/client server/client
 
 # Install Python dependencies
-RUN pip install -r requirements.txt  # Assuming you have a requirements.txt file
+RUN make pip-i
 
 # Command to run both applications
 CMD ["sh", "-c", "make run & python -m routines.__main__ & cd client && yarn start"]
