@@ -1,13 +1,9 @@
-# Stage 1: Build Python
-FROM python:3.10 AS python
+FROM node:18 AS nextjs
 
 WORKDIR /home/runner/work/server/server
 
 # Copy the entire project to the container
 COPY . .
-
-# Stage 2: Build Next.js
-FROM node:18 AS nextjs
 
 WORKDIR /home/runner/work/server/server/client
 
@@ -18,7 +14,7 @@ RUN yarn install
 RUN yarn build
 
 # Stage 3: Final Image
-FROM python:3.10
+FROM python:3.10 AS python
 
 WORKDIR /home/runner/work/server/server
 
