@@ -19,7 +19,12 @@ class SignIn:
                       expiration:int):
         valid = Validation()
         token:str = security.generate_512_bit_token_string()
-        if valid.validate_login(login) == False or valid.validate_secret_string(secret_string) == False or expiration <1 or valid.validate_TOTP_code(code) == False:
+        if (
+            valid.validate_login(login) == False
+            or valid.validate_secret_string(secret_string) == False
+            or expiration <1 and expiration > 7776000
+            or valid.validate_TOTP_code(code) == False
+        ):
             return (None,BAD_REQUEST)
 
         returns = (
