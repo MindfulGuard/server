@@ -3,9 +3,7 @@ FROM node:18 AS nextjs
 WORKDIR /home/runner/work/server/server
 
 # Copy the entire project to the container
-COPY . .
-
-WORKDIR /home/runner/work/server/server/client
+COPY /home/runner/work/server/server/client /home/runner/work/server/client
 
 # Install the dependencies for Next.js
 RUN yarn install
@@ -16,7 +14,7 @@ RUN yarn build
 # Stage 3: Final Image
 FROM python:3.10 AS python
 
-WORKDIR /home/runner/work/server/server
+COPY --from=nextjs /home/runner/work/server/client  /home/runner/work/server/server
 
 # Install Python dependencies
 RUN make pip-i
