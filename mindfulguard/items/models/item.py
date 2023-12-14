@@ -63,7 +63,7 @@ class Item(AsyncValidationModelMixin,BaseModel):
         if category_array[1] == INTERNAL_SERVER_ERROR:
             raise ValueError("Server error")
         categories = category_array[0]['item_categories']
-        if value not in categories:
+        if value not in categories or len(value.replace(' ', '')) == 0:
             raise ValueError(f"'{value}' is not an acceptable category")
 
     @field_validator("tags")
