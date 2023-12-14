@@ -18,10 +18,10 @@ WORKDIR /home/runner/work/server/server/client
 COPY --from=python /home/runner/work/server/server .
 
 # Install the dependencies for Next.js
-RUN yarn install
+RUN cd client && yarn install
 
 # Build the Next.js application
-RUN yarn build
+RUN cd client && yarn build
 
 # Command to run both applications
-CMD ["sh", "-c", "cd /home/runner/work/server/server && make run & cd /home/runner/work/server/server/client && yarn start & python -m routines.__main__"]
+CMD ["sh", "-c", "cd /home/runner/work/server/server && make run & python -m routines.__main__ & cd /home/runner/work/server/server/client && yarn start"]
