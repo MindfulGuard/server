@@ -674,7 +674,6 @@ DELETE /v1/user/settings
 
 | Parameters | Type | Description | Encrypt |
 | - | - | - | - |
-| login | string | the length is set in the configuration | &#10007; | |
 | secret_string | string | [secret_string](#secret_string) | &#10003; | |
 | code | string | the code consists of a 6-digit number, the code can be obtained in the TOTP client| &#10007; | |
 
@@ -734,7 +733,6 @@ PUT /v1/user/settings/auth/secret_string
 
 | Parameters | Type | Description | Encrypt |
 | - | - | - | - |
-| login | string | | &#10007; | |
 | old_secret_string | string | [secret_string](#secret_string) | &#10003; | |
 | new_secret_string | string | [secret_string](#secret_string) | &#10003; | |
 | code | string | the code consists of a 6-digit number, the code can be obtained in the TOTP client| &#10007; | |
