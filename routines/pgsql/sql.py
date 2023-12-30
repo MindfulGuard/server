@@ -2,7 +2,6 @@ from http.client import INTERNAL_SERVER_ERROR, OK
 import asyncpg
 from routines.pgsql.connection import Connection
 
-
 class Sql:
     async def get_settings(self):
         connection = None
@@ -17,7 +16,7 @@ class Sql:
             for row in values:
                 key, value = row['st_key'], row['st_value']
                 settings_dict[key] = value
-            return (settings_dict,OK)
+            return (settings_dict, OK)
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return ({}, INTERNAL_SERVER_ERROR)
         finally:
@@ -38,7 +37,7 @@ class Sql:
             if connection:
                 await connection.close()
 
-    async def delete_users(self,expiration:int):
+    async def delete_users(self, expiration: int):
         connection = None
         try:
             connection = await Connection().connect()
@@ -50,7 +49,9 @@ class Sql:
             )
             DELETE FROM c_codes
             WHERE c_codes.c_u_id IN (SELECT u_id FROM deleted_users);
-            ''',expiration)
+            ''',
+            expiration
+        )
         except asyncpg.exceptions.ConnectionDoesNotExistError:
             return ({}, INTERNAL_SERVER_ERROR)
         finally:

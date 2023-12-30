@@ -1,40 +1,39 @@
-from typing import Annotated
+from typing import Annotated, Literal
 from fastapi import  APIRouter, Form, Header, Query, Request, Response
-from mindfulguard.authentication import Authentication
+from mindfulguard.classes.authentication import Authentication
 
 router = APIRouter()
 
 @router.post("/sign_up")
-async def sign_up(login: Annotated[str, Form()],
-                  secret_string:Annotated[str, Form()],
-                  request: Request,
-                  response:Response
+async def sign_up(
+    login: Annotated[str, Form()],
+    secret_string:Annotated[str, Form()],
+    request: Request,
+    response:Response
 ):
-    auth = Authentication()
-    return await auth.sign_up(login,secret_string,False,request,response)
+    auth = Authentication(response, request)
+    return await auth.sign_up(login,secret_string)
 
 @router.post("/sign_in")
 async def sign_in(
     login: Annotated[str, Form()],
-    secret_string:Annotated[str, Form()],
-    code:Annotated[str, Form()],
-    expiration:Annotated[int, Form()],
+    secret_string: Annotated[str, Form()],
+    code: Annotated[str, Form()],
+    expiration: Annotated[int, Form()],
     device: Annotated[str, Header()],
     request: Request,
-    response:Response,
-    type:str  = Query(min_length=5, max_length=7)
+    response: Response,
+    type: str = Query(min_length=5, max_length=7)
 ):
-    auth = Authentication()
-    return await auth.sign_in(login,secret_string,code,type,device,expiration,request,response)
+    auth = Authentication(response, request)
+    return await auth.sign_in(login, secret_string, device, expiration, type, code) # type: ignore
 
 @router.delete("/sign_out/{id}")
 async def sign_out(
-    id:str,
-    device: Annotated[str, Header()],
+    id: str,
     request: Request,
     response: Response,
     token: str = Header(default=None, alias="Authorization")
 ):
-    auth = Authentication()
-    await auth.update_token_info(token,device,request)
-    return await auth.sign_out(token, id, response)
+    auth = Authentication(response, request)
+    return await auth.sign_out(token, id)

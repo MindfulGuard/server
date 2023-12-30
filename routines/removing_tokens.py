@@ -3,7 +3,6 @@ from http.client import OK
 import time
 from routines.pgsql.sql import Sql
 
-
 class Tokens:
     def __init__(self,update_settings_time:int):
         self.__sql = Sql()

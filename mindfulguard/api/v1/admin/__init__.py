@@ -1,94 +1,67 @@
-from typing import Annotated, Any, Optional
+from typing import Annotated, Optional
 from fastapi import APIRouter, Form, Header, Query, Request, Response
-from mindfulguard.admin import Admin
-
-from mindfulguard.authentication import Authentication
+from mindfulguard.classes.admin import Admin
 
 router = APIRouter()
 
 @router.get("/users/all")
 async def get_info(
-    device: Annotated[str, Header()],
-    request: Request,
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
-    page:int  = Query(..., ge=1)
+    page: int  = Query(..., ge=1)
 ):
-    auth = Authentication()
-    await auth.update_token_info(token,device,request)
-    admin = Admin()
-    return await admin.get_users(token, page, response)
+    admin = Admin(response).users()
+    return await admin.get_by_page(token, page)
 
 @router.get("/users/search")
 async def search(
     value: Annotated[str, Form()],
-    device: Annotated[str, Header()],
-    request: Request,
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
-    by:str  = Query(),
+    by: str  = Query(),
 ):
-    auth = Authentication()
-    await auth.update_token_info(token,device,request)
-    admin = Admin()
-    return await admin.search_users(token, by, value, response)
+    admin = Admin(response).users()
+    return await admin.search_users(token, by, value)
 
 @router.get("/settings")
 async def get_settings(
-    device: Annotated[str, Header()],
-    request: Request,
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
 ):
-    auth = Authentication()
-    await auth.update_token_info(token,device,request)
-    admin = Admin()
-    return await admin.get_settings(token, response)
-
+    admin = Admin(response).configuration()
+    return await admin.get(token)
 
 @router.put("/settings")
 async def update_settings(
-    value:Annotated[Optional[str], Form()],
-    device: Annotated[str, Header()],
-    request: Request,
+    value: Annotated[Optional[str], Form()],
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
-    key:str  = Query(),
+    key: str  = Query(),
 ):
-    auth = Authentication()
-    await auth.update_token_info(token,device,request)
-    admin = Admin()
-    return await admin.update_settings(token,key,value, response)
+    admin = Admin(response).configuration()
+    return await admin.update(token, key, value) # type: ignore
 
 @router.post("/users")
 async def create_user(
     login: Annotated[str, Form()],
-    secret_string:Annotated[str, Form()],
-    device: Annotated[str, Header()],
+    secret_string: Annotated[str, Form()],
     request: Request,
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
 ):
-    auth = Authentication()
-    await auth.update_token_info(token,device,request)
-    admin = Admin()
+    admin = Admin(response).users()
     return await admin.create_user(
         token,
         login,
         secret_string,
-        request,
-        response
+        request
     )
 
 @router.delete("/users")
 async def delete_user(
-    device: Annotated[str, Header()],
-    request: Request,
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
     id = Query(),
 ):
-    auth = Authentication()
-    await auth.update_token_info(token,device,request)
-    admin = Admin()
-    return await admin.delete_user(token, id, response)
+    admin = Admin(response).users()
+    return await admin.delete_user(token, id)

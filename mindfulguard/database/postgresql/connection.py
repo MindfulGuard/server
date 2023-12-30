@@ -1,30 +1,22 @@
-import os
 import asyncpg
+from mindfulguard.classes.database.postgresql.connection_base import PostgreSqlConnectionBase
 
-class Config:
-    def get_host(self)->str:
-        return os.environ.get('DATABASE_HOST', 'localhost')
-    def get_port(self)->str:
-        return os.environ.get('DATABASE_PORT', '5432')
-    def get_database(self)->str:
-        return "mindfulguard_production"
-    def get_user(self)->str:
-        return os.environ.get('DATABASE_USER', '')
-    def get_password(self)->str:
-        return os.environ.get('DATABASE_PASSWORD', '')
-
-class Connection:
+class PostgreSqlConnection(PostgreSqlConnectionBase):
     def __init__(self):
-        self.__db_config = Config()
-    async def connect(self):
-        return await asyncpg.connect(database=self.__db_config.get_database(),
-                                     user=self.__db_config.get_user(),
-                                     password=self.__db_config.get_password(),
-                                     host=self.__db_config.get_host(),
-                                     port=self.__db_config.get_port())
-    async def create_pool(self):
-        return await asyncpg.create_pool(database=self.__db_config.get_database(),
-                                        user=self.__db_config.get_user(),
-                                        password=self.__db_config.get_password(),
-                                        host=self.__db_config.get_host(),
-                                        port=self.__db_config.get_port())
+        super().__init__()
+
+    async def open(self) -> None:
+        try:
+            self.connection = await asyncpg.connect(
+                database=self._DATABASE,
+                user=self._user,
+                password=self._password,
+                host=self._host,
+                port=self._port
+            )
+        except asyncpg.exceptions.ConnectionDoesNotExistError as e:
+            print(e)
+
+    async def close(self) -> None:
+        if self.connection:
+            await self.connection.close()

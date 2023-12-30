@@ -798,6 +798,11 @@ const ItemDetails = ({ dataState, token, selectedItem, selectedsafe, safes, hand
                   </IconButton>
                 )}
               </div>
+              <Tooltip title="Edit Item">
+                <IconButton onClick={EditModalItem(,,,selectedItem, token, selectedsafe.id, , , dataState, local_key, password, private_key)}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
               <Tooltip title="Relocate">
                 <IconButton onClick={handleSafeClick}>
                   <ArrowBackIcon />
