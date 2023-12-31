@@ -2,7 +2,7 @@ from mindfulguard.classes.models.settings import ModelSettings
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.models.user import ModelUser
 from mindfulguard.database.postgresql.admin.configuration_update import PostgreSqlAdminConfigurationUpdate
-from mindfulguard.database.postgresql.admin.delet_user import PostgreSqlAdminDeletUser
+from mindfulguard.database.postgresql.admin.delete_user import PostgreSqlAdminDeletUser
 from mindfulguard.database.postgresql.admin.get_users import PostgreSqlAdminGetUsers
 from mindfulguard.database.postgresql.admin.search_users import PostgreSqlAdminSearchUsers
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection

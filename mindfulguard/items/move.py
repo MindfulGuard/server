@@ -17,6 +17,9 @@ class Move(ItemsBase):
         try:
             self.__model_record_extend.old_safe_id = old_safe_id
             self.__model_record_extend.new_safe_id = new_safe_id
+            if self.__model_record_extend.old_safe_id == self.__model_record_extend.new_safe_id:
+                self._status_code = BAD_REQUEST
+                return
             self._model_token.token = token
             self.__model_record_extend.id = record_id
 

@@ -20,6 +20,12 @@ class UserSettingsUpdateSecretString(UserBase):
             self._model_totp_code.totp_code = one_time_code
             self.__model_user_extend.old_secret_string = old_secret_string
             self.__model_user_extend.new_secret_string = new_secret_string
+            if (
+                self.__model_user_extend.old_secret_string ==
+                self.__model_user_extend.new_secret_string
+            ):
+                self._status_code = BAD_REQUEST
+                return    
             
             db = self._pgsql_user.settings().udpate_secret_string(
                 self.__model_user_extend,

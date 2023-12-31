@@ -5,7 +5,6 @@ from mindfulguard.validation import Validation
 
 class Totp:
     def __init__(self, secret_code: str) -> None:
-        self.__validation = Validation()
         self.__secret_code = secret_code
 
     def generate_secret_code(self) -> str:

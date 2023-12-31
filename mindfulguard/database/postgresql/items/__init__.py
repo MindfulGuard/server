@@ -116,8 +116,7 @@ class PostgreSqlItems:
             ModelToken().token,
             ModelRecordExtend().id,
             ModelRecordExtend().old_safe_id,
-            ModelRecordExtend().new_safe_id,
-            ModelRecordExtend().id
+            ModelRecordExtend().new_safe_id
         """
         obj: PostgreSqlQueriesBase = PostgreSqlItemsMove(
             self.__connection,

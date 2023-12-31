@@ -32,7 +32,6 @@ class PostgreSqlUserSettingsDeleteAccount(PostgreSqlQueriesBase):
         self.__model_user.secret_string,
         confirm
         )
-        print(value)
         if value == 0:
             self._status_code = OK
             return
