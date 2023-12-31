@@ -3,6 +3,7 @@ import threading
 from routines.removing_tokens import Tokens
 from routines.removing_users import Users
 
+
 UPDATE_SETTINGS_PER_SECONDS = 10
 
 async def tks():
