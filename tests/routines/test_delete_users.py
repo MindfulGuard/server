@@ -26,8 +26,8 @@ async def change_confirmation_period_settings(time: str):
 async def test_routines_delete_users():
     sign_up = DbTestsAuthenticationSignUp()
 
-    login: str = 'User6_sfv_--ff--'
-    secret_string: str = 'seHhtvUWhA5unv8ycaWDpXiryULDeQ5Cba5YdQuPFO7lOldrM1RZlzwA1rOphJqq'
+    login: str = 'User6_sftgv_--ff--'
+    secret_string: str = 'ssHhtvUWhg5unv8ycaWDpXiryULDeQ5Cba5YdQuPFO7lOldrM1RZlzwA1rOphJqh'
     secret_code: str = 'KE26VBNRYVHOAUD7YQK5QZ2ONMTL2HKX'
     backup_codes: list[int] = [425234, 424523, 536345, 674522, 321333, 243244]
 
@@ -39,11 +39,11 @@ async def test_routines_delete_users():
         backup_codes
     ) == OK
 
-    time.sleep(110)
+    time.sleep(200)
 
     sign_in = DbTestsAuthenticationSignIn()
     
-    token = 'Bearer eYWFPthabPhPd4jwWd1IogepUeRokRPHPNyDAjSfxzm0JDRohBqwOwjSZHv2tUMJgD1FI7kAuezdxni4RtSA8JPv0HIqxP2OLitu9Ay7AZ5qLFRjK467o5iCIcDWTpqJ'
+    token = 'Bearer KzBY2qoURydaqn8C4WXfDZEFN0mIoTERtnBFlZB6oq4jnukSPqCQPj0zugORZvxLhImS7vikKNdXMwAkG9vMNid5MlImkGCN6mL0Xp2DG1LxHm2eyfa4YqtJMWw3lCK3'
     assert await sign_in.ok(
         login,
         secret_string,
