@@ -31,7 +31,7 @@ async def test_routines_delete_users():
     secret_code: str = 'KE26VBNRYVHOAUD7YQK5QZ2ONMTL2HKX'
     backup_codes: list[int] = [425234, 424523, 536345, 674522, 321333, 243244]
 
-    assert await change_confirmation_period_settings('40') == True
+    assert await change_confirmation_period_settings('10') == True
     assert await sign_up.ok(
         login,
         secret_string,
