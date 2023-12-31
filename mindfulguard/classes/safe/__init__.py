@@ -1,8 +1,7 @@
 import asyncio
 from http.client import BAD_REQUEST, OK, UNAUTHORIZED
-from imp import get_tag
 from typing import Any
-from fastapi import Request, Response
+from fastapi import Response
 from mindfulguard.classes.responses import Responses
 from mindfulguard.files.get import Get as FilesGet
 from mindfulguard.items.get import Get as ItemsGet
