@@ -110,7 +110,6 @@ class Bucket:
         self.__bucket_name: str = bucket_name
     
     def make_bucket(self) -> bool:
-        print(self.__bucket_name)
         if self.__s3_client.bucket_exists(self.__bucket_name):
             return False
         self.__s3_client.make_bucket(self.__bucket_name)

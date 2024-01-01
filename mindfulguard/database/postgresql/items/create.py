@@ -38,16 +38,12 @@ class PostgreSqlItemsCreate(PostgreSqlQueriesBase):
                 self._status_code = UNAUTHORIZED
                 return
             elif value == -2:
-                print(value)
                 self._status_code = INTERNAL_SERVER_ERROR
                 return
             else:
-                print(value)
                 self._status_code = INTERNAL_SERVER_ERROR
                 return
         except asyncpg.exceptions.ForeignKeyViolationError as e:
-            print(e)
             self._status_code = INTERNAL_SERVER_ERROR
         except asyncpg.exceptions.UniqueViolationError  as e:
-            print(e)
             self._status_code = INTERNAL_SERVER_ERROR

@@ -26,23 +26,19 @@ class AdminUsersDeleteUser(AdminBase):
             await user_info.execute('id')
             self._status_code = user_info.status_code
             if user_info.status_code != OK:
-                print('User info', user_info.status_code)
                 return
             
             db_delete = self._pgsql_admin.delete_user(self._model_token, self._model_user)
             await db_delete.execute()
             self._status_code = db_delete.status_code
             if db_delete.status_code != OK:
-                print('Db_delete', db_delete.status_code)
                 return
 
-            print(user_info.response.login)
             self._s3.set_bucket_name(user_info.response.login)
             self._s3.object().delete_all_objects()
             self._s3.bucket().delete_bucket()
             return
         except ValueError as e:
-            print(e)
             self._status_code = BAD_REQUEST
         finally:
             await self._connection.close()

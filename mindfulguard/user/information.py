@@ -59,7 +59,6 @@ class UserInformation(UserBase):
             self._status_code = OK
             return
         except ValueError as e:
-            print(e)
             self._status_code = BAD_REQUEST
         finally:
             await self._connection.close()

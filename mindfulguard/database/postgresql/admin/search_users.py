@@ -39,7 +39,7 @@ class PostgreSqlAdminSearchUsers(PostgreSqlQueriesBase):
                 f"{query} WHERE u_id = $1;",
                 self.__model_user.id
             )
-            print(values, 'userid: ', self.__model_user.id)
+
             if not values:
                 self._status_code = NOT_FOUND
                 return
