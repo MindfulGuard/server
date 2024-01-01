@@ -19,14 +19,14 @@ const getDeviceInfo = () => {
     }
   };
   
-  export const device = `MindfulGuard Web 0.0.0/${getDeviceInfo().deviceName} ${getDeviceInfo().deviceVersion}`;
-  
-  export const api = axios.create({
-    baseURL: process.env.API_BASE_URL || 'http://localhost',
-    headers: {
-      'Device': device,
-    },
-  });
+export const device = `MindfulGuard Web 0.0.0/${getDeviceInfo().deviceName} ${getDeviceInfo().deviceVersion}`;
+
+export const api = axios.create({
+  baseURL: process.env.API_BASE_URL || 'http://localhost', //SOLVE THE PROBLEM with env
+  headers: {
+    'Device': device,
+  },
+});
 
 export const api_v1_auth_sign_up: string = "/v1/auth/sign_up";
 export const api_v1_auth_sign_in_basic: string= '/v1/auth/sign_in?type=basic'

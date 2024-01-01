@@ -25,7 +25,7 @@ class UserDiskSpace(UserBase):
             await self._settings.execute()
 
             self.__total_disk_space = self._settings.response['disk_space_per_user']
-            self._s3_bucket_name = db.response.login
+            self._s3.set_bucket_name(db.response.login)
             self.__user_disk_space = self._s3.bucket().get_size
             self._status_code = OK
             return
