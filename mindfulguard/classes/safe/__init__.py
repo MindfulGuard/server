@@ -68,7 +68,7 @@ class Safe:
 
         async def disk_space():
             async with semaphore:
-                obj = User().disk().disk_space()
+                obj = User().disk().space()
                 await obj.execute(token)
                 return obj
 

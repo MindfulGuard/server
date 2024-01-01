@@ -1,9 +1,9 @@
 from fastapi import Response
-from mindfulguard.configuration.public import ConfigurationPublic
 
 
 class Configuration:
     def __init__(self, response: Response) -> None:
+        from mindfulguard.configuration.public import ConfigurationPublic
         self.__response: Response = response
         self.__configuration_public = ConfigurationPublic()
 

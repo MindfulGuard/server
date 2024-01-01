@@ -52,7 +52,7 @@ pip-i:
 run:
 	$(PYTHON_TYPE) -m uvicorn $(PROJECT-NAME).__main__:app --host $(HOST) --port $(PORT)
 test:
-	pytest
+	pytest tests
 
 clean:
 	$(RM) $(INFO)

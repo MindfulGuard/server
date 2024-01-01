@@ -1,7 +1,6 @@
 from http.client import BAD_REQUEST, NOT_FOUND, OK
 from typing import Any
 from mindfulguard.classes.admin.base import AdminBase
-from mindfulguard.validation import Validation
 
 
 class AdminUsersSearchUsers(AdminBase):
