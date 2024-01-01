@@ -98,7 +98,7 @@ jobs:
           sudo ./routines/setup_service.sh
       - name: Running Tests
         run: |
-          python -m pytest -rA
+          python -m pytest -rA --disable-warnings
 
   deploy:
     name: Deploy

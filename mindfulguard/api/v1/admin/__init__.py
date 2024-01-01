@@ -1,6 +1,6 @@
 from typing import Annotated, Optional
 from fastapi import APIRouter, Form, Header, Query, Request, Response
-from mindfulguard.classes.admin import Admin
+from mindfulguard.classes.admin import AdminClass
 
 router = APIRouter()
 
@@ -10,7 +10,7 @@ async def get_info(
     token: str = Header(default=None, alias="Authorization"),
     page: int  = Query(..., ge=1)
 ):
-    admin = Admin(response).users()
+    admin = AdminClass(response).users()
     return await admin.get_by_page(token, page)
 
 @router.get("/users/search")
@@ -20,7 +20,7 @@ async def search(
     token: str = Header(default=None, alias="Authorization"),
     by: str  = Query(),
 ):
-    admin = Admin(response).users()
+    admin = AdminClass(response).users()
     return await admin.search_users(token, by, value)
 
 @router.get("/settings")
@@ -28,7 +28,7 @@ async def get_settings(
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
 ):
-    admin = Admin(response).configuration()
+    admin = AdminClass(response).configuration()
     return await admin.get(token)
 
 @router.put("/settings")
@@ -38,7 +38,7 @@ async def update_settings(
     token: str = Header(default=None, alias="Authorization"),
     key: str  = Query(),
 ):
-    admin = Admin(response).configuration()
+    admin = AdminClass(response).configuration()
     return await admin.update(token, key, value) # type: ignore
 
 @router.post("/users")
@@ -49,7 +49,7 @@ async def create_user(
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
 ):
-    admin = Admin(response).users()
+    admin = AdminClass(response).users()
     return await admin.create_user(
         token,
         login,
@@ -63,5 +63,5 @@ async def delete_user(
     token: str = Header(default=None, alias="Authorization"),
     id = Query(),
 ):
-    admin = Admin(response).users()
+    admin = AdminClass(response).users()
     return await admin.delete_user(token, id)

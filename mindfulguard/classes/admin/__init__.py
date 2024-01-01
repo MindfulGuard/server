@@ -1,7 +1,7 @@
 from http.client import BAD_REQUEST, OK
 from typing import Any
 from fastapi import Request, Response
-from mindfulguard.admin import Admin as AdminClass
+from mindfulguard.admin import Admin
 from mindfulguard.admin.users.delete_user import AdminUsersDeleteUser
 from mindfulguard.classes.authentication import Authentication
 from mindfulguard.classes.database import DataBase
@@ -14,11 +14,11 @@ class AdminUsers:
         self,
         response: Response,
         responses: Responses,
-        admin_class: AdminClass
+        admin_class: Admin
     ) -> None:
         self.__responses: Responses = responses
         self.__response: Response = response
-        self.__admin_class: AdminClass = admin_class
+        self.__admin_class: Admin = admin_class
     
     async def get_by_page(self, token: str, page: int):
         obj = self.__admin_class.users().get_by_page()
@@ -109,11 +109,11 @@ class AdminConfiguration:
         self,
         response: Response,
         responses: Responses,
-        admin_class: AdminClass
+        admin_class: Admin
     ) -> None:
         self.__responses: Responses = responses
         self.__response: Response = response
-        self.__admin_class: AdminClass = admin_class
+        self.__admin_class: Admin = admin_class
 
     async def get(self, token: str) -> dict[str, Any]:
         obj = self.__admin_class.configuration().get()
@@ -143,11 +143,11 @@ class AdminConfiguration:
             internal_server_error = self.__responses.custom().failed_to_update_settings
         ).get(obj.status_code)
 
-class Admin:
+class AdminClass:
     def __init__(self, response: Response) -> None:
         self.__responses = Responses()
         self.__response: Response = response
-        self.__admin_class: AdminClass = AdminClass()
+        self.__admin_class: Admin = Admin()
 
     def users(self) -> AdminUsers:
         return AdminUsers(

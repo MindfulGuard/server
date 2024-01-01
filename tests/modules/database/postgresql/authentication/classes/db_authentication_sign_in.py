@@ -1,6 +1,5 @@
 from http.client import BAD_REQUEST
 from mindfulguard.classes.database import DataBase
-from mindfulguard.classes.models.code import ModelCode
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.models.user import ModelUser
 from mindfulguard.database.postgresql.authentication import PostgreSqlAuthentication

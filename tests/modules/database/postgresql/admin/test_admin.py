@@ -1,4 +1,4 @@
-from http.client import FORBIDDEN, NOT_FOUND, OK, UNAUTHORIZED
+from http.client import FORBIDDEN, NOT_FOUND, OK
 import pytest
 from mindfulguard.classes.database import DataBase
 from tests.modules.database.postgresql.admin.classes.get_by_page import DbTestAdminGetByPage
