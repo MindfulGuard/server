@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from mindfulguard.classes.database import DataBase
+from mindfulguard.classes.database.redis import Redis
 from mindfulguard.classes.models.item_json import Item
 from mindfulguard.classes.models.record import ModelRecord
 from mindfulguard.classes.models.token import ModelToken
@@ -14,6 +15,7 @@ class ItemsBase(ABC):
         self._pgsql_items = PostgreSqlItems(self._connection)
         self._model_token = ModelToken()
         self._model_record = ModelRecord()
+        self._redis = Redis()
 
     @abstractmethod
     async def execute(self) -> None:...

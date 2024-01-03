@@ -1,7 +1,10 @@
 import asyncio
 from http.client import BAD_REQUEST, OK, UNAUTHORIZED
+import json
 from typing import Any
 from fastapi import Response
+from mindfulguard.classes.database.redis import Redis
+from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.responses import Responses
 from mindfulguard.files.get import Get as FilesGet
 from mindfulguard.items.get import Get as ItemsGet
@@ -10,6 +13,7 @@ from mindfulguard.safe.delete import Delete
 from mindfulguard.safe.get import Get as SafeGet
 from mindfulguard.safe.udpate import Update
 from mindfulguard.user import User
+from redis.commands.json.path import Path
 
 
 class Safe:
@@ -47,6 +51,17 @@ class Safe:
         return response
 
     async def get(self, token: str) -> dict[str, Any]:
+        model_token = ModelToken()
+        model_token.token = token
+        redis = Redis()
+        cache_name = f'{model_token.token}:{redis.PATH_SAFE_ALL_ITEM}'
+        cache_response = redis.client().connection.json().get(
+            cache_name
+        )
+        if cache_response:
+            self.__response.status_code = OK
+            return cache_response # type: ignore
+
         semaphore = asyncio.Semaphore(3)
         async def items():
             async with semaphore:
@@ -108,6 +123,14 @@ class Safe:
             result.update(data_disk)
 
             self.__response.status_code = get_safe.status_code
+            result_ = json.dumps(result, indent=2, default=ItemsGet().serialize_uuid)
+            result_ = json.loads(result_)
+            redis.client().connection.json().set(
+                cache_name,
+                Path.root_path(),
+                result_
+            )
+            redis.client().connection.expire(cache_name, 300)
             return result
         
         else:

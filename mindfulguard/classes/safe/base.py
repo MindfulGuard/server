@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from mindfulguard.classes.database import DataBase
+from mindfulguard.classes.database.redis import Redis
 from mindfulguard.classes.models.safe import ModelSafe
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.database.postgresql.safe import PostgreSqlSafe
@@ -11,6 +12,7 @@ class SafeBase(ABC):
         self._pgsql_safe =  PostgreSqlSafe(self._connection)
         self._model_token = ModelToken()
         self._model_safe = ModelSafe()
+        self._redis = Redis()
 
     @abstractmethod
     async def execute(self) -> None:...

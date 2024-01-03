@@ -59,6 +59,10 @@ class Upload(FilesBase):
                 self._status_code = INTERNAL_SERVER_ERROR
                 return
             self._status_code = OK
+            for i in self._redis.client().connection.scan_iter(
+                f'{self._model_token.token}:{self._redis.PATH_SAFE_ALL_ITEM}'
+            ):
+                self._redis.client().connection.delete(i)
             return
         except ValueError:
             self._status_code = BAD_REQUEST

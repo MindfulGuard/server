@@ -30,6 +30,10 @@ class Delete(FilesBase):
             )
             if s3:
                 self._status_code = OK
+                for i in self._redis.client().connection.scan_iter(
+                    f'{self._model_token.token}:{self._redis.PATH_SAFE_ALL_ITEM}'
+                ):
+                    self._redis.client().connection.delete(i)
                 return
             else:
                 self._status_code = INTERNAL_SERVER_ERROR

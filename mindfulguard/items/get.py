@@ -24,7 +24,7 @@ class Get(ItemsBase):
     def favorites(self) -> list[str]:
         return self.__favorites
 
-    def __serialize_uuid(self, obj):
+    def serialize_uuid(self, obj):
         if isinstance(obj, UUID):
             return str(obj)
         raise TypeError(f'Object of type {obj.__class__.__name__} is not JSON serializable')
@@ -88,7 +88,7 @@ class Get(ItemsBase):
 
             # Converting a dictionary with safes into a list for the final JSON
             result_dict["list"] = list(safe_dict.values())
-            result_json = json.dumps(result_dict, indent=2, default=self.__serialize_uuid)
+            result_json = json.dumps(result_dict, indent=2, default=self.serialize_uuid)
 
             if not result_dict:
                 self.__json = [] # type: ignore

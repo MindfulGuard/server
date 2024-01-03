@@ -1,4 +1,4 @@
-from http.client import BAD_REQUEST
+from http.client import BAD_REQUEST, OK
 from mindfulguard.classes.safe.base import SafeBase
 
 
@@ -21,6 +21,11 @@ class Update(SafeBase):
             db = self._pgsql_safe.update(self._model_token, self._model_safe)
             await self._connection.open()
             await db.execute()
+            if db.status_code == OK:
+                for i in self._redis.client().connection.scan_iter(
+                    f'{self._model_token.token}:{self._redis.PATH_SAFE_ALL_ITEM}'
+                ):
+                    self._redis.client().connection.delete(i)
             self._status_code = db.status_code
             return
         except ValueError:
