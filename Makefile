@@ -50,9 +50,9 @@ pip-i:
 	pip install -e .
 
 run:
-	$(PYTHON_TYPE) -m uvicorn $(PROJECT-NAME).__main__:app --host $(HOST) --port $(PORT)
+	python -m uvicorn $(PROJECT-NAME).__main__:app --host $(HOST) --port $(PORT)
 test:
-	pytest tests
+	python -m pytest -rA tests
 
 clean:
 	$(RM) $(INFO)

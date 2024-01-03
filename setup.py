@@ -13,6 +13,7 @@ setup(
         'pytest',
         'pytest-asyncio',
         'cryptography',
-        'minio' 
+        'minio',
+        'redis[hiredis]'
     ],
 )

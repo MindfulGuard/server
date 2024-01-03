@@ -9,7 +9,7 @@ class ConfigurationPublic(ConfigurationBase):
         self.__settings: dict[str, Any] = {}
     
     @property
-    def response(self) -> dict[str, Any]:
+    def response(self) -> Any:
         return self._response
 
     @property

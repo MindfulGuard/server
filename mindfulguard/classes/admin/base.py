@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 from mindfulguard.classes.database import DataBase
+from mindfulguard.classes.database.redis import Redis
 
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.models.user import ModelUser
@@ -18,6 +19,7 @@ class AdminBase(ABC):
         self._connection = DataBase().postgresql().connection()
         self._pgsql_admin = PostgreSqlAdmin(self._connection)
         self._s3 = S3()
+        self._redis = Redis()
 
     @abstractmethod
     async def execute(self) -> None:...

@@ -1,4 +1,4 @@
-from http.client import BAD_REQUEST
+from http.client import BAD_REQUEST, OK
 from mindfulguard.classes.admin.base import AdminBase
 from mindfulguard.classes.models.settings import ModelSettings
 
@@ -7,6 +7,7 @@ class AdminConfigurationUpdate(AdminBase):
     def __init__(self) -> None:
         super().__init__()
         self.__model_settings = ModelSettings()
+        self.__cache_name: str = self._redis.CACHE_NAME_SETTINGS
 
     async def execute(self, token: str, key: str, value: str) -> None:
         try:
@@ -21,6 +22,9 @@ class AdminConfigurationUpdate(AdminBase):
             await self._connection.open()
             await db.execute()
             self._status_code = db.status_code
+            if db.status_code == OK:
+                for i in self._redis.client().connection.scan_iter(f'{self.__cache_name}:*'):
+                    self._redis.client().connection.delete(i)
             return
         except ValueError:
             self._status_code = BAD_REQUEST

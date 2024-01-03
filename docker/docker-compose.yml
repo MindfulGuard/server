@@ -15,19 +15,32 @@ services:
      - app-network
 
   mindfulguard_server:
-      image: ghcr.io/mindfulguard/server:main
-      container_name: mindfulguard_server
-      restart: always
-      env_file:
-        - .SERVER.env
-      ports:
-        - 80:8080
-        - 81:3000
-      depends_on:
-        - postgresql
-        - minio
-      networks:
-        - app-network
+    image: ghcr.io/mindfulguard/server:main
+    container_name: mindfulguard_server
+    restart: always
+    env_file:
+      - .SERVER.env
+    ports:
+      - 80:8080
+      - 81:3000
+    depends_on:
+      - cacheredis
+      - postgresql
+      - minio
+    networks:
+      - app-network
+
+  cacheredis:
+    image: redis/redis-stack:latest
+    restart: always
+    ports:
+      - '6379:6379'
+    env_file: 
+      - .REDIS.env
+    volumes: 
+      - cache:/data
+    networks:
+      - app-network
 
   minio:
     image: quay.io/minio/minio
@@ -50,3 +63,4 @@ networks:
 volumes:
   minio:
   pgdata:
+  cache:
