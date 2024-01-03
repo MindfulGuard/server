@@ -49,7 +49,7 @@ jobs:
       - name: Run MinIO Server
         run: docker run -d --name minio -p 9000:9000 -v ~/minio/data:/data -e MINIO_ACCESS_KEY=$minio_root_access_key -e MINIO_SECRET_KEY=$minio_root_secret_key quay.io/minio/minio server /data --console-address ":9090"
       - name: Run Redis Server
-        run: docker run -d --name redis -p 6379:6379 -v cache:/data -e REDIS_ARGS=--loglevel warning --requirepass $REDIS_PASSWORD redis/redis-stack:latest
+        run: docker run -d --name redis -p 6379:6379 -v cache:/data -e REDIS_ARGS="--loglevel warning --requirepass $REDIS_PASSWORD" redis/redis-stack:latest
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
