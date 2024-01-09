@@ -2,7 +2,7 @@
 
 import { APISignOut } from "@/api/authentication/signout";
 import { APIUserGet } from "@/api/user/get";
-import { AppBar, Toolbar, Typography, CircularProgress, Button, Popover, Link, Modal } from "@mui/material";
+import { AppBar, Toolbar, Typography, CircularProgress, Button, Popover, Link, Modal, TextField, Select, MenuItem, Box, Alert, Paper, TableHead, TableCell, TableRow, TableBody, Table, TableContainer } from "@mui/material";
 import { redirect } from "next/navigation";
 import MicrosoftIcon from '@mui/icons-material/Microsoft';
 import WebIcon from '@mui/icons-material/Web';
@@ -10,15 +10,36 @@ import AndroidIcon from '@mui/icons-material/Android';
 import AppleIcon from '@mui/icons-material/Apple';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import DevicesIcon from '@mui/icons-material/Devices';
-import { useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
+import { APIUserUpdateSecretOrBackupCode } from "@/api/user/update_secret_or_backup_code";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { QRCodeCanvas } from "qrcode.react";
+import { Validation } from "@/utils/validation";
+import { APIUserUpdateSecretString } from "@/api/user/update_secret_string";
+import { APIUserDeleteAccount } from "@/api/user/delete_account";
+
 
 function NavBar() {
     const [token, setToken] = useState('');
     const [anchorEl, setAnchorEl] = useState(null);
     const [response, setResponse] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [openModalSettings, setOpenModalSettings] = useState(false);
+    const [openModalInformation, setOpenModalInformation] = useState(false);
     const [selectedToken, setSelectedToken] = useState(null);
+    const [secretString, setSecretString] = useState('')
+    const [secretStringNew, setSecretStringNew] = useState('')
+    const [privateString, setPrivateString] = useState('')
+    const [oneTimeCode, setOneTimeCode] = useState('')
+    const [oneTimeCodeType, setOneTimeCodeType] = useState('basic')
+    const [valueTab, setValueTab] = useState('1');
+    const [resultSettings, setResultSettings] = useState(null)
     
+    const handleChangeTab = (event: SyntheticEvent, newValue: string) => {
+      setValueTab(newValue);
+    };
+
     const handleClick = (event: any, token: any) => {
       setAnchorEl(event.currentTarget);
       setSelectedToken(token);
@@ -32,6 +53,118 @@ function NavBar() {
     const handleOpenModal = () => {
       setOpenModal(true);
       handleClose();
+    };
+
+    const handleOpenModalSettings = () => {
+      setOpenModalSettings(true);
+      handleCloseModal();
+    }
+
+    const handleOpenModalInfo = () => {
+      setOpenModalInformation(true);
+      handleCloseModal();
+    }
+    
+    const handleUpdateSecretString = async () =>{
+      try{
+        let validation = new Validation();
+        if (!await validation.is_password(secretStringNew)){
+          setResultSettings(
+            <Alert severity="error">Password must contain at least 1 lowercase character, 1 uppercase character, 1 number, 1 special character</Alert>
+          )
+          return
+        }
+        const login: any = response&&response.data.information.username
+        let api = new APIUserUpdateSecretString(
+          token,
+          login,
+          secretString,
+          privateString,
+          secretStringNew,
+          oneTimeCode
+        )
+        let reult = await api.execute()
+        setResultSettings(
+          <Alert severity="success">{reult&&reult.data.msg.en}</Alert>
+        )
+      }catch(error){
+        setResultSettings(
+          <Alert severity="error">{error.data.msg.en}</Alert>
+        )
+      }
+    }
+
+    const handleDeleteAccount = async () =>{
+      try{
+        const login: any = response&&response.data.information.username
+        let api = new APIUserDeleteAccount(token, login, secretString, privateString, oneTimeCode)
+        await api.execute()
+        location.reload()
+      }catch(error){
+        setResultSettings(
+          <Alert severity="error">{error.data.msg.en}</Alert>
+        )
+      }
+    }
+
+    const handleUpdateSecretOrBackupCode = async () => {
+      try{
+        const login: any = response&&response.data.information.username
+        let api = new APIUserUpdateSecretOrBackupCode(token, login, secretString, privateString)
+        let resp = await api.execute(oneTimeCodeType)
+
+        if (typeof (resp&&resp.data.data) == "string"){
+          setResultSettings(
+            <>
+            <Alert severity="success">{resp&&resp.data.msg.en}</Alert>
+            <Typography variant="h6">
+                Totp code: <span style={{ color: 'red' }}>{resp.data.data}</span>
+              </Typography>
+            <Typography variant="h6">QR Code:</Typography>
+            <QRCodeCanvas value={`otpauth://totp/${login}?secret=${resp.data.data}&issuer=MindfulGuard`} size={128} />
+            </>
+          )
+        }else{
+          setResultSettings(
+            <>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Backup Codes</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {resp.data.data.map((item: any, index: number) => (
+                    <TableRow key={index}>
+                      <TableCell>{item}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            </>
+          )
+        }
+      }catch(error){
+        console.log(error)
+        setResultSettings(<Alert severity="error">Failed</Alert>)
+        return
+      }
+    }
+
+    const handleCloseModalInfo = () => {
+      setOpenModalInformation(false);
+    };
+
+    const handleCloseModalSettings = () => {
+      setOpenModalSettings(false);
+      setSecretString('')
+      setSecretStringNew('')
+      setPrivateString('')
+      setOneTimeCode('')
+      setValueTab('1')
+      setResultSettings(null)
     };
 
     const handleCloseModal = () => {
@@ -158,6 +291,12 @@ function NavBar() {
                             horizontal: 'right',
                         }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', padding: '10px' }}>
+                                    <Button onClick={handleOpenModalInfo}>Information</Button>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', padding: '10px' }}>
+                                    <Button onClick={handleOpenModalSettings}>Settings</Button>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', padding: '10px' }}>
                                     <Button onClick={handleOpenModal}>Logout</Button>
                                 </div>
                             </Popover>
@@ -182,7 +321,19 @@ function NavBar() {
                                 background-color: #f1f1f1;
                               }
                             `}</style>
-
+                            <Modal open={openModalInformation} onClose={handleCloseModalInfo}>
+                                <div className="scroll-container" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', maxHeight: '80vh', overflowY: 'auto' }}>
+                                    <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>Tokens Information</h2>
+                                      <div style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>
+                                        <Typography>Username: {response.data&&response.data.information.username}</Typography>
+                                        <div style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}></div>
+                                        <Typography>Registration ip: {response.data&&response.data.information.ip}</Typography>
+                                        <div style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}></div>
+                                        <Typography>Created at: {response.data&&response.data.information.created_at}</Typography>
+                                      </div>
+                                    <Button onClick={handleCloseModalInfo} style={{ marginTop: '10px' }}>Close</Button>
+                                </div>
+                            </Modal> 
                             <Modal open={openModal} onClose={handleCloseModal}>
                                 <div className="scroll-container" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', maxHeight: '80vh', overflowY: 'auto' }}>
                                     <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>Tokens Information</h2>
@@ -199,6 +350,155 @@ function NavBar() {
                                   ))}
 
                                     <Button onClick={handleCloseModal} style={{ marginTop: '10px' }}>Close</Button>
+                                </div>
+                            </Modal>
+
+                            <Modal open={openModalSettings} onClose={handleCloseModalSettings}>
+                                <div className="scroll-container" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', maxHeight: '80vh', overflowY: 'auto' }}>
+                                    <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>Settings</h2>
+                                    <Box sx={{ width: '100%' }}>
+                                      <Tabs
+                                        value={valueTab}
+                                        onChange={handleChangeTab}
+                                        aria-label=""
+                                      >
+                                        <Tab
+                                          value="1"
+                                          label="Update one time or backup code"
+                                          wrapped
+                                        />
+                                        <Tab
+                                          value="2"
+                                          label="Update secret string"
+                                          wrapped
+                                        />
+                                        <Tab
+                                          value="3"
+                                          label="Delete account"
+                                          wrapped
+                                        />
+                                      </Tabs>
+                                    </Box>
+                                    {valueTab === "1" && (
+                                      <>
+                                        <TextField
+                                          label="Secret String"
+                                          fullWidth
+                                          type="password"
+                                          value={secretString}
+                                          onChange={(e) => setSecretString(e.target.value)}
+                                          variant="outlined"
+                                          margin="normal"
+                                          placeholder="Enter your secret string"
+                                        />
+                                        <TextField
+                                          label="Private String"
+                                          fullWidth
+                                          type="password"
+                                          value={privateString}
+                                          onChange={(e) => setPrivateString(e.target.value)}
+                                          variant="outlined"
+                                          margin="normal"
+                                          placeholder="Enter your private string"
+                                        />
+                                        <Select
+                                          label="One Time Code Type"
+                                          value={oneTimeCodeType}
+                                          onChange={(e) => setOneTimeCodeType(e.target.value)}
+                                        >
+                                          <MenuItem value="basic">Basic</MenuItem>
+                                          <MenuItem value="backup">Backup</MenuItem>
+                                        </Select>
+                                        <p></p>
+                                        <Button onClick={handleUpdateSecretOrBackupCode}>Send</Button>
+                                      </>
+                                    )}
+                                    {valueTab === "2" && (
+                                      <>
+                                        <TextField
+                                          label="Old Secret String"
+                                          fullWidth
+                                          type="password"
+                                          value={secretString}
+                                          onChange={(e) => setSecretString(e.target.value)}
+                                          variant="outlined"
+                                          margin="normal"
+                                          placeholder="Enter your old secret string"
+                                        />
+                                        <TextField
+                                          label="Private String"
+                                          fullWidth
+                                          type="password"
+                                          value={privateString}
+                                          onChange={(e) => setPrivateString(e.target.value)}
+                                          variant="outlined"
+                                          margin="normal"
+                                          placeholder="Enter your private string"
+                                        />
+                                        <TextField
+                                          label="New Secret String"
+                                          fullWidth
+                                          type="password"
+                                          value={secretStringNew}
+                                          onChange={(e) => setSecretStringNew(e.target.value)}
+                                          variant="outlined"
+                                          margin="normal"
+                                          placeholder="Enter your new secret string"
+                                        />
+                                        <TextField
+                                          label="One Time Code"
+                                          fullWidth
+                                          type="number"
+                                          value={oneTimeCode}
+                                          onChange={(e) => setOneTimeCode(e.target.value)}
+                                          variant="outlined"
+                                          margin="normal"
+                                          placeholder="Enter your one time code"
+                                        />
+                                        
+                                        <Button onClick={handleUpdateSecretString}>Send</Button>
+                                      </>
+                                    )}
+                                    {valueTab === "3" && (
+                                      <>
+                                        <TextField
+                                          label="Secret String"
+                                          fullWidth
+                                          type="password"
+                                          value={secretString}
+                                          onChange={(e) => setSecretString(e.target.value)}
+                                          variant="outlined"
+                                          margin="normal"
+                                          placeholder="Enter your secret string"
+                                        />
+                                        <TextField
+                                          label="Private String"
+                                          fullWidth
+                                          type="password"
+                                          value={privateString}
+                                          onChange={(e) => setPrivateString(e.target.value)}
+                                          variant="outlined"
+                                          margin="normal"
+                                          placeholder="Enter your private string"
+                                        />
+                                        <TextField
+                                          label="One Time Code"
+                                          fullWidth
+                                          type="number"
+                                          value={oneTimeCode}
+                                          onChange={(e) => setOneTimeCode(e.target.value)}
+                                          variant="outlined"
+                                          margin="normal"
+                                          placeholder="Enter your one time code"
+                                        />
+                                        <Button color="error" onClick={handleDeleteAccount}>Delete</Button>
+                                      </>
+                                    )}
+                                    <span>
+                                      {resultSettings}
+                                    </span>
+                                    <p></p>
+                                    <Button onClick={handleCloseModalSettings} style={{ marginTop: '10px' }}>Close</Button>
                                 </div>
                             </Modal>
                         </div>

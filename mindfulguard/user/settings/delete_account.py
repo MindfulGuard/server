@@ -22,8 +22,8 @@ class UserSettingsDeleteAccount(UserBase):
             await db_user_info.execute()
             self._status_code = db_user_info.status_code
             if db_user_info.status_code != OK:
-                print('db_user_info', db_user_info.status_code)
                 return
+            login: str = db_user_info.response.login
 
             db = self._pgsql_user.settings().delete_account(
                 self._model_token,
@@ -33,7 +33,6 @@ class UserSettingsDeleteAccount(UserBase):
             await db_secret_code.execute()
             self._status_code = db_secret_code.status_code
             if db_secret_code.status_code != OK:
-                print('db_secret_code', db_secret_code.status_code)
                 return
             
             confirm = self._security.totp(
@@ -41,15 +40,12 @@ class UserSettingsDeleteAccount(UserBase):
             ).verify(
                 self._model_totp_code.totp_code
             )
-            print(db_secret_code.secret_code, self._model_totp_code.totp_code)
-            print(confirm)
             await db.execute(confirm)
             self._status_code = db.status_code
             if db.status_code != OK:
-                print('db', db.status_code)
                 return
             
-            self._s3.set_bucket_name(db_user_info.response.login)
+            self._s3.set_bucket_name(login)
             self._s3.object().delete_all_objects()
             self._s3.bucket().delete_bucket()
             return

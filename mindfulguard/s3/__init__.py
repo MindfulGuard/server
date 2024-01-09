@@ -90,18 +90,15 @@ class Object:
         """
         if not self.__s3_client.bucket_exists(self.__bucket_name):
             return False
-        arr:list[DeleteObject] = [DeleteObject(prefix_object_name_ + item + _postfix_object_name) for item in objects_name]
+        arr: list[DeleteObject] = [DeleteObject(prefix_object_name_ + item + _postfix_object_name) for item in objects_name]
         for _ in self.__s3_client.remove_objects(self.__bucket_name, arr):...
         return True
 
     def delete_all_objects(self) -> bool:
         if not self.__s3_client.bucket_exists(self.__bucket_name):
             return False
-        delete_object_list = map(
-            lambda x: x.object_name,
-            self.get_all_objects(),
-        )
-        self.__s3_client.remove_objects(self.__bucket_name, delete_object_list)
+        delete_object_list: list[DeleteObject] = [DeleteObject(item.object_name) for item in self.get_all_objects()]
+        for _ in self.__s3_client.remove_objects(self.__bucket_name, delete_object_list):...
         return True
 
 class Bucket:
