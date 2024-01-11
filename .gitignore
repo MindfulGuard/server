@@ -9,3 +9,4 @@ __pycache__/
 mindfulguard.egg-info/
 .pytest_cache
 minio-data
+tests/api/content/temp_files

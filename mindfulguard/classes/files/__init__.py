@@ -53,7 +53,7 @@ class Files:
                 BytesIO(obj.data),
                 media_type="application/octet-stream",
                 headers={
-                    "Content-Disposition": f"attachment; {obj.name}"
+                    "Content-Disposition": f"attachment; filename={obj.name}"
                 }
         )
     

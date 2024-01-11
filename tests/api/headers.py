@@ -9,7 +9,11 @@ without_token = {
 
 def with_token_OK(
     token: str,
-    content_type: Literal['application/x-www-form-urlencoded', 'application/json'] = 'application/x-www-form-urlencoded'
+    content_type: Literal[
+        'application/x-www-form-urlencoded',
+        'application/json',
+        'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+    ] = 'application/x-www-form-urlencoded'
 )-> dict[str, str]:
     with_token_OK = {
         'Device': 'python:3.10/windows',
