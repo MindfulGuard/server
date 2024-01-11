@@ -17,7 +17,6 @@ from tests.api.safe.udpate import SafeUpdateApi
 from tests.api.user.delete import UserDeleteApi
 
 PATH_TO_FILES = 'tests/api/content/temp_files'
-PATH_TO_DOWNLOAD_FILES = 'tests/api/content/temp_download_files'
 FILE_NAMES: list[str] = ["/400MiB1.bin", "/400MiB2.bin", "/400MiB3.bin"]
 
 def generate_files(file_names: list[str], directory: str, size_in_mb: int):
@@ -156,12 +155,13 @@ def test_content_api():
     file_get_response = file_get.execute(with_token_OK(token))
     assert file_get_response.status_code == OK
     safe_and_items_and_files_information = file_get_response.json()
-    file_id = safe_and_items_and_files_information['files'][0]['objects'][0]['id']
+    file_id = safe_and_items_and_files_information['files'][0]['objects'][0]['content_path']
 
     download_file_reponse =  download_file.execute(with_token_OK(token), file_id)
-    assert download_file_reponse.status_code == OK, safe_and_items_and_files_information
+    assert download_file_reponse.status_code == OK, file_id
             
     file_delete = ContentDeleteApi(SAFE_PATH_V1)
+    file_id = safe_and_items_and_files_information['files'][0]['objects'][0]['id']
     file_data = {
         'files': file_id
     }
