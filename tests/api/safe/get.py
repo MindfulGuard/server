@@ -1,7 +1,8 @@
+from typing import Literal
 from fastapi.testclient import TestClient
 from mindfulguard.__main__ import app
 
-class UserGetInformationApi:
+class SafeGetApi:
     def __init__(
         self,
         path: str,
@@ -10,4 +11,4 @@ class UserGetInformationApi:
         self.__path: str=  path
 
     def execute(self, headers: dict[str, str]):
-        return self.__client.get(self.__path+ "/", headers = headers)
+        return self.__client.get(f"{self.__path}/all/item", headers = headers)

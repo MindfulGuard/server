@@ -1,13 +1,19 @@
+from typing import Literal
+
+
 without_token = {
     'Device': 'python:3.10/windows',
     'Content-Type': 'application/x-www-form-urlencoded',
     'X-Real-IP': '127.0.0.1'
 }
 
-def with_token_OK(token:str)-> dict[str, str]:
+def with_token_OK(
+    token: str,
+    content_type: Literal['application/x-www-form-urlencoded', 'application/json'] = 'application/x-www-form-urlencoded'
+)-> dict[str, str]:
     with_token_OK = {
         'Device': 'python:3.10/windows',
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': content_type,
         'X-Real-IP': '127.0.0.1',
         'Authorization': 'Bearer '+token
     }
