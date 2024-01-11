@@ -17,17 +17,18 @@ from tests.api.safe.udpate import SafeUpdateApi
 from tests.api.user.delete import UserDeleteApi
 
 PATH_TO_FILES = 'tests/api/content/temp_files'
-FILE_NAMES: list[str] = ["/400MiB1.bin", "/400MiB2.bin", "/400MiB3.bin"]
+FILE_NAMES: list[str] = ["400MiB1.bin", "400MiB2.bin", "400MiB3.bin"]
 
 def generate_files(file_names: list[str], directory: str, size_in_mb: int):
     for file_name in file_names:
-        file_path = os.path.join(directory, file_name.lstrip("/"))
+        file_path = os.path.join(directory, file_name)
         generate_binary_file(file_path, size_in_mb)
     
     return True
 
 def generate_binary_file(file_path: str, size_in_mb: int):
     size_in_bytes = size_in_mb * 1024 * 1024  # Convert MB to bytes
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Create directory if it does not exist
     with open(file_path, "wb") as f:
         f.write(os.urandom(size_in_bytes))
 
