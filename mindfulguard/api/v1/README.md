@@ -1924,6 +1924,7 @@ DELETE /v1/safe/<safe_id>/content
 | OK | | |
 | BAD REQUEST | | |
 | UNAUTHORIZED | | |
+| NOT_FOUND | | |
 | INTERNAL_SERVER_ERROR | | |
 
 ## • JSON Responses
