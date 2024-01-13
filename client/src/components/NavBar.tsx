@@ -323,7 +323,7 @@ function NavBar() {
                             `}</style>
                             <Modal open={openModalInformation} onClose={handleCloseModalInfo}>
                                 <div className="scroll-container" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', maxHeight: '80vh', overflowY: 'auto' }}>
-                                    <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>Tokens Information</h2>
+                                    <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>User Information</h2>
                                       <div style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>
                                         <Typography>Username: {response.data&&response.data.information.username}</Typography>
                                         <div style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}></div>
