@@ -131,16 +131,15 @@ jobs:
         run: echo ${{ secrets.ACTIONS }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
       
       - name: Convert repository owner to lowercase
-        id: convert_repo_owner
+        id: repo_nameLC
         run: |
-          REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo "::set-output name=repo_owner::$REPO_OWNER"
+          echo "variable=${{ github.repository }}" | tr '[:upper:]' '[:lower:]' >> "$GITHUB_OUTPUT" 
       
       - name: Build and Push Docker Container
         run: |
           branch_name=$(echo ${{ github.ref }} | sed 's|refs/heads/||' | tr '[:upper:]' '[:lower:]')
           echo "Branch name is $branch_name"
-          docker buildx build --push --platform linux/amd64 -t ghcr.io/mindfulguard/server:${branch_name} .
+          docker buildx build --push --platform linux/amd64 -t ghcr.io/${{ steps.repo_nameLC.outputs.variable }}:${branch_name} .
 
   release:
     name: Create Release
