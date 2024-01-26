@@ -17,6 +17,7 @@ class Responses:
             unauthorized: dict[str, Any] = {},
             not_found: dict[str, Any] = {},
             forbidden: dict[str, Any] = {},
+            conflict: dict[str, Any] = {},
             service_is_not_available: dict[str, Any] = {},
             internal_server_error: dict[str, Any] = {}
         ):
@@ -27,6 +28,7 @@ class Responses:
             unauthorized,
             not_found,
             forbidden,
+            conflict,
             service_is_not_available,
             internal_server_error
         )

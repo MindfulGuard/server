@@ -1,4 +1,4 @@
-from http.client import BAD_REQUEST, FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SERVICE_UNAVAILABLE, UNAUTHORIZED
+from http.client import BAD_REQUEST, CONFLICT, FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SERVICE_UNAVAILABLE, UNAUTHORIZED
 from typing import Any
 from mindfulguard.exceptions.incorrect_parameters import ExceptionIncorrectParameters
 from mindfulguard.languages.messages import Messages
@@ -12,6 +12,7 @@ class DefaultResponses:
         unauthorized: dict[str, Any] = {},
         not_found: dict[str, Any] = {},
         forbidden: dict[str, Any] = {},
+        conflict: dict[str, Any] = {},
         service_is_not_available: dict[str, Any] = {},
         internal_server_error: dict[str, Any] = {}
     ) -> None:
@@ -20,6 +21,7 @@ class DefaultResponses:
         self.__bad_request: dict[str, Any] = bad_request
         self.__not_found: dict[str, Any] = not_found
         self.__forbidden: dict[str, Any] = forbidden
+        self.__conflict: dict[str, Any] = conflict
         self.__unauthorized: dict[str, Any] = unauthorized
         self.__service_is_not_available: dict[str, Any] = service_is_not_available
         self.__internal_server_error: dict[str, Any] = internal_server_error
@@ -35,6 +37,8 @@ class DefaultResponses:
             return self.__check_if_custom(self.__message.not_found, self.__not_found)
         elif status_code == FORBIDDEN:
             return self.__check_if_custom(self.__message.access_denied, self.__forbidden)
+        elif status_code == CONFLICT:
+            return self.__check_if_custom(self.__message.conflict, self.__conflict)
         elif status_code == SERVICE_UNAVAILABLE:
             return self.__check_if_custom(self.__message.service_is_not_available, self.__service_is_not_available)
         elif status_code == INTERNAL_SERVER_ERROR:

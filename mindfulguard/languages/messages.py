@@ -152,3 +152,7 @@ class Messages:
     @property
     def failed_to_update_settings(self) -> dict[str,Any]:
         return self.__message.get("failed_to_update_settings")
+    
+    @property
+    def conflict(self) -> dict[str,Any]:
+        return self.__message.get("conflict")

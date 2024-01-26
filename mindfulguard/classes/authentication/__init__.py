@@ -17,20 +17,20 @@ class Authentication:
         obj = SignUp(self.__request)
         await obj.execute(login, secret_string, confirm)
         self.__response.status_code = obj.status_code
-
-        if obj.status_code == CONFLICT:
-            response = self.__responses.custom().user_already_exists
-            response['secret_code'] = None
-            response['backup_codes'] = None
-            return response
         
         response = self.__responses.default(
             ok = self.__responses.custom().registration_was_successful,
             service_is_not_available = self.__responses.custom().registration_not_allowed,
+            conflict = self.__responses.custom().user_already_exists
         ).get(obj.status_code)
 
         if obj.status_code != OK:
-            return response
+            if obj.status_code == CONFLICT:
+                response['secret_code'] = None
+                response['backup_codes'] = None
+                return response
+            else:
+                return response
 
         response['secret_code'] = obj.secret_code
         response['backup_codes'] = obj.backup_codes

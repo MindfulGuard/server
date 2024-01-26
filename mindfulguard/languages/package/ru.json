@@ -35,5 +35,6 @@
     "failed_to_delete_user":"не удалось удалить пользователя",
     "access_denied":"отказано в доступе",
     "settings_have_been_successfully_updated":"настройки были успешно обновлены",
-    "failed_to_update_settings":"не удалось обновить настройки"
+    "failed_to_update_settings":"не удалось обновить настройки",
+    "conflict": "конфликт"
 }

@@ -35,5 +35,6 @@
     "failed_to_delete_user":"failed to delete user",
     "access_denied":"access denied",
     "settings_have_been_successfully_updated":"the settings have been successfully updated",
-    "failed_to_update_settings":"failed to update settings"
+    "failed_to_update_settings":"failed to update settings",
+    "conflict": "conflict"
 }

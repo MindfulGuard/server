@@ -21,8 +21,9 @@ const getDeviceInfo = () => {
   
 export const device = `MindfulGuard Web 0.0.0/${getDeviceInfo().deviceName} ${getDeviceInfo().deviceVersion}`;
 
+console.log(process.env.NEXT_PUBLIC_API_BASE_URL)
 export const api = axios.create({
-  baseURL: process.env.API_BASE_URL || 'http://localhost', //SOLVE THE PROBLEM with env
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     'Device': device,
   },
