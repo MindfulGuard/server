@@ -151,13 +151,6 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
 
-    - name: Set up Git
-      run: |
-        git config user.name "MindfulGuard"
-        git config user.email "MindfulGuard@example.com"
-      env:
-        GITHUB_TOKEN: ${{ secrets.ACTIONS }}
-
     - name: Get branch name
       id: branch_name
       run: echo ::set-output name=branch::$(echo $GITHUB_REF | awk -F'/' '{print $3}')
