@@ -369,7 +369,7 @@ function NavBar() {
                                         />
                                         <Tab
                                           value="2"
-                                          label="Update secret string"
+                                          label="Update password"
                                           wrapped
                                         />
                                         <Tab
@@ -382,14 +382,14 @@ function NavBar() {
                                     {valueTab === "1" && (
                                       <>
                                         <TextField
-                                          label="Secret String"
+                                          label="Password"
                                           fullWidth
                                           type="password"
                                           value={secretString}
                                           onChange={(e) => setSecretString(e.target.value)}
                                           variant="outlined"
                                           margin="normal"
-                                          placeholder="Enter your secret string"
+                                          placeholder="Enter your password"
                                         />
                                         <TextField
                                           label="Private String"
@@ -416,14 +416,14 @@ function NavBar() {
                                     {valueTab === "2" && (
                                       <>
                                         <TextField
-                                          label="Old Secret String"
+                                          label="Old Password"
                                           fullWidth
                                           type="password"
                                           value={secretString}
                                           onChange={(e) => setSecretString(e.target.value)}
                                           variant="outlined"
                                           margin="normal"
-                                          placeholder="Enter your old secret string"
+                                          placeholder="Enter your old password"
                                         />
                                         <TextField
                                           label="Private String"
@@ -436,14 +436,14 @@ function NavBar() {
                                           placeholder="Enter your private string"
                                         />
                                         <TextField
-                                          label="New Secret String"
+                                          label="New password"
                                           fullWidth
                                           type="password"
                                           value={secretStringNew}
                                           onChange={(e) => setSecretStringNew(e.target.value)}
                                           variant="outlined"
                                           margin="normal"
-                                          placeholder="Enter your new secret string"
+                                          placeholder="Enter your new password"
                                         />
                                         <TextField
                                           label="One Time Code"
@@ -462,14 +462,14 @@ function NavBar() {
                                     {valueTab === "3" && (
                                       <>
                                         <TextField
-                                          label="Secret String"
+                                          label="Password"
                                           fullWidth
                                           type="password"
                                           value={secretString}
                                           onChange={(e) => setSecretString(e.target.value)}
                                           variant="outlined"
                                           margin="normal"
-                                          placeholder="Enter your secret string"
+                                          placeholder="Enter your password"
                                         />
                                         <TextField
                                           label="Private String"
