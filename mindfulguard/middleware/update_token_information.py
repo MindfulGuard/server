@@ -1,7 +1,9 @@
 from http.client import BAD_REQUEST, UNAUTHORIZED
 from fastapi import Request
 from fastapi.responses import JSONResponse
+from mindfulguard.classes.database import DataBase
 from mindfulguard.classes.middleware.base import MiddlewareBase
+from mindfulguard.database.postgresql.data_collection import PostgreSqlDataCollection
 from mindfulguard.net.ip import get_client_ip
 
 
@@ -23,14 +25,16 @@ class UpdateTokenInformationMiddleware(MiddlewareBase):
                     status_code = BAD_REQUEST,
                     content = self._responses.default().get(BAD_REQUEST)
                 )
+            
+            connection = DataBase().postgresql().connection()
 
             try:
                 self._model_token.token = authorization_header
                 self._model_token.device = device_header
                 self._model_token.last_ip = get_client_ip(request)
 
-                await self._connection.open()
-                db = self._pgsql_data_collection.update_token_information(self._model_token)
+                await connection.open()
+                db = PostgreSqlDataCollection(connection).update_token_information(self._model_token)
                 await db.execute()
                 if db.status_code == UNAUTHORIZED:
                     return JSONResponse(
@@ -44,6 +48,6 @@ class UpdateTokenInformationMiddleware(MiddlewareBase):
                     content = self._responses.default().get(BAD_REQUEST)
                 )
             finally:
-                await self._connection.close()
+                await connection.close()
 
         return await call_next(request)
