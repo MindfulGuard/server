@@ -2027,8 +2027,8 @@ sha256(login|password|privateKey)
 ## Text
 
 ```python
-private_key = PBKDF2(password, salt = privateKey, iterations, length = 32)
-ciphertext = aes256_encrypt(text, private_key, mode)
+cypherKey = PBKDF2(password, salt = privateKey, iterations, length = 32)
+ciphertext = aes256_encrypt(text, cypherKey, mode)
 return (iv(16 bytes)+cyphertext+tag(16 bytes)).hex_encode() = "e60c203ae89b8ec4cc3d4917..."
-decrypt_text = aes256_decrypt(ciphertext.hex_decode(), private_key, mode)
+decrypt_text = aes256_decrypt(ciphertext.hex_decode(), cypherKey, mode)
 ```
