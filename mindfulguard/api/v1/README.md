@@ -2008,7 +2008,7 @@ DELETE /v1/safe/<safe_id>/content
 
 ## **The "Encryption" section explains how the client should encrypt the data.**
 
-- #### uuid  = UUIDv4 (stored only on the client, !the uuid must be without hyphens!)
+- #### privateKey  = UUIDv4 (stored only on the client, !the uuid must be without hyphens!)
 
 - #### password = @mV3?fsf43vvewqf (must match a [regular expression "authentication.password_rule"](#configuration__200))
 
@@ -2016,7 +2016,7 @@ DELETE /v1/safe/<safe_id>/content
 
 ```python
 length = 128
-sha256(login|password|uuid)
+sha256(login|password|privateKey)
 
 ```
 
@@ -2027,10 +2027,8 @@ sha256(login|password|uuid)
 ## Text
 
 ```python
-private_key = PBKDF2(password, salt = uuid, iterations, length = 32)
+private_key = PBKDF2(password, salt = privateKey, iterations, length = 32)
 ciphertext = aes256_encrypt(text, private_key, mode)
-  #!!!attention, 1 character in unencrypted form is equal to 2 in encrypted!!!
-  return (iv(32 bytes).hex+cyphertext.hex+tag(32 bytes).hex).to_string() = "e60c203ae89b8ec4cc3d4917..."
-decrypt_text = aes256_decrypt(ciphertext.fromhex, private_key, mode)
-
+return (iv(16 bytes)+cyphertext+tag(16 bytes)).hex_encode() = "e60c203ae89b8ec4cc3d4917..."
+decrypt_text = aes256_decrypt(ciphertext.hex_decode(), private_key, mode)
 ```
