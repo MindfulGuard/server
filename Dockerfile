@@ -21,4 +21,4 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
 
 RUN make pip-i
 
-CMD ["sh", "-c", "make run & python -m routines.__main__ & cd client && yarn start"]
+CMD ["sh", "-c", "make run & python -m routines.__main__ & cd client && yarn build && yarn start"]
