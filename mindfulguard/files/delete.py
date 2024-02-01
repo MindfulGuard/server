@@ -31,7 +31,7 @@ class Delete(FilesBase):
             if s3:
                 self._status_code = OK
                 for i in self._redis.client().connection.scan_iter(
-                    f'{self._model_token.token}:{self._redis.PATH_SAFE_ALL_ITEM}'
+                    f'{db.response.login}:{self._redis.PATH_SAFE_ALL_ITEM}'
                 ):
                     self._redis.client().connection.delete(i)
                 return

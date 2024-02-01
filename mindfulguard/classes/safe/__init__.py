@@ -53,8 +53,11 @@ class Safe:
     async def get(self, token: str) -> dict[str, Any]:
         model_token = ModelToken()
         model_token.token = token
+
+        obj_user_info = User().information()
+        await obj_user_info.execute(token)
         redis = Redis()
-        cache_name = f'{model_token.token}:{redis.PATH_SAFE_ALL_ITEM}'
+        cache_name: str = f'{obj_user_info.login}:{redis.PATH_SAFE_ALL_ITEM}'
         cache_response = redis.client().connection.json().get(
             cache_name
         )
@@ -62,7 +65,7 @@ class Safe:
             self.__response.status_code = OK
             return cache_response # type: ignore
 
-        semaphore = asyncio.Semaphore(3)
+        semaphore = asyncio.Semaphore(4)
         async def items():
             async with semaphore:
                 obj = ItemsGet()
