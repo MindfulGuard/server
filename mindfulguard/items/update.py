@@ -57,6 +57,7 @@ class Update(ItemsBase):
             await self._connection.open()
             await db.execute()
             await db_user_info.execute()
+            self._status_code = db.status_code
             if db.status_code == OK and db_user_info.status_code == OK:
                 for i in self._redis.client().connection.scan_iter(
                     f'{db_user_info.response.login}:{self._redis.PATH_SAFE_ALL_ITEM}'
