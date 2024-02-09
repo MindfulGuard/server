@@ -1838,7 +1838,7 @@ POST /v1/safe/<safe_id>/content
 
 | Parameters | Type | Description | Encrypt |
 | - | - | - | - |
-| files | File | files should be encrypted before sending, names should not be changed, but files should only have names that are supported by ASCII encoding | [&#10003;](#Text) | |
+| files | File | files should be encrypted before sending, names should not be changed, but files should only have names that are supported by ASCII encoding | &#10007; | |
 
 - ### Responses
 
