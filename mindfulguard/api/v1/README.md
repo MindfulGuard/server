@@ -1289,7 +1289,9 @@ GET /v1/safe/all/item
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "created_at": 1707839150,
+                    "updated_at": 1707839196
                 },
                 {
                     "id": "20d9a8c6-5da6-4df1-92c5-defb025e35a9",
@@ -1333,6 +1335,8 @@ GET /v1/safe/all/item
                             ]
                         }
                     ]
+                    "created_at": 1707839150,
+                    "updated_at": 1707839196
                 }
             ]
         },
@@ -1382,6 +1386,8 @@ GET /v1/safe/all/item
                             ]
                         }
                     ]
+                    "created_at": 1707839150,
+                    "updated_at": 1707839196
                 },
                 {
                     "id": "86057143-8e30-40c8-aa4d-887a48920cef",
@@ -1425,6 +1431,8 @@ GET /v1/safe/all/item
                             ]
                         }
                     ]
+                    "created_at": 1707839150,
+                    "updated_at": 1707839196
                 },
                 {
                     "id": "cee5638a-5b33-4e57-90ab-0228d1935880",
@@ -1468,6 +1476,8 @@ GET /v1/safe/all/item
                             ]
                         }
                     ]
+                    "created_at": 1707839150,
+                    "updated_at": 1707839196
                 }
             ]
         },
@@ -1517,6 +1527,8 @@ GET /v1/safe/all/item
                             ]
                         }
                     ]
+                    "created_at": 1707839150,
+                    "updated_at": 1707839196
                 }
             ]
         }
