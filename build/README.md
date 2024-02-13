@@ -22,7 +22,7 @@
 ## Initial setup
 
    ```bash
-   docker-compose -f docker/docker-compose.yml up -d
+   docker-compose -f docker/docker-compose-release.yml up -d
    ```
 
    - LOGIN - must contain no less than 2 and no more than 50 characters, may contain Latin characters, digits, hyphen and underscore
