@@ -21,8 +21,8 @@ services:
     env_file:
       - .SERVER.env
     ports:
-      - 80:8080
-      - 81:3000
+      - 80:80
+      - 81:81
     depends_on:
       - cacheredis
       - postgresql
@@ -31,7 +31,7 @@ services:
       - app-network
 
   cacheredis:
-    image: redis/redis-stack:latest
+    image: redis/redis-stack-server:latest
     restart: always
     ports:
       - '6379:6379'

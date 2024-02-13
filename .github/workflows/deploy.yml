@@ -9,7 +9,6 @@ on:
       - '*'
 
 jobs:
-
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -46,28 +45,35 @@ jobs:
       REDIS_LD: 0
       
     steps:
+      - uses: actions/checkout@v4
+
       - name: Run MinIO Server
         run: docker run -d --name minio -p 9000:9000 -v ~/minio/data:/data -e MINIO_ACCESS_KEY=$minio_root_access_key -e MINIO_SECRET_KEY=$minio_root_secret_key quay.io/minio/minio server /data --console-address ":9090"
+
       - name: Run Redis Server
         run: docker run -d --name redis -p 6379:6379 -v cache:/data -e REDIS_ARGS="--loglevel warning --requirepass $REDIS_PASSWORD" redis/redis-stack:latest
+
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
           sudo apt-get install --yes postgresql-client
-      - uses: actions/checkout@v4
+
       - name: Database Initialization
         run: |
           pwd
           psql -h localhost -d mindfulguard_production -U mindfulguard -f docker/dumps/pgsql.sql
         env:
           PGPASSWORD: mindfulguard_password
+
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
           architecture: 'x64'
+
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
+
       - name: Show Environment Variables
         run: |
           echo $admin_login
@@ -80,10 +86,12 @@ jobs:
           echo $DATABASE_PORT
           echo $DATABASE_USER
           echo $DATABASE_PASSWORD
+
       - name: Installing dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e .
+
       - name: Check if MinIO is running
         run: |
           timeout=15
@@ -97,12 +105,15 @@ jobs:
             echo "MinIO did not start within the specified timeout."
             exit 1
           fi
+
       - name: Initializing the administrator
         run: make -f build/Makefile init admin_login="$admin_login" admin_password="$admin_password" database_host="localhost" database_port="5432" database_user="$DATABASE_USER" database_password="$DATABASE_PASSWORD" minio_hostname="$MINIO_HOSTNAME" minio_root_access_key="$minio_root_access_key" minio_root_secret_key="$minio_root_secret_key" minio_user_access_key="$MINIO_USER_ACCESS_KEY" minio_user_secret_key="$MINIO_USER_SECRET_KEY"
+
       - name: Setup service "routines"
         run: |
           sudo chmod +x routines/setup_service.sh
           sudo ./routines/setup_service.sh
+
       - name: Running Tests
         run: |
           python -m pytest -rA tests

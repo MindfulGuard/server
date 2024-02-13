@@ -61,7 +61,9 @@ class Get(ItemsBase):
                     'notes': record.notes,
                     'tags': record.tags,
                     'favorite': record.favorite,
-                    'sections': record.item['sections']
+                    'sections': record.item['sections'],
+                    'created_at': record.created_at,
+                    'updated_at': record.updated_at
                 }
 
                 # Check if there is already an entry with such a safe_id in the dictionary
