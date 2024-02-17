@@ -1334,7 +1334,7 @@ GET /v1/safe/all/item
                                 }
                             ]
                         }
-                    ]
+                    ],
                     "created_at": 1707839150,
                     "updated_at": 1707839196
                 }
@@ -1385,7 +1385,7 @@ GET /v1/safe/all/item
                                 }
                             ]
                         }
-                    ]
+                    ],
                     "created_at": 1707839150,
                     "updated_at": 1707839196
                 },
@@ -1430,7 +1430,7 @@ GET /v1/safe/all/item
                                 }
                             ]
                         }
-                    ]
+                    ],
                     "created_at": 1707839150,
                     "updated_at": 1707839196
                 },
@@ -1475,7 +1475,7 @@ GET /v1/safe/all/item
                                 }
                             ]
                         }
-                    ]
+                    ],
                     "created_at": 1707839150,
                     "updated_at": 1707839196
                 }
@@ -1526,7 +1526,7 @@ GET /v1/safe/all/item
                                 }
                             ]
                         }
-                    ]
+                    ],
                     "created_at": 1707839150,
                     "updated_at": 1707839196
                 }
