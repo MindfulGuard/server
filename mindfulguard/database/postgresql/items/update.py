@@ -20,7 +20,7 @@ class PostgreSqlItemsUpdate(PostgreSqlQueriesBase):
     async def execute(self) -> None:
         try:
             value: int = await self._connection.connection.fetchval('''
-            SELECT update_item($1, $2, $3, $4, $5, $6, $7);
+            SELECT update_item($1, $2, $3, $4, $5, $6, $7, $8);
             ''',
             self.__model_token.token,
             self.__model_record.safe_id,
@@ -28,7 +28,8 @@ class PostgreSqlItemsUpdate(PostgreSqlQueriesBase):
             self.__model_record.title,
             self.__model_record.item,
             self.__model_record.notes,
-            self.__model_record.tags
+            self.__model_record.tags,
+            self.__model_record.category
             )
             if value == 0:
                 self._status_code = OK
