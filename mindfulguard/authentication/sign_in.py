@@ -110,7 +110,6 @@ class SignIn(AuthenticationBase):
 
             self._s3.set_bucket_name(self._model_user.login)
             self._s3.bucket().make_bucket()
-            self._s3.bucket().make_bucket()
             return
         except ValueError:
             self._status_code = BAD_REQUEST

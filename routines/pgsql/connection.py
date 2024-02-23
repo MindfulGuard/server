@@ -1,3 +1,6 @@
+import asyncio
+from logging import log
+import logging
 import os
 import asyncpg
 
@@ -22,10 +25,19 @@ class Connection:
         self.__db_config = Config()
 
     async def connect(self):
-        return await asyncpg.connect(
-            database = self.__db_config.get_database(),
-            user = self.__db_config.get_user(),
-            password = self.__db_config.get_password(),
-            host = self.__db_config.get_host(),
-            port = self.__db_config.get_port()
-        )
+        try:
+            return await asyncpg.connect(
+                database = self.__db_config.get_database(),
+                user = self.__db_config.get_user(),
+                password = self.__db_config.get_password(),
+                host = self.__db_config.get_host(),
+                port = self.__db_config.get_port()
+            )
+        except ConnectionRefusedError as e:
+            logging.error(e)
+            await asyncio.sleep(5)
+            return await self.connect()
+        except asyncpg.InvalidAuthorizationSpecificationError as e:
+            logging.error(e)
+            await asyncio.sleep(5)
+            return await self.connect()

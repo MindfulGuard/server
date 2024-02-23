@@ -1,9 +1,13 @@
 import asyncio
+import logging
+import sys
 import threading
 from routines.removing_tokens import Tokens
 from routines.removing_users import Users
 
 UPDATE_SETTINGS_PER_SECONDS = 10
+
+logging.basicConfig(stream=sys.stdout, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 async def tks():
     tokens = Tokens(UPDATE_SETTINGS_PER_SECONDS)
