@@ -90,7 +90,7 @@ jobs:
       - name: Installing dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
+          make pip-i
 
       - name: Generating a localization file.
         run: make generate-locales
