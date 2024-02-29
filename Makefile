@@ -47,6 +47,7 @@ setup:
 	@echo *****$(DEACTIVATE-VENV-MSG)*****
 
 pip-i:
+	git submodule update --init --recursive
 	pip install -e .
 
 generate-locales:
