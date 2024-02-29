@@ -28,21 +28,21 @@ class DefaultResponses:
 
     def get(self, status_code: int) -> dict[str, Any]:
         if status_code == OK:
-            return self.__check_if_custom(self.__message.successfully, self.__ok)
+            return self.__check_if_custom(self.__message.get("successfully"), self.__ok)
         elif status_code == BAD_REQUEST:
-            return self.__check_if_custom(self.__message.data_not_valid, self.__bad_request)
+            return self.__check_if_custom(self.__message.get("data_not_valid"), self.__bad_request)
         elif status_code == UNAUTHORIZED:
-            return self.__check_if_custom(self.__message.unauthorized, self.__unauthorized)
+            return self.__check_if_custom(self.__message.get("unauthorized"), self.__unauthorized)
         elif status_code == NOT_FOUND:
-            return self.__check_if_custom(self.__message.not_found, self.__not_found)
+            return self.__check_if_custom(self.__message.get("not_found"), self.__not_found)
         elif status_code == FORBIDDEN:
-            return self.__check_if_custom(self.__message.access_denied, self.__forbidden)
+            return self.__check_if_custom(self.__message.get("access_denied"), self.__forbidden)
         elif status_code == CONFLICT:
-            return self.__check_if_custom(self.__message.conflict, self.__conflict)
+            return self.__check_if_custom(self.__message.get("conflict"), self.__conflict)
         elif status_code == SERVICE_UNAVAILABLE:
-            return self.__check_if_custom(self.__message.service_is_not_available, self.__service_is_not_available)
+            return self.__check_if_custom(self.__message.get("service_is_not_available"), self.__service_is_not_available)
         elif status_code == INTERNAL_SERVER_ERROR:
-            return self.__check_if_custom(self.__message.server_error, self.__internal_server_error)
+            return self.__check_if_custom(self.__message.get("server_error"), self.__internal_server_error)
         else:
             raise ExceptionIncorrectParameters(f'Unknown Parameter: {status_code}')
 

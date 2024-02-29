@@ -38,6 +38,8 @@ class AdminConfiguration:
         )
         self.__response.status_code = obj.status_code
         return self.__responses.default(
-            ok = self.__responses.custom().settings_have_been_successfully_updated,
-            internal_server_error = self.__responses.custom().failed_to_update_settings
+            ok = {
+            
+            },
+            internal_server_error = self.__responses.custom().get("failed_to_update_settings")
         ).get(obj.status_code)

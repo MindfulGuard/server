@@ -49,6 +49,9 @@ setup:
 pip-i:
 	pip install -e .
 
+generate-locales:
+	python -m l10n.generator --config="mindfulguard/languages/configuration.yml"
+
 run:
 	python -m uvicorn $(PROJECT-NAME).__main__:app --host $(HOST) --port $(PORT)
 test:

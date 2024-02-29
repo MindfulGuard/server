@@ -16,4 +16,5 @@ setup(
         'minio',
         'redis[hiredis]'
     ],
+    package_dir={'': 'libs/l10n'}
 )

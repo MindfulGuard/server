@@ -18,8 +18,8 @@ class Items:
         await obj.execute(token, safe_id, item)
         self.__response.status_code = obj.status_code
         response = self.__responses.default(
-            ok = self.__responses.custom().item_was_successfully_created,
-            internal_server_error = self.__responses.custom().failed_to_create_item
+            ok = self.__responses.custom().get("item_was_successfully_created"),
+            internal_server_error = self.__responses.custom().get("failed_to_create_item")
         ).get(obj.status_code)
         return response
     
@@ -39,8 +39,8 @@ class Items:
         )
         self.__response.status_code = obj.status_code
         response = self.__responses.default(
-            ok = self.__responses.custom().item_has_been_successfully_updated,
-            internal_server_error = self.__responses.custom().failed_to_update_the_item
+            ok = self.__responses.custom().get("item_has_been_successfully_updated"),
+            internal_server_error = self.__responses.custom().get("failed_to_update_the_item")
         ).get(obj.status_code)
         return response
     
@@ -58,8 +58,8 @@ class Items:
         )
         self.__response.status_code = obj.status_code
         response = self.__responses.default(
-            ok = self.__responses.custom().item_was_successfully_deleted,
-            internal_server_error = self.__responses.custom().failed_to_delete_item
+            ok = self.__responses.custom().get("item_was_successfully_deleted"),
+            internal_server_error = self.__responses.custom().get("failed_to_delete_item")
         ).get(obj.status_code)
         return response
     
@@ -74,8 +74,8 @@ class Items:
         self.__response.status_code = obj.status_code
 
         response = self.__responses.default(
-            ok = self.__responses.custom().item_was_successfully_added_to_favorites,
-            internal_server_error = self.__responses.custom().failed_to_update_favorite
+            ok = self.__responses.custom().get("item_was_successfully_added_to_favorites"),
+            internal_server_error = self.__responses.custom().get("failed_to_update_favorite")
         ).get(obj.status_code)
         return response
     
@@ -96,7 +96,7 @@ class Items:
         self.__response.status_code = obj.status_code
 
         response = self.__responses.default(
-            ok = self.__responses.custom().item_was_successfully_moved_to_safe,
-            internal_server_error = self.__responses.custom().failed_to_move_item_to_safe
+            ok = self.__responses.custom().get("item_was_successfully_moved_to_safe"),
+            internal_server_error = self.__responses.custom().get("failed_to_move_item_to_safe")
         ).get(obj.status_code)
         return response

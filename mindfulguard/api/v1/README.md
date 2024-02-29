@@ -39,7 +39,6 @@ POST /v1/auth/sign_up
 ```json
 {
   "msg": {
-        "de": null,
         "en": "registration was successful",
         "ru": "регистрация прошла успешно"
     },
@@ -58,7 +57,6 @@ POST /v1/auth/sign_up
 ```json
 {
   "msg": {
-        "de": null,
         "en": "the user already exists",
         "ru": "пользователь уже существует"
     },
@@ -107,7 +105,6 @@ POST /v1/auth/sign_in?type=basic|backup
 ```json
 {
     "msg": {
-        "de": null,
         "en": "successful login",
         "ru": "удачный вход в систему"
     },
@@ -121,7 +118,6 @@ POST /v1/auth/sign_in?type=basic|backup
 ```json
 {
     "msg": {
-        "de": null,
         "en": "user not found",
         "ru": "пользователь не найден"
     }
@@ -172,7 +168,6 @@ DELETE /v1/auth/sign_out/{token_id}
 ```json
 {
   "msg": {
-    "de": null,
     "en": "the session token has been deleted",
     "ru": "токен сеанса был удален"
   }
@@ -185,7 +180,6 @@ DELETE /v1/auth/sign_out/{token_id}
 ```json
 {
   "msg": {
-        "de": null,
         "en": "failed to delete token",
         "ru": "не удалось удалить токен"
     },
@@ -314,7 +308,6 @@ GET /v1/admin/users/search?by=id|username
 ```json
 {
     "msg": {
-        "de": "kein Benutzer gefunden",
         "en": "user not found",
         "ru": "пользователь не найден"
     }
@@ -441,7 +434,6 @@ PUT /v1/admin/settings?key=<str>
 ```json
 {
   "msg": {
-        "de": null,
         "en": "the settings have been successfully updated",
         "ru": "настройки были успешно обновлены"
     }
@@ -454,7 +446,6 @@ PUT /v1/admin/settings?key=<str>
 ```json
 {
   "msg": {
-        "de": null,
         "en": "failed to update settings",
         "ru": "не удалось обновить настройки"
     }
@@ -630,7 +621,6 @@ PUT /v1/user/settings/auth/one_time_code?type=basic|backup
 ```json
 {
   "msg": {
-        "de": null,
         "en": "successfully updated",
         "ru": "успешно обновлено"
     }
@@ -644,7 +634,6 @@ PUT /v1/user/settings/auth/one_time_code?type=basic|backup
 ```json
 {
   "msg": {
-        "de": null,
         "en": "successfully updated",
         "ru": "успешно обновлено"
     }
@@ -691,7 +680,6 @@ DELETE /v1/user/settings
 ```json
 {
   "msg": {
-        "de": null,
         "en": "the user has been successfully deleted",
         "ru": "пользователь успешно удален"
     }
@@ -704,7 +692,6 @@ DELETE /v1/user/settings
 ```json
 {
   "msg": {
-        "de": null,
         "en": "не удалось удалить пользователя",
         "ru": "failed to delete user"
     }
@@ -752,7 +739,6 @@ PUT /v1/user/settings/auth/secret_string
 ```json
 {
   "msg": {
-        "de": null,
         "en": "successfully updated",
         "ru": "успешно обновлено"
     }
@@ -765,7 +751,6 @@ PUT /v1/user/settings/auth/secret_string
 ```json
 {
   "msg": {
-        "de": null,
         "en": "failed to update",
         "ru": "не удалось обновить"
     }
@@ -778,7 +763,6 @@ PUT /v1/user/settings/auth/secret_string
 ```json
 {
   "msg": {
-        "de": null,
         "en": "failed to update",
         "ru": "не удалось обновить"
     }
@@ -826,7 +810,6 @@ POST /v1/safe
 ```json
 {
   "msg": {
-        "de": null,
         "en": "the safe was successfully created",
         "ru": "сейф удачно создан"
     },
@@ -839,7 +822,6 @@ POST /v1/safe
 ```json
 {
   "msg": {
-        "de": null,
         "en": "failed to create a safe",
         "ru": "не удалось создать сейф"
     },
@@ -891,7 +873,6 @@ PUT /v1/safe/{safe_id}
 ```json
 {
   "msg": {
-        "de": null,
         "en": "the safe was successfully updated",
         "ru": "сейф успешно обновлен"
     },
@@ -904,7 +885,6 @@ PUT /v1/safe/{safe_id}
 ```json
 {
     "msg": {
-        "de": null,
         "en": "failed to update the safe",
         "ru": "не удалось обновить сейф"
     }
@@ -955,7 +935,6 @@ DELETE /v1/safe/{safe_id}
 ```json
 {
     "msg": {
-        "de": null,
         "en": "the safe has been successfully deleted",
         "ru": "сейф был успешно удален"
     }
@@ -968,7 +947,6 @@ DELETE /v1/safe/{safe_id}
 ```json
 {
     "msg": {
-        "de": null,
         "en": "failed to delete the safe",
         "ru": "не удалось удалить сейф"
     }
@@ -1145,7 +1123,6 @@ POST /v1/safe/{safe_id}/item
 ```json
 {
   "msg": {
-    "de": null,
     "en": "the item was successfully created",
     "ru": "элемент был успешно создан"
   }
@@ -1158,7 +1135,6 @@ POST /v1/safe/{safe_id}/item
 ```json
 {
   "msg": {
-    "de": null,
     "en": "failed to create item",
     "ru": "не удалось создать элемент"
   }
@@ -1614,7 +1590,6 @@ PUT /v1/safe/{from}/{to}/item/{item_id}
 ```json
 {
   "msg": {
-        "de": null,
         "en": "the item was successfully moved to the safe",
         "ru": "элемент был успешно перемещен в сейф"
     },
@@ -1627,7 +1602,6 @@ PUT /v1/safe/{from}/{to}/item/{item_id}
 ```json
 {
     "msg": {
-        "de": null,
         "en": "failed to move item to safe",
         "ru": "не удалось переместить элемент в сейф"
     }
@@ -1678,7 +1652,6 @@ PUT /v1/safe/{safe_id}/item/{item_id}/favorite
 ```json
 {
   "msg": {
-    "de": null,
     "en": "the item was successfully added to favorites",
     "ru": "элемент успешно добавлен в избранное"
   }
@@ -1691,7 +1664,6 @@ PUT /v1/safe/{safe_id}/item/{item_id}/favorite
 ```json
 {
   "msg": {
-    "de": null,
     "en": "couldn't add item to favorites",
     "ru": "не удалось добавить элемент в избранное"
   }
@@ -1743,7 +1715,6 @@ PUT /v1/safe/{safe_id}/item/{item_id}
 ```json
 {
   "msg": {
-    "de": null,
     "en": "the item was successfully updated",
     "ru": "элемент был успешно обновлен"
   }
@@ -1756,7 +1727,6 @@ PUT /v1/safe/{safe_id}/item/{item_id}
 ```json
 {
   "msg": {
-    "de": null,
     "en": "failed to update the item",
     "ru": "не удалось обновить элемент"
   }
@@ -1806,7 +1776,6 @@ DELETE /v1/safe/{safe_id}/item/{item_id}
 ```json
 {
   "msg": {
-    "de": null,
     "en": "the item was successfully deleted",
     "ru": "элемент был успешно удален"
   }
@@ -1819,7 +1788,6 @@ DELETE /v1/safe/{safe_id}/item/{item_id}
 ```json
 {
   "msg": {
-    "de": null,
     "en": "не удалось удалить элемент",
     "ru": "failed to delete item"
   }
@@ -1948,7 +1916,6 @@ DELETE /v1/safe/<safe_id>/content
 ```json
 {
   "msg": {
-    "de": null,
     "en": "unauthorized",
     "ru": "не авторизован"
   }
@@ -1963,7 +1930,6 @@ DELETE /v1/safe/<safe_id>/content
 ```json
 {
   "msg": {
-    "de": null,
     "en": "failed to delete the safe",
     "ru": "не удалось удалить сейф"
   }
@@ -1978,7 +1944,6 @@ DELETE /v1/safe/<safe_id>/content
 ```json
 {
   "msg": {
-    "de": null,
     "en": "отказано в доступе",
     "ru": "access denied"
   }
@@ -1993,7 +1958,6 @@ DELETE /v1/safe/<safe_id>/content
 ```json
 {
     "msg": {
-      "de": null,
       "en": "the service is not available",
       "ru": "сервис недоступен"
     },
@@ -2008,7 +1972,6 @@ DELETE /v1/safe/<safe_id>/content
 ```json
 {
   "msg": {
-    "de": null,
     "en": "server error",
     "ru": "ошибка сервера"
   },

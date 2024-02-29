@@ -24,7 +24,7 @@ class UserSettings:
         self.__response.status_code = obj.status_code
 
         response = self.__responses.default(
-            ok =  self.__responses.custom().successfully_updated
+            ok =  self.__responses.custom().get("successfully_updated")
         ).get(obj.status_code)
 
         if obj.status_code != OK:
@@ -50,9 +50,9 @@ class UserSettings:
         )
         self.__response.status_code = obj.status_code
         response = self.__responses.default(
-            ok =  self.__responses.custom().successfully_updated,
-            not_found = self.__responses.custom().failed_to_update,
-            internal_server_error = self.__responses.custom().failed_to_update
+            ok =  self.__responses.custom().get("successfully_updated"),
+            not_found = self.__responses.custom().get("failed_to_update"),
+            internal_server_error = self.__responses.custom().get("failed_to_update")
         ).get(obj.status_code)
 
         return response
@@ -72,8 +72,8 @@ class UserSettings:
         )
         self.__response.status_code = obj.status_code
         response = self.__responses.default(
-            ok =  self.__responses.custom().user_has_been_successfully_deleted,
-            internal_server_error = self.__responses.custom().failed_to_delete_user
+            ok =  self.__responses.custom().get("user_has_been_successfully_deleted"),
+            internal_server_error = self.__responses.custom().get("failed_to_delete_user")
         ).get(obj.status_code)
 
         return response

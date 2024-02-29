@@ -26,8 +26,8 @@ class Safe:
         await obj.execute(token, name, description)
         self.__response.status_code = obj.status_code
         response = self.__responses.default(
-            ok = self.__responses.custom().safe_was_successfully_created,
-            internal_server_error= self.__responses.custom().failed_to_create_a_safe,
+            ok = self.__responses.custom().get("safe_was_successfully_created"),
+            internal_server_error= self.__responses.custom().get("failed_to_create_a_safe"),
         ).get(obj.status_code)
         return response
 
@@ -36,8 +36,8 @@ class Safe:
         await obj.execute(token, safe_id, name, description)
         self.__response.status_code = obj.status_code
         response = self.__responses.default(
-            ok = self.__responses.custom().safe_was_successfully_updated,
-            internal_server_error= self.__responses.custom().failed_to_update_safe,
+            ok = self.__responses.custom().get("safe_was_successfully_updated"),
+            internal_server_error= self.__responses.custom().get("failed_to_update_safe"),
         ).get(obj.status_code)
         return response
 
@@ -45,8 +45,8 @@ class Safe:
         obj = Delete()
         await obj.execute(token, safe_id)
         response = self.__responses.default(
-            ok = self.__responses.custom().safe_has_been_successfully_deleted,
-            internal_server_error= self.__responses.custom().failed_to_delete_the_safe,
+            ok = self.__responses.custom().get("safe_has_been_successfully_deleted"),
+            internal_server_error= self.__responses.custom().get("failed_to_delete_the_safe"),
         ).get(obj.status_code)
         return response
 

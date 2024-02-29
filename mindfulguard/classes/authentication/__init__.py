@@ -19,9 +19,9 @@ class Authentication:
         self.__response.status_code = obj.status_code
         
         response = self.__responses.default(
-            ok = self.__responses.custom().registration_was_successful,
-            service_is_not_available = self.__responses.custom().registration_not_allowed,
-            conflict = self.__responses.custom().user_already_exists
+            ok = self.__responses.custom().get("registration_was_successful"),
+            service_is_not_available = self.__responses.custom().get("registration_not_allowed"),
+            conflict = self.__responses.custom().get("user_already_exists")
         ).get(obj.status_code)
 
         if obj.status_code != OK:
@@ -49,8 +49,8 @@ class Authentication:
         await obj.execute(login, secret_string, device, expiration, type, code)
         self.__response.status_code = obj.status_code
         response = self.__responses.default(
-            ok = self.__responses.custom().successful_login,
-            not_found= self.__responses.custom().user_not_found
+            ok = self.__responses.custom().get("successful_login"),
+            not_found= self.__responses.custom().get("user_not_found")
         ).get(obj.status_code)
 
         if obj.status_code != OK:
@@ -68,7 +68,7 @@ class Authentication:
         await obj.execute(token, token_id)
         self.__response.status_code = obj.status_code
         response = self.__responses.default(
-            ok = self.__responses.custom().session_token_has_been_deleted,
-            not_found= self.__responses.custom().failed_to_delete_token
+            ok = self.__responses.custom().get("session_token_has_been_deleted"),
+            not_found= self.__responses.custom().get("failed_to_delete_token")
         ).get(obj.status_code)
         return response

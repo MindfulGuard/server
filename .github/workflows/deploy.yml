@@ -92,6 +92,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
 
+      - name: Generating a localization file.
+        run: make generate-locales
+
       - name: Check if MinIO is running
         run: |
           timeout=15
