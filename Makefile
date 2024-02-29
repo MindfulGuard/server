@@ -48,7 +48,7 @@ setup:
 
 pip-i:
 	git submodule update --init --recursive	
-	git -C libs/l10n checkout 0.0.1_python
+	git -C libs/l10n checkout 0.0.2_python
 	pip install -e .
 
 generate-locales:
