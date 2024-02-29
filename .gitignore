@@ -10,3 +10,4 @@ mindfulguard.egg-info/
 .pytest_cache
 minio-data
 tests/api/content/temp_files
+mindfulguard/languages/localization.py
