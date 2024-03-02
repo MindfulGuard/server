@@ -1,5 +1,4 @@
 import asyncio
-from logging import log
 import logging
 import os
 import asyncpg
@@ -33,7 +32,7 @@ class Connection:
                 host = self.__db_config.get_host(),
                 port = self.__db_config.get_port()
             )
-        except ConnectionRefusedError as e:
+        except (ConnectionRefusedError, asyncpg.CannotConnectNowError) as e:
             logging.error(e)
             await asyncio.sleep(5)
             return await self.connect()
