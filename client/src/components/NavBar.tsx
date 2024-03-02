@@ -329,7 +329,7 @@ function NavBar() {
                                         <div style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}></div>
                                         <Typography>Registration ip: {response.data&&response.data.information.ip}</Typography>
                                         <div style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}></div>
-                                        <Typography>Created at: {response.data&&response.data.information.created_at}</Typography>
+                                        <Typography>Created at: {new Date(response.data&&response.data.information.created_at * 1000).toLocaleString()}</Typography>
                                       </div>
                                     <Button onClick={handleCloseModalInfo} style={{ marginTop: '10px' }}>Close</Button>
                                 </div>
