@@ -584,13 +584,89 @@ GET /v1/user
 
 ```
 
+## • Audit
+
+- ## Get 
+- ### Request
+
+- Headers
+
+| key | value | Description |
+| - | - | - |
+| Content-Type | application/x-www-form-urlencoded |  | |
+| Device | App name version/Device name Version |  | |
+| Authorization | Bearer &lt;token> |  | |
+
+```http
+GET /v1/user/audit?page=1
+```
+
+- ### Responses
+
+| Status code | Description |
+| - | - |
+| [OK](#user_info_200) | | |
+| [BAD REQUEST](#400) | | |
+| [UNAUTHORIZED](#401) | | |
+
+```json
+{
+    "page": 1,
+    "total_pages": 1,
+    "items_per_page": 20,
+    "total_items": 7,
+    "list": [
+        {
+            "id": "e1a85d45-f653-43f6-ba69-fce3124a94d1",
+            "created_at": 1709723982,
+            "ip": "127.0.0.1",
+            "object": "safe",
+            "action": "delete",
+            "device": "Chromium/100.0.0"
+        },
+        {
+            "id": "5f93cdc3-6ca0-4020-93b3-2e81611ee401",
+            "created_at": 1709723960,
+            "ip": "127.0.0.1",
+            "object": "item",
+            "action": "create",
+            "device": "Chromium/100.0.0"
+        },
+        {
+            "id": "ca5c4765-8372-493c-9965-61d16d44ccf6",
+            "created_at": 1709723952,
+            "ip": "127.0.0.1",
+            "object": "safe",
+            "action": "create",
+            "device": "Chromium/100.0.0"
+        },
+        {
+            "id": "3762ed22-f407-4eae-b788-8f1f39072190",
+            "created_at": 1709723915,
+            "ip": "127.0.0.1",
+            "object": "user",
+            "action": "sign_in",
+            "device": "Chromium/100.0.0"
+        }
+    ]
+}
+```
+
+| key | Description |
+| --- | ----------- |
+| page | Current page. |
+| total_pages | Total number of pages. |
+| items_per_page | The number of items_per_page contained on a single page. |
+| total_items | Total number of items. |
+| list.object | Object on which the operation is performed. |
+| list.action | Name of action. |
+
 - ## Update `secret_code` or `backup_codes`
 
 - ### Request
 
 ```http
 PUT /v1/user/settings/auth/one_time_code?type=basic|backup
-
 ```
 
 - Headers
