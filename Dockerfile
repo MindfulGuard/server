@@ -5,6 +5,7 @@ WORKDIR /home/runner/work/server/server
 COPY . /home/runner/work/server/server
 
 RUN make pip-i
+RUN make generate-locales
 
 # Install Nginx
 RUN apt-get update && apt-get install -y nginx
