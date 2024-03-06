@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Form, Header, Request, Response, UploadFile
+from fastapi import APIRouter, Form, Header, Request, Response
 from mindfulguard.classes.files import Files
 
 

@@ -55,7 +55,8 @@ class PostgreSqlItemsGet(PostgreSqlQueriesBase):
         JOIN s_safes AS s ON s.s_id = r.r_s_id
         JOIN t_tokens AS t ON t.t_u_id = r.r_u_id
         WHERE t.t_token = $1
-        AND active_token($1) = True;
+        AND active_token($1) = True
+        ORDER BY r.r_updated_at DESC;
         ''',
         self.__model_token.token
         )

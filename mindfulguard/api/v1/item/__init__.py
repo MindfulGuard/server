@@ -1,5 +1,4 @@
-from typing import Annotated
-from fastapi import APIRouter, Header, Path, Request, Response
+from fastapi import APIRouter, Header, Path, Response
 from mindfulguard.classes.models.item_json import Item
 from mindfulguard.classes.safe import Safe
 from mindfulguard.classes.items import Items as ItemsClass

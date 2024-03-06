@@ -1,4 +1,4 @@
-from http.client import FORBIDDEN, INTERNAL_SERVER_ERROR, OK, UNAUTHORIZED
+from http.client import OK
 from mindfulguard.classes.database.postgresql.queries_base import PostgreSqlQueriesBase
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.models.user import ModelUser

@@ -74,7 +74,8 @@ class PostgreSqlSafeGet(PostgreSqlQueriesBase):
         LEFT JOIN r_records AS r ON r.r_s_id = s.s_id
         WHERE t.t_token = $1
         AND active_token($1) = True
-        GROUP BY s.s_id, s.s_name, s.s_description, s.s_created_at, s.s_updated_at;
+        GROUP BY s.s_id, s.s_name, s.s_description, s.s_created_at, s.s_updated_at
+        ORDER BY s.s_updated_at DESC;
         ''',
         self.__model_token.token
         )

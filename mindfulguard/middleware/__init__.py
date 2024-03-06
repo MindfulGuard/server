@@ -1,6 +1,8 @@
+import asyncio
 from http.client import BAD_REQUEST, UNAUTHORIZED
 from fastapi import Request
 from fastapi.responses import JSONResponse
+from mindfulguard.classes.audit import Audit
 from mindfulguard.classes.database import DataBase
 from mindfulguard.classes.middleware.base import MiddlewareBase
 from mindfulguard.database.postgresql.data_collection import PostgreSqlDataCollection
@@ -41,6 +43,10 @@ class UpdateTokenInformationMiddleware(MiddlewareBase):
                         status_code = UNAUTHORIZED,
                         content = self._responses.default().get(UNAUTHORIZED)
                     )
+                
+                if not request.url.path.startswith('/v1/auth/sign_out') and not (request.url.path.startswith('/v1/user/settings') and request.method.lower() == 'delete'):
+                    asyncio.create_task(Audit(request).insert(authorization_header, device_header))
+                    
                 return await call_next(request)
             except ValueError:
                 return JSONResponse(

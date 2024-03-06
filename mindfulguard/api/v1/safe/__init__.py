@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Form, Header, Request, Response
+from fastapi import APIRouter, Form, Header, Response
 from mindfulguard.classes.safe import Safe
 
 router = APIRouter()

@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 from fastapi import  APIRouter, Form, Header, Query, Request, Response
 from mindfulguard.classes.authentication import Authentication
 

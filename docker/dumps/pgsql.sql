@@ -1,3 +1,4 @@
+failed to get console mode for stdout: The handle is invalid.
 --
 -- PostgreSQL database dump
 --
@@ -15,6 +16,38 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: action_status; Type: TYPE; Schema: public; Owner: mindfulguard
+--
+
+CREATE TYPE public.action_status AS ENUM (
+    'create',
+    'update',
+    'delete',
+    'download',
+    'upload',
+    'sign_up',
+    'sign_in',
+    'sign_out'
+);
+
+
+ALTER TYPE public.action_status OWNER TO mindfulguard;
+
+--
+-- Name: object_; Type: TYPE; Schema: public; Owner: mindfulguard
+--
+
+CREATE TYPE public.object_ AS ENUM (
+    'user',
+    'safe',
+    'item',
+    'file'
+);
+
+
+ALTER TYPE public.object_ OWNER TO mindfulguard;
 
 --
 -- Name: active_token(character varying); Type: FUNCTION; Schema: public; Owner: mindfulguard
@@ -97,6 +130,41 @@ END;$_$;
 
 
 ALTER FUNCTION public.active_token_admin(token character varying) OWNER TO mindfulguard;
+
+--
+-- Name: create_audit_item(character varying, inet, public.object_, public.action_status, character varying); Type: PROCEDURE; Schema: public; Owner: mindfulguard
+--
+
+CREATE PROCEDURE public.create_audit_item(IN token character varying, IN ip inet, IN _object public.object_, IN action_ public.action_status, IN device character varying)
+    LANGUAGE plpgsql
+    AS $_$
+declare 
+    user_id UUID;
+    timestmp BIGINT;
+	BEGIN
+	timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+	SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+	IF user_id IS NULL THEN
+	    RETURN;
+	END IF;
+	
+	insert into a_audit values (
+	gen_random_uuid(),
+	user_id,
+	timestmp,
+	$2,
+	$3,
+	$4,
+	$5
+	);
+
+	END;
+$_$;
+
+
+ALTER PROCEDURE public.create_audit_item(IN token character varying, IN ip inet, IN _object public.object_, IN action_ public.action_status, IN device character varying) OWNER TO mindfulguard;
 
 --
 -- Name: create_item(character varying, uuid, character varying, json, character varying, character varying[], character varying, boolean); Type: FUNCTION; Schema: public; Owner: mindfulguard
@@ -353,58 +421,34 @@ CREATE FUNCTION public.delete_user(user_id uuid) RETURNS integer
     AS $_$
 
 declare
-
     verification_secret_string UUID;
-
     code_u_id UUID;
-
     delete_id UUID;
 
 begin
 
-
-
 SELECT u_id INTO verification_secret_string FROM u_users
-
-
-
 WHERE u_id = $1 AND u_admin = FALSE;
 
-
-
 IF verification_secret_string IS NULL THEN
-
     RETURN -2;
-
 END IF;
 
-
-
 DELETE FROM r_records
-
 WHERE r_u_id = $1;
 
-
-
 DELETE FROM s_safes
-
 WHERE s_u_id = $1;
 
-
-
 DELETE FROM t_tokens
-
 WHERE t_u_id = $1;
 
-
+delete from a_audit
+where a_u_id = $1;
 
 DELETE FROM c_codes
-
 WHERE c_u_id = $1
-
 RETURNING c_id INTO code_u_id;
-
-
 
 IF code_u_id IS NULL THEN
 
@@ -412,23 +456,13 @@ IF code_u_id IS NULL THEN
 
 END IF;
 
-
-
 DELETE FROM u_users
-
 WHERE u_id = $1
-
 RETURNING u_id INTO delete_id;
 
-
-
 IF delete_id IS NULL THEN
-
     RETURN -2;
-
 END IF;
-
-
 
 RETURN 0;
 
@@ -448,98 +482,56 @@ CREATE FUNCTION public.delete_user(token character varying, secret_string charac
     AS $_$
 
 declare
-
     verification_secret_string UUID;
-
     user_id UUID;
-
     code_u_id UUID;
-
     delete_id UUID;
 
 begin
 
-
-
 SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
 
-
-
 IF user_id IS NULL THEN
-
     RETURN -1;
-
 END IF;
-
-
 
 SELECT u_id INTO verification_secret_string FROM u_users
-
 WHERE u_id = user_id
-
 AND u_secret_string = $2
-
 AND $3 = TRUE;
 
-
-
 IF verification_secret_string IS NULL THEN
-
     RETURN -2;
-
 END IF;
-
 
 
 DELETE FROM r_records
-
 WHERE r_u_id = user_id;
 
-
-
 DELETE FROM s_safes
-
 WHERE s_u_id = user_id;
 
-
-
 DELETE FROM t_tokens
-
 WHERE t_u_id = user_id;
 
-
+delete from a_audit
+where a_u_id = user_id;
 
 DELETE FROM c_codes
-
 WHERE c_u_id = user_id
-
 RETURNING c_id INTO code_u_id;
 
-
-
 IF code_u_id IS NULL THEN
-
     RETURN -2;
-
 END IF;
-
-
 
 DELETE FROM u_users
-
 WHERE u_id = user_id
-
 RETURNING u_id INTO delete_id;
 
-
-
 IF delete_id IS NULL THEN
-
     RETURN -2;
-
 END IF;
-
-
 
 RETURN 0;
 
@@ -549,6 +541,24 @@ $_$;
 
 
 ALTER FUNCTION public.delete_user(token character varying, secret_string character varying, one_time_code_confirm boolean) OWNER TO mindfulguard;
+
+--
+-- Name: insert_audit_data_limit(); Type: FUNCTION; Schema: public; Owner: mindfulguard
+--
+
+CREATE FUNCTION public.insert_audit_data_limit() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF (SELECT COUNT(*) FROM a_audit WHERE a_u_id = NEW.a_u_id) > 256 THEN
+        DELETE FROM a_audit WHERE a_u_id = NEW.a_u_id AND a_id = (SELECT min(a_id) FROM a_audit WHERE a_u_id = NEW.a_u_id) RETURNING *;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.insert_audit_data_limit() OWNER TO mindfulguard;
 
 --
 -- Name: item_favorite(character varying, uuid, uuid); Type: FUNCTION; Schema: public; Owner: mindfulguard
@@ -792,92 +802,32 @@ ALTER FUNCTION public.safe_and_element_exists(token character varying, safe_id u
 CREATE FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint, is_verified_code boolean) RETURNS boolean
     LANGUAGE plpgsql
     AS $_$DECLARE
-
-
-
 user_id UUID;
-
-
-
 user_confirm BOOLEAN;
-
-
-
 timestmp BIGINT;
-
-
-
+token_id uuid;
 BEGIN
-
-
-
-
-
-
-
+token_id := gen_random_uuid();
 timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
-
-
 
 SELECT u_id,u_confirm INTO user_id, user_confirm FROM u_users WHERE u_login = $1 AND u_secret_string=$2;
 
-
-
-
-
-
-
 IF $7 IS TRUE THEN
-
-
-
     IF user_id IS NULL THEN
-
-
-
         RETURN FALSE;
-
-
-
     END IF;
-
-
 
     IF user_confirm IS FALSE THEN
-
-
-
         UPDATE u_users SET u_confirm = $7 WHERE u_id = user_id;
-
-
-
     END IF;
-
-
-
-    
-
-
-
-    INSERT INTO t_tokens VALUES(gen_random_uuid (),user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
-
-
-
+	
+    INSERT INTO t_tokens VALUES(token_id,user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
+   	call create_audit_item($3, $5, 'user', 'sign_in', $4);
     RETURN TRUE;
-
-
 
 END IF;
 
-
-
-
-
-
-
 RETURN FALSE;
-
-
 
 END$_$;
 
@@ -890,48 +840,31 @@ ALTER FUNCTION public.sign_in(login character varying, secret_string character v
 
 CREATE FUNCTION public.sign_out(token character varying, token_id uuid) RETURNS integer
     LANGUAGE plpgsql
-    AS $_$DECLARE
-
+    AS $_$
+DECLARE
     user_id UUID;
-
     deletion_successful INTEGER;
-
+    token_device character varying;
+    token_last_ip inet;
 BEGIN
-
-
-
-    SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 and active_token($1) = TRUE;
-
-
+    SELECT t_u_id, t_device, t_last_ip
+    INTO user_id, token_device, token_last_ip
+    FROM t_tokens WHERE t_token = $1 and active_token($1) = TRUE;
 
     IF user_id IS NULL THEN
-
-
-
         deletion_successful := -1;
-
     ELSE
-
+        CALL create_audit_item($1, token_last_ip, 'user', 'sign_out', token_device);
         DELETE FROM t_tokens WHERE t_u_id = user_id AND t_id = $2;
-
         IF FOUND THEN
-
             deletion_successful := 0;
-
         ELSE
-
             deletion_successful := -2;
-
         END IF;
-
     END IF;
 
     RETURN deletion_successful;
-
-
-
 END;
-
 $_$;
 
 
@@ -948,46 +881,31 @@ CREATE FUNCTION public.sign_up(login character varying, secret_string character 
 
 
 declare
-
     user_id UUID;
-
     code_id UUID;
-
     user_id_insert UUID;
-
     uuid_user_id UUID;
-
     code_id_insert UUID;
-
     current_timeu BIGINT;
-
     is_registration BOOLEAN;
 
 BEGIN
-
-
 
 current_timeu := EXTRACT(EPOCH FROM current_timestamp)::bigint;
 
 uuid_user_id := gen_random_uuid ();
 
-
-
 SELECT st_value::BOOLEAN INTO is_registration FROM st_settings WHERE st_id = '498e9042-1492-44d8-8697-76b9a73967ec';
 
-
-
 IF is_registration IS FALSE OR is_registration IS NULL THEN
-
     RETURN -5;
-
 END IF;
 
 SELECT u_id INTO user_id FROM u_users WHERE u_login = $1 AND u_secret_string = $2 AND u_confirm = FALSE;
 
 IF user_id IS NULL THEN
     INSERT INTO u_users VALUES (uuid_user_id,$1,$3,$4,current_timeu,$2,False) RETURNING u_id INTO user_id_insert;
-
+   
     IF user_id_insert IS NULL THEN
         RETURN -1;
     END IF;
@@ -1020,6 +938,7 @@ END IF;
 RETURN 2;
 END
 $_$;
+
 
 ALTER FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, backup_codes integer[]) OWNER TO mindfulguard;
 
@@ -1320,6 +1239,23 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: a_audit; Type: TABLE; Schema: public; Owner: mindfulguard
+--
+
+CREATE TABLE public.a_audit (
+    a_id character varying NOT NULL,
+    a_u_id uuid NOT NULL,
+    a_created_at bigint NOT NULL,
+    a_ip inet NOT NULL,
+    a_object public.object_ NOT NULL,
+    a_action public.action_status NOT NULL,
+    a_device character varying(512) NOT NULL
+);
+
+
+ALTER TABLE public.a_audit OWNER TO mindfulguard;
+
+--
 -- Name: c_codes; Type: TABLE; Schema: public; Owner: mindfulguard
 --
 
@@ -1421,6 +1357,14 @@ CREATE TABLE public.u_users (
 ALTER TABLE public.u_users OWNER TO mindfulguard;
 
 --
+-- Data for Name: a_audit; Type: TABLE DATA; Schema: public; Owner: mindfulguard
+--
+
+COPY public.a_audit (a_id, a_u_id, a_created_at, a_ip, a_object, a_action, a_device) FROM stdin;
+\.
+
+
+--
 -- Data for Name: c_codes; Type: TABLE DATA; Schema: public; Owner: mindfulguard
 --
 
@@ -1474,6 +1418,14 @@ COPY public.t_tokens (t_id, t_u_id, t_token, t_created_at, t_updated_at, t_devic
 
 COPY public.u_users (u_id, u_login, u_reg_ip, u_confirm, u_created_at, u_secret_string, u_admin) FROM stdin;
 \.
+
+
+--
+-- Name: a_audit a_audit_pk; Type: CONSTRAINT; Schema: public; Owner: mindfulguard
+--
+
+ALTER TABLE ONLY public.a_audit
+    ADD CONSTRAINT a_audit_pk PRIMARY KEY (a_id);
 
 
 --
@@ -1554,6 +1506,21 @@ ALTER TABLE ONLY public.u_users
 
 ALTER TABLE ONLY public.u_users
     ADD CONSTRAINT u_users_u_secret_string_key UNIQUE (u_secret_string);
+
+
+--
+-- Name: a_audit enforce_audit_data_limit; Type: TRIGGER; Schema: public; Owner: mindfulguard
+--
+
+CREATE TRIGGER enforce_audit_data_limit AFTER INSERT ON public.a_audit FOR EACH ROW EXECUTE FUNCTION public.insert_audit_data_limit();
+
+
+--
+-- Name: a_audit a_audit_u_users_fk; Type: FK CONSTRAINT; Schema: public; Owner: mindfulguard
+--
+
+ALTER TABLE ONLY public.a_audit
+    ADD CONSTRAINT a_audit_u_users_fk FOREIGN KEY (a_u_id) REFERENCES public.u_users(u_id);
 
 
 --
