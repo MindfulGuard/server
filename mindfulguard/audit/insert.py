@@ -83,7 +83,7 @@ class AuditInsert(AuditBase):
                         action = self._model_audit.audit_action_type.delete
 
             else:
-                InvalidUrlPath(f"Invalid url path: {request_url_path}")
+                raise InvalidUrlPath(f"Invalid url path: {request_url_path}")
 
             return object, action                
 
