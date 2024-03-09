@@ -559,6 +559,7 @@ GET /v1/user
   "tokens":[
     {
       "id": "25275093-aa91-4937-941c-1934e0174d2e",
+      "short_hash": "ectcxizeku8nzywkc1j2b7asyok8",
       "first_login": 1695004570,
       "last_login": 1695004570,
       "device": "Chromium/100.0.0 or <Сlient name>/<Version>",
@@ -567,6 +568,7 @@ GET /v1/user
     },
     {
       "id": "188da897-a032-4747-bbc7-99c078dd539b",
+      "short_hash": "ysvuebx7du1tqfpjietuiyrqml31",
       "first_login": 1695004574,
       "last_login": 1695004576,
       "device": "Chromium/100.0.0 or <Сlient name>/<Version>",
@@ -581,8 +583,11 @@ GET /v1/user
       "ip": "127.0.0.1"
   }
 }
-
 ```
+
+| Key | Description |
+| --- | ----------- |
+| short_hash | The first 28 characters of the token hash `sha256`. |
 
 ## • Audit
 
