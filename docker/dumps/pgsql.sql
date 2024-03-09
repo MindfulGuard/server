@@ -1280,7 +1280,7 @@ CREATE TABLE public.r_records (
     r_u_id uuid NOT NULL,
     r_title character varying(512) NOT NULL,
     r_item json NOT NULL,
-    r_notes character varying(512) NOT NULL,
+    r_notes character varying(1024) NOT NULL,
     r_tags character varying[] NOT NULL,
     r_created_at bigint NOT NULL,
     r_updated_at bigint NOT NULL,

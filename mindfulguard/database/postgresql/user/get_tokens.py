@@ -16,6 +16,7 @@ class PostgreSqlUserGetTokens(PostgreSqlQueriesBase):
         def __init__(self):
             super().__init__()
             self.__id: str
+            self.__hashed_token_shortened: str
             self.__created_at: int
             self.__updated_at: int
             self.__device: str
@@ -31,6 +32,14 @@ class PostgreSqlUserGetTokens(PostgreSqlQueriesBase):
             if not self._validation.is_uuid(value):
                 raise ValueError('The value is not a uuid')
             self.__id = value
+
+        @property
+        def hashed_token_shortened(self) -> str:
+            return self.__hashed_token_shortened
+        
+        @hashed_token_shortened.setter
+        def hashed_token_shortened(self, value: str) -> None:
+            self.__hashed_token_shortened = value[:28]
 
         @property
         def created_at(self) -> int:
@@ -89,6 +98,7 @@ class PostgreSqlUserGetTokens(PostgreSqlQueriesBase):
         def __next__(self):
             if self.__i < len(self.__pgsql_response):
                 self.__model_token_extend.id = self.__pgsql_response[self.__i]['t_id']
+                self.__model_token_extend.hashed_token_shortened = self.__pgsql_response[self.__i]['t_token']
                 self.__model_token_extend.created_at = self.__pgsql_response[self.__i]['t_created_at']
                 self.__model_token_extend.updated_at = self.__pgsql_response[self.__i]['t_updated_at']
                 self.__model_token_extend.device = self.__pgsql_response[self.__i]['t_device']
@@ -110,7 +120,7 @@ class PostgreSqlUserGetTokens(PostgreSqlQueriesBase):
             return
 
         values = await self._connection.connection.fetch('''
-        SELECT t_id, t_created_at, t_updated_at, t_device, t_last_ip, t_expiration
+        SELECT t_id, t_token, t_created_at, t_updated_at, t_device, t_last_ip, t_expiration
         FROM t_tokens
         WHERE t_u_id IN (
             SELECT t_u_id

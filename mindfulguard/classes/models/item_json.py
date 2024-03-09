@@ -2,7 +2,7 @@ from pydantic_async_validation import async_field_validator, AsyncValidationMode
 from pydantic import BaseModel, field_validator, constr
 from mindfulguard.settings import Settings
 
-TITLE_LENGTH: int = 1024
+TITLE_LENGTH: int = 512
 NOTES_LENGTH: int = 1024
 TAGS_ARRAY_LENGTH: int = 11
 TAGS_LENGTH: int = 256
@@ -41,7 +41,7 @@ class Sections(AsyncValidationModelMixin, BaseModel):
 
 class Item(AsyncValidationModelMixin, BaseModel):
     title: constr(min_length = 0, max_length = TITLE_LENGTH)
-    category: constr(min_length = 0, max_length = 20)
+    category: constr(min_length = 0, max_length = 64)
     notes: constr(min_length = 0, max_length = NOTES_LENGTH)
     tags: list[str]
     sections: list[Sections]

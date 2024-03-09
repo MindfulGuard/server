@@ -48,6 +48,7 @@ class UserInformation(UserBase):
             for i in db_get_tokens.response:
                 value_dict = {
                     'id': i.id,
+                    'short_hash': i.hashed_token_shortened,
                     'created_at': i.created_at,
                     'updated_at': i.updated_at,
                     'device': i.device,

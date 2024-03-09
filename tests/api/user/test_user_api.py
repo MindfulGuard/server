@@ -1,3 +1,4 @@
+from tests.api.authentication.sign_out import SignOutApi
 from tests.api.paths import USER_PATH_V1
 from tests.api.user.delete import UserDeleteApi
 from tests.api.user.get_information import UserGetInformationApi
@@ -79,11 +80,24 @@ def test_user_api():
     assert sign_in_response.status_code == OK
     token: str = sign_in_response.json()['token']
 
+    sign_in_response = sign_in.execute(without_token, sign_in_body_ok, 'basic')
+    assert sign_in_response.status_code == OK
+    token2: str = sign_in_response.json()['token']
+
     assert sign_up.execute(without_token, sign_up_body_ok).status_code == CONFLICT
 
-    user_information = UserGetInformationApi(USER_PATH_V1)
-    assert user_information.execute(with_token_OK(token)).status_code == OK
+    user_information = UserGetInformationApi(USER_PATH_V1).execute(with_token_OK(token))
+    assert user_information.status_code == OK
     
+    user_information =  user_information.json()
+    _hash = Security().hash()
+    hashed_token2: str = _hash.sha(token2)[:28]
+
+    for i in user_information['tokens']:
+        if i['short_hash'] == hashed_token2:
+            sign_out = SignOutApi(AUTH_PATH_V1)
+            assert sign_out.execute(with_token_OK(token2), i['id']).status_code == OK, f"Token: {token}\nToken2: {token2}"
+
     update_secret_code = UserUpdateSecretCodeAdnBackupCodesApi(USER_PATH_V1)
     body = {
         "secret_string": 'aX7pDfUTAMQvQU3tOPs7IJ8pYaczHjilEo9cQ4r2DOrSTx6aVYqpYOMQatScCdfR'
@@ -92,7 +106,7 @@ def test_user_api():
         with_token_OK(token),
         body,
         'None'
-    ).status_code == UNPROCESSABLE_ENTITY
+    ).status_code == UNPROCESSABLE_ENTITY, f"Token: {token}\nToken2: {token2}"
     assert update_secret_code.execute(
         with_token_OK(token),
         body,
