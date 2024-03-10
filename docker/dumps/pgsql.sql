@@ -78,50 +78,22 @@ ALTER FUNCTION public.active_token(token character varying) OWNER TO mindfulguar
 CREATE FUNCTION public.active_token_admin(token character varying) RETURNS integer
     LANGUAGE plpgsql
     AS $_$DECLARE
-
-
-
     user_id UUID;
-
     is_admin BOOLEAN;
-
-
-
 BEGIN
-
-
 
 SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND EXTRACT(EPOCH FROM current_timestamp)::BIGINT <= t_expiration;
 
-
-
-
-
 IF user_id IS NULL THEN
-
-
-
     RETURN -1;
-
-
-
 END IF;
-
-
 
 SELECT u_admin INTO is_admin FROM u_users
-
 WHERE u_id = user_id;
 
-
-
 IF is_admin IS FALSE THEN
-
     RETURN -2;
-
 END IF;
-
-
 
 RETURN 0;
 
@@ -548,10 +520,26 @@ ALTER FUNCTION public.delete_user(token character varying, secret_string charact
 CREATE FUNCTION public.insert_audit_data_limit() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
+DECLARE
+    num_to_delete INT;
 BEGIN
-    IF (SELECT COUNT(*) FROM a_audit WHERE a_u_id = NEW.a_u_id) > 256 THEN
-        DELETE FROM a_audit WHERE a_u_id = NEW.a_u_id AND a_id = (SELECT min(a_id) FROM a_audit WHERE a_u_id = NEW.a_u_id) RETURNING *;
+    -- Check the number of records for the given a_u_u_id
+    SELECT COUNT(*) INTO num_to_delete FROM a_audit WHERE a_u_id = NEW.a_u_id;
+    
+    IF num_to_delete > 256 THEN
+        -- Calculate the number of unnecessary records to be deleted
+        num_to_delete := num_to_delete - 256;
+        
+        DELETE FROM a_audit 
+        WHERE a_id IN (
+            SELECT a_id 
+            FROM a_audit 
+            WHERE a_u_id = NEW.a_u_id 
+            ORDER BY a_created_at ASC 
+            LIMIT num_to_delete + 1
+        );
     END IF;
+    
     RETURN NEW;
 END;
 $$;
