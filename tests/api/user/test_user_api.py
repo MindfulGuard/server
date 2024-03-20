@@ -186,6 +186,8 @@ def test_user_api():
     sign_in_response = sign_in.execute(without_token, sign_in_body_ok, 'basic')
     assert sign_in_response.status_code == OK
 
+    token = sign_in_response.json()['token']
+
     delete_user = UserDeleteApi(USER_PATH_V1)
     body = {
         "secret_string": new_secret_string,

@@ -126,6 +126,14 @@ async def test_user():
         'Bearer Dn8QQDRNpWo3PAbk3GtsDXntoq6AK10uyn2JgTYNJ1unHBF67ZZ4ROsyp5ke4tlph9UnWSV6v0dfowahxiEgjj8BEhLRhUC2utZKLbgjEcXceH9AXnrcWe296ME3t8oD',
         new_secret_string
     ) == UNAUTHORIZED
+
+    assert await sign_in.ok(
+        login,
+        new_secret_string,
+        token,
+        True
+    ) == OK
+
     assert await delete_account.execute(
         token,
         'IIm8jyVPcU8EsMPT4Ma33HW12LgOws5mwJTgmgr9Zj2hXIDRfX6KqfjbM1jUkgqD'
