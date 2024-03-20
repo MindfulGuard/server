@@ -63,7 +63,6 @@ SELECT EXISTS (SELECT t_id FROM t_tokens WHERE t_token = $1 AND EXTRACT(EPOCH FR
 RETURN record_exists;
 END;$_$;
 
-
 ALTER FUNCTION public.active_token(token character varying) OWNER TO mindfulguard;
 
 --
@@ -137,37 +136,69 @@ ALTER PROCEDURE public.create_audit_item(IN token character varying, IN ip inet,
 CREATE FUNCTION public.create_item(token character varying, safe_id uuid, title character varying, item json, notes character varying, tags character varying[], category character varying, favorite boolean) RETURNS integer
     LANGUAGE plpgsql
     AS $_$
+
 declare
+
     user_id UUID;
+
     _safe_id UUID;
+
     record_id UUID;
+
     timestmp BIGINT;
+
 begin
+
+
 
 timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
 
+
+
 SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
 
+
+
 IF user_id IS NULL THEN
+
     RETURN -1;
+
 END IF;
+
+
 
 SELECT s_id INTO _safe_id FROM s_safes WHERE s_u_id = user_id AND s_id = $2;
 
+
+
 IF _safe_id IS NULL THEN
+
     RETURN -2;
+
 END IF;
+
+
 
 INSERT INTO r_records VALUES (gen_random_uuid(),_safe_id,user_id,$3,$4,$5,$6,timestmp,timestmp,$7,$8) RETURNING r_id INTO record_id;
 
+
+
 IF record_id IS NULL THEN
+
     RETURN -2;
+
 END IF;
+
+
 
 CALL update_safe_info($1,$2);
 
+
+
 RETURN 0;
+
 end;
+
 $_$;
 
 
@@ -180,29 +211,53 @@ ALTER FUNCTION public.create_item(token character varying, safe_id uuid, title c
 CREATE FUNCTION public.create_safe(token character varying, name character varying, description character varying) RETURNS integer
     LANGUAGE plpgsql
     AS $_$
+
 declare
+
     user_id UUID;
+
     safe_id UUID;
+
     timestmp BIGINT;
+
 begin
+
+
 
 timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
 
 
+
+
+
 SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
 
+
+
 IF user_id IS NULL THEN
+
     RETURN -1;
+
 END IF;
+
+
 
 INSERT INTO s_safes VALUES (gen_random_uuid(),user_id,$2,$3,timestmp,timestmp) RETURNING s_id INTO safe_id;
 
+
+
 IF safe_id IS NULL THEN
+
     RETURN -2;
+
 END IF;
 
+
+
 RETURN 0;
+
 end;
+
 $_$;
 
 
@@ -216,32 +271,60 @@ CREATE FUNCTION public.delete_item(token character varying, safe_id uuid, item_i
     LANGUAGE plpgsql
     AS $_$
 
+
+
 declare
+
     user_id UUID;
+
     record_id UUID;
+
 begin
+
+
 
 SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
 
 
+
+
+
 IF user_id IS NULL THEN
+
     RETURN -1;
+
 END IF;
+
+
 
 DELETE FROM r_records
+
 WHERE r_id = $3
+
 AND r_s_id = $2
+
 AND r_u_id = user_id
+
 RETURNING r_id INTO record_id;
 
+
+
 IF record_id IS NULL THEN
+
     RETURN -2;
+
 END IF;
+
+
 
 CALL update_safe_info($1,$2);
 
+
+
 RETURN 0;
+
 end;
+
 $_$;
 
 
@@ -254,28 +337,51 @@ ALTER FUNCTION public.delete_item(token character varying, safe_id uuid, item_id
 CREATE FUNCTION public.delete_safe(token character varying, id uuid) RETURNS integer
     LANGUAGE plpgsql
     AS $_$
+
 declare
+
     user_id UUID;
+
     safe_id UUID;
+
 begin
+
+
 
 SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
 
+
+
 IF user_id IS NULL THEN
+
     RETURN -1;
+
 END IF;
 
+
+
 DELETE FROM r_records WHERE r_s_id = $2 AND r_u_id = user_id;
+
+
 
 DELETE FROM s_safes WHERE s_u_id = user_id AND s_id = $2 RETURNING s_id INTO safe_id;
 
 
+
+
+
 IF safe_id IS NULL THEN
+
     RETURN -2;
+
 END IF;
 
+
+
 RETURN 0;
+
 end;
+
 $_$;
 
 
@@ -288,53 +394,101 @@ ALTER FUNCTION public.delete_safe(token character varying, id uuid) OWNER TO min
 CREATE FUNCTION public.delete_user(user_id uuid) RETURNS integer
     LANGUAGE plpgsql
     AS $_$
+
 declare
+
     verification_secret_string UUID;
+
     code_u_id UUID;
+
     delete_id UUID;
+
+
 
 begin
 
+
+
 SELECT u_id INTO verification_secret_string FROM u_users
+
 WHERE u_id = $1 AND u_admin = FALSE;
 
+
+
 IF verification_secret_string IS NULL THEN
+
     RETURN -2;
+
 END IF;
+
+
+
 
 
 DELETE FROM r_records
+
 WHERE r_u_id = $1;
 
 
+
+
+
 DELETE FROM s_safes
+
 WHERE s_u_id = $1;
 
+
+
 DELETE FROM t_tokens
+
 WHERE t_u_id = $1;
 
+
+
 delete from a_audit
+
 where a_u_id = $1;
 
+
+
 DELETE FROM c_codes
+
 WHERE c_u_id = $1
+
 RETURNING c_id INTO code_u_id;
 
 
+
+
+
 IF code_u_id IS NULL THEN
+
     RETURN -2;
+
 END IF;
+
+
 
 DELETE FROM u_users
+
 WHERE u_id = $1
+
 RETURNING u_id INTO delete_id;
 
+
+
 IF delete_id IS NULL THEN
+
     RETURN -2;
+
 END IF;
 
+
+
 RETURN 0;
+
 end;
+
 $_$;
 
 
@@ -350,60 +504,118 @@ CREATE FUNCTION public.delete_user(token character varying, secret_string charac
 
 
 
+
+
+
+
 declare
+
     verification_secret_string UUID;
+
     user_id UUID;
+
     code_u_id UUID;
+
     delete_id UUID;
+
 begin
+
+
+
+
 
 
 
 SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
 
+
+
 IF user_id IS NULL THEN
+
     RETURN -1;
+
 END IF;
+
+
 
 SELECT u_id INTO verification_secret_string FROM u_users
+
 WHERE u_id = user_id
+
 AND u_secret_string = $2
+
 AND $3 = TRUE;
 
+
+
 IF verification_secret_string IS NULL THEN
+
     RETURN -2;
+
 END IF;
+
+
 
 DELETE FROM r_records
+
 WHERE r_u_id = user_id;
 
+
+
 DELETE FROM s_safes
+
 WHERE s_u_id = user_id;
 
+
+
 DELETE FROM t_tokens
+
 WHERE t_u_id = user_id;
 
+
+
 delete from a_audit
+
 where a_u_id = user_id;
 
+
+
 DELETE FROM c_codes
+
 WHERE c_u_id = user_id
+
 RETURNING c_id INTO code_u_id;
 
+
+
 IF code_u_id IS NULL THEN
+
     RETURN -2;
+
 END IF;
+
+
 
 DELETE FROM u_users
+
 WHERE u_id = user_id
+
 RETURNING u_id INTO delete_id;
 
+
+
 IF delete_id IS NULL THEN
+
     RETURN -2;
+
 END IF;
 
+
+
 RETURN 0;
+
 end;
+
 $_$;
 
 
@@ -417,49 +629,95 @@ CREATE FUNCTION public.insert_audit_data_limit() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 
+
+
 DECLARE
+
+
 
     num_to_delete INT;
 
+
+
 BEGIN
+
+
 
     -- Check the number of records for the given a_u_u_id
 
+
+
     SELECT COUNT(*) INTO num_to_delete FROM a_audit WHERE a_u_id = NEW.a_u_id;
 
+
+
     
+
+
 
     IF num_to_delete > 256 THEN
 
+
+
         -- Calculate the number of unnecessary records to be deleted
+
+
 
         num_to_delete := num_to_delete - 256;
 
+
+
         
+
+
 
         DELETE FROM a_audit 
 
+
+
         WHERE a_id IN (
+
+
 
             SELECT a_id 
 
+
+
             FROM a_audit 
+
+
 
             WHERE a_u_id = NEW.a_u_id 
 
+
+
             ORDER BY a_created_at ASC 
+
+
 
             LIMIT num_to_delete + 1
 
+
+
         );
+
+
 
     END IF;
 
+
+
     
+
+
 
     RETURN NEW;
 
+
+
 END;
+
+
 
 $$;
 
@@ -476,7 +734,15 @@ CREATE FUNCTION public.item_favorite(token character varying, safe_id uuid, item
 
 
 
+
+
+
+
 DECLARE
+
+
+
+
 
 
 
@@ -484,11 +750,27 @@ DECLARE
 
 
 
+
+
+
+
     record_id UUID;
 
 
 
+
+
+
+
 BEGIN
+
+
+
+
+
+
+
+
 
 
 
@@ -504,7 +786,19 @@ SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1)
 
 
 
+
+
+
+
+
+
+
+
 IF user_id IS NULL THEN
+
+
+
+
 
 
 
@@ -512,7 +806,19 @@ IF user_id IS NULL THEN
 
 
 
+
+
+
+
 END IF;
+
+
+
+
+
+
+
+
 
 
 
@@ -524,7 +830,15 @@ UPDATE r_records
 
 
 
+
+
+
+
 SET r_favorite = NOT r_favorite,
+
+
+
+
 
 
 
@@ -532,7 +846,15 @@ r_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
 
 
 
+
+
+
+
 WHERE r_s_id = $2 AND r_u_id = user_id AND r_id = $3
+
+
+
+
 
 
 
@@ -544,7 +866,19 @@ RETURNING r_id INTO record_id;
 
 
 
+
+
+
+
+
+
+
+
 IF record_id IS NULL THEN
+
+
+
+
 
 
 
@@ -552,7 +886,19 @@ IF record_id IS NULL THEN
 
 
 
+
+
+
+
 END IF;
+
+
+
+
+
+
+
+
 
 
 
@@ -568,11 +914,27 @@ CALL update_safe_info($1,$2);
 
 
 
+
+
+
+
+
+
+
+
 RETURN 0;
 
 
 
+
+
+
+
 END
+
+
+
+
 
 
 
@@ -591,7 +953,15 @@ CREATE FUNCTION public.move_item_to_new_safe(token character varying, old_safe_i
 
 
 
+
+
+
+
 DECLARE
+
+
+
+
 
 
 
@@ -599,7 +969,15 @@ DECLARE
 
 
 
+
+
+
+
     _old_safe_id UUID;
+
+
+
+
 
 
 
@@ -607,11 +985,23 @@ DECLARE
 
 
 
+
+
+
+
     record_id UUID;
 
 
 
+
+
+
+
 BEGIN
+
+
+
+
 
 
 
@@ -623,7 +1013,19 @@ SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1)
 
 
 
+
+
+
+
+
+
+
+
 IF user_id IS NULL THEN
+
+
+
+
 
 
 
@@ -631,7 +1033,19 @@ IF user_id IS NULL THEN
 
 
 
+
+
+
+
 END IF;
+
+
+
+
+
+
+
+
 
 
 
@@ -647,7 +1061,19 @@ END IF;
 
 
 
+
+
+
+
+
+
+
+
 SELECT s_id INTO _old_safe_id
+
+
+
+
 
 
 
@@ -655,11 +1081,27 @@ FROM s_safes
 
 
 
+
+
+
+
 WHERE s_id = $2
 
 
 
+
+
+
+
 AND s_u_id = user_id;
+
+
+
+
+
+
+
+
 
 
 
@@ -675,7 +1117,19 @@ AND s_u_id = user_id;
 
 
 
+
+
+
+
+
+
+
+
 SELECT s_id INTO _new_safe_id
+
+
+
+
 
 
 
@@ -683,7 +1137,15 @@ FROM s_safes
 
 
 
+
+
+
+
 WHERE s_id = $3
+
+
+
+
 
 
 
@@ -695,11 +1157,27 @@ AND s_u_id = user_id;
 
 
 
+
+
+
+
+
+
+
+
 IF _old_safe_id IS NULL OR _new_safe_id IS NULL THEN
 
 
 
+
+
+
+
     RETURN -2;
+
+
+
+
 
 
 
@@ -711,7 +1189,19 @@ END IF;
 
 
 
+
+
+
+
+
+
+
+
 UPDATE r_records
+
+
+
+
 
 
 
@@ -719,7 +1209,15 @@ SET r_s_id = $3,
 
 
 
+
+
+
+
 r_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
+
+
+
+
 
 
 
@@ -727,11 +1225,27 @@ WHERE r_id = $4
 
 
 
+
+
+
+
 AND r_s_id = $2
 
 
 
+
+
+
+
 AND r_u_id = user_id
+
+
+
+
+
+
+
+
 
 
 
@@ -747,11 +1261,27 @@ RETURNING r_id INTO record_id;
 
 
 
+
+
+
+
+
+
+
+
 IF record_id IS NULL THEN
 
 
 
+
+
+
+
     RETURN -2;
+
+
+
+
 
 
 
@@ -767,7 +1297,23 @@ END IF;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 CALL update_safe_info($1,$2);
+
+
+
+
 
 
 
@@ -775,7 +1321,15 @@ RETURN 0;
 
 
 
+
+
+
+
 END
+
+
+
+
 
 
 
@@ -798,7 +1352,19 @@ CREATE FUNCTION public.safe_and_element_exists(token character varying, safe_id 
 
 
 
+
+
+
+
+
+
+
+
 declare
+
+
+
+
 
 
 
@@ -806,11 +1372,27 @@ declare
 
 
 
+
+
+
+
     _safe_id UUID;
 
 
 
+
+
+
+
     timestmp BIGINT;
+
+
+
+
+
+
+
+
 
 
 
@@ -826,7 +1408,23 @@ begin
 
 
 
+
+
+
+
+
+
+
+
 timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+
+
+
+
+
+
+
 
 
 
@@ -842,7 +1440,19 @@ SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1)
 
 
 
+
+
+
+
+
+
+
+
 IF user_id IS NULL THEN
+
+
+
+
 
 
 
@@ -850,7 +1460,19 @@ IF user_id IS NULL THEN
 
 
 
+
+
+
+
 END IF;
+
+
+
+
+
+
+
+
 
 
 
@@ -862,6 +1484,10 @@ SELECT s_id INTO _safe_id FROM s_safes
 
 
 
+
+
+
+
 WHERE s_id = $2 AND s_u_id = user_id;
 
 
@@ -870,14 +1496,30 @@ WHERE s_id = $2 AND s_u_id = user_id;
 
 
 
+
+
+
+
+
+
+
+
 IF _safe_id IS NULL THEN
+
     RETURN -2;
+
 END IF;
+
+
 
 CALL update_safe_info($1,$2);
 
+
+
 RETURN 0;
+
 end;
+
 $_$;
 
 
@@ -891,16 +1533,31 @@ CREATE FUNCTION public.sign_in(login character varying, secret_string character 
     LANGUAGE plpgsql
     AS $_$DECLARE
 
+
+
 user_id UUID;
+
 user_confirm BOOLEAN;
+
 timestmp BIGINT;
+
 token_id uuid;
+
+
 
 BEGIN
 
+
+
 token_id := gen_random_uuid();
 
+
+
 timestmp := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+
+
+
 
 
 
@@ -908,27 +1565,55 @@ SELECT u_id,u_confirm INTO user_id, user_confirm FROM u_users WHERE u_login = $1
 
 
 
+
+
+
+
 IF $7 IS TRUE THEN
+
+
 
     IF user_id IS NULL THEN
 
+
+
         RETURN FALSE;
 
+
+
     END IF;
+
+
 
     IF user_confirm IS FALSE THEN
 
+
+
         UPDATE u_users SET u_confirm = $7 WHERE u_id = user_id;
+
+
 
     END IF;
 
+
+
 	
+
+
 
     INSERT INTO t_tokens VALUES(token_id,user_id,$3,timestmp,timestmp,$4,$5,timestmp+$6);
 
+
+
    	call create_audit_item($3, $5, 'user', 'sign_in', $4);
 
+
+
     RETURN TRUE;
+
+
+
+
 
 
 
@@ -936,7 +1621,15 @@ END IF;
 
 
 
+
+
+
+
 RETURN FALSE;
+
+
+
+
 
 
 
@@ -953,53 +1646,103 @@ CREATE FUNCTION public.sign_out(token character varying, token_id uuid) RETURNS 
     LANGUAGE plpgsql
     AS $_$
 
+
+
 DECLARE
+
+
 
     user_id UUID;
 
+
+
     deletion_successful INTEGER;
+
+
 
     token_device character varying;
 
+
+
     token_last_ip inet;
+
+
 
 BEGIN
 
+
+
     SELECT t_u_id, t_device, t_last_ip
 
+
+
     INTO user_id, token_device, token_last_ip
+
+
 
     FROM t_tokens WHERE t_token = $1 and active_token($1) = TRUE;
 
 
 
+
+
+
+
     IF user_id IS NULL THEN
+
+
 
         deletion_successful := -1;
 
+
+
     ELSE
+
+
 
         CALL create_audit_item($1, token_last_ip, 'user', 'sign_out', token_device);
 
+
+
         DELETE FROM t_tokens WHERE t_u_id = user_id AND t_id = $2;
+
+
 
         IF FOUND THEN
 
+
+
             deletion_successful := 0;
+
+
 
         ELSE
 
+
+
             deletion_successful := -2;
 
+
+
         END IF;
+
+
 
     END IF;
 
 
 
+
+
+
+
     RETURN deletion_successful;
 
+
+
 END;
+
+
 
 $_$;
 
@@ -1020,21 +1763,47 @@ CREATE FUNCTION public.sign_up(login character varying, secret_string character 
 
 
 
+
+
+
+
+
+
+
+
 declare
+
+
 
     user_id UUID;
 
+
+
     code_id UUID;
+
+
 
     user_id_insert UUID;
 
+
+
     uuid_user_id UUID;
+
+
 
     code_id_insert UUID;
 
+
+
     current_timeu BIGINT;
 
+
+
     is_registration BOOLEAN;
+
+
+
+
 
 
 
@@ -1042,7 +1811,15 @@ BEGIN
 
 
 
+
+
+
+
 current_timeu := EXTRACT(EPOCH FROM current_timestamp)::bigint;
+
+
+
+
 
 
 
@@ -1050,15 +1827,31 @@ uuid_user_id := gen_random_uuid ();
 
 
 
+
+
+
+
 SELECT st_value::BOOLEAN INTO is_registration FROM st_settings WHERE st_id = '498e9042-1492-44d8-8697-76b9a73967ec';
+
+
+
+
 
 
 
 IF is_registration IS FALSE OR is_registration IS NULL THEN
 
+
+
     RETURN -5;
 
+
+
 END IF;
+
+
+
+
 
 
 
@@ -1066,17 +1859,35 @@ SELECT u_id INTO user_id FROM u_users WHERE u_login = $1 AND u_secret_string = $
 
 
 
+
+
+
+
 IF user_id IS NULL THEN
+
+
 
     INSERT INTO u_users VALUES (uuid_user_id,$1,$3,$4,current_timeu,$2,False) RETURNING u_id INTO user_id_insert;
 
+
+
    
+
+
 
     IF user_id_insert IS NULL THEN
 
+
+
         RETURN -1;
 
+
+
     END IF;
+
+
+
+
 
 
 
@@ -1084,15 +1895,31 @@ IF user_id IS NULL THEN
 
 
 
+
+
+
+
     IF code_id_insert IS NULL THEN
+
+
 
         RETURN -2;
 
+
+
     END IF;
+
+
 
     RETURN 0;
 
+
+
 END IF;
+
+
+
+
 
 
 
@@ -1100,19 +1927,41 @@ SELECT c_id INTO code_id FROM c_codes WHERE c_u_id = user_id;
 
 
 
+
+
+
+
 IF code_id IS NULL THEN
+
+
 
     INSERT INTO c_codes VALUES (gen_random_uuid(),user_id,$5,$6,current_timeu,current_timeu) RETURNING c_id INTO code_id_insert;
 
+
+
     IF code_id_insert IS NULL THEN
+
+
 
         RETURN -3;
 
+
+
     END IF;
+
+
 
     RETURN 1;
 
+
+
 END IF;
+
+
+
+
+
+
 
 
 
@@ -1122,17 +1971,33 @@ UPDATE c_codes SET c_secret_code = $5,c_backup_codes = $6,c_created_at = current
 
 
 
+
+
+
+
 IF code_id IS NULL THEN
 
+
+
     RETURN -4;
+
+
 
 END IF;
 
 
 
+
+
+
+
 RETURN 2;
 
+
+
 END
+
+
 
 $_$;
 
@@ -1147,13 +2012,25 @@ CREATE FUNCTION public.update_c_codes_code(token character varying, secret_strin
     LANGUAGE plpgsql
     AS $_$
 
+
+
 DECLARE
+
+
 
     user_id UUID;
 
+
+
     code_id UUID;
 
+
+
 BEGIN
+
+
+
+
 
 
 
@@ -1161,33 +2038,67 @@ SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1)
 
 
 
+
+
+
+
 IF user_id IS NULL THEN
+
+
 
     RETURN -1;
 
+
+
 END IF;
+
+
+
+
 
 
 
 UPDATE c_codes
 
+
+
 SET c_backup_codes = $3,
+
+
 
 c_updated_at = EXTRACT(EPOCH FROM current_timestamp)::bigint
 
+
+
 FROM u_users ur
 
+
+
 WHERE c_u_id = user_id AND ur.u_secret_string = $2 AND ur.u_id = user_id
+
+
 
 RETURNING c_id INTO code_id;
 
 
 
+
+
+
+
 IF code_id IS NULL THEN
+
+
 
     RETURN -2;
 
+
+
 END IF;
+
+
+
+
 
 
 
@@ -1195,7 +2106,13 @@ RETURN 0;
 
 
 
+
+
+
+
 END
+
+
 
 $_$;
 
@@ -1210,45 +2127,89 @@ CREATE FUNCTION public.update_c_codes_code(token character varying, secret_strin
     LANGUAGE plpgsql
     AS $_$
 
+
+
 DECLARE
+
+
 
     user_id UUID;
 
+
+
     code_id UUID;
 
+
+
 BEGIN
+
+
 
 SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
 
 
 
+
+
+
+
 IF user_id IS NULL THEN
+
+
 
     RETURN -1;
 
+
+
 END IF;
+
+
+
+
 
 
 
 UPDATE c_codes
 
+
+
 SET c_secret_code = $3,
+
+
 
 c_updated_at = EXTRACT(EPOCH FROM current_timestamp)::bigint
 
+
+
 FROM u_users ur
 
+
+
 WHERE c_u_id = user_id AND ur.u_secret_string = $2 AND ur.u_id = user_id
+
+
 
 RETURNING c_id INTO code_id;
 
 
 
+
+
+
+
 IF code_id IS NULL THEN
+
+
 
     RETURN -2;
 
+
+
 END IF;
+
+
+
+
 
 
 
@@ -1256,7 +2217,13 @@ RETURN 0;
 
 
 
+
+
+
+
 END
+
+
 
 $_$;
 
@@ -1273,7 +2240,15 @@ CREATE FUNCTION public.update_item(token character varying, safe_id uuid, item_i
 
 
 
+
+
+
+
 DECLARE
+
+
+
+
 
 
 
@@ -1281,7 +2256,15 @@ DECLARE
 
 
 
+
+
+
+
     record_id UUID;
+
+
+
+
 
 
 
@@ -1289,7 +2272,15 @@ BEGIN
 
 
 
+
+
+
+
 SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+
+
+
 
 
 
@@ -1297,11 +2288,27 @@ IF user_id IS NULL THEN
 
 
 
+
+
+
+
     RETURN -1;
 
 
 
+
+
+
+
 END IF;
+
+
+
+
+
+
+
+
 
 
 
@@ -1311,29 +2318,57 @@ END IF;
 
 UPDATE r_records
 
+
+
 SET r_title = $4,
+
+
 
 r_category = $8,
 
+
+
 r_item = $5,
+
+
 
 r_notes = $6,
 
+
+
 r_tags = $7,
+
+
 
 r_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
 
+
+
 WHERE r_s_id = $2 AND r_u_id = user_id AND r_id = $3
+
+
 
 RETURNING r_id INTO record_id;
 
 
 
+
+
+
+
 IF record_id IS NULL THEN
+
+
 
     RETURN -2;
 
+
+
 END IF;
+
+
+
+
 
 
 
@@ -1341,11 +2376,23 @@ CALL update_safe_info($1,$2);
 
 
 
+
+
+
+
 RETURN 0;
 
 
 
+
+
+
+
 END
+
+
+
+
 
 
 
@@ -1364,13 +2411,27 @@ CREATE FUNCTION public.update_safe(token character varying, safe_id uuid, name c
 
 
 
+
+
+
+
 DECLARE
+
+
 
     safe_id UUID;
 
+
+
     user_id UUID;
 
+
+
 BEGIN
+
+
+
+
 
 
 
@@ -1378,27 +2439,55 @@ BEGIN
 
 
 
+
+
+
+
     IF user_id IS NULL THEN
+
+
 
         RETURN -1;
 
+
+
     END IF;
+
+
+
+
 
 
 
     UPDATE s_safes SET s_name = $3, s_description = $4,s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::bigint
 
+
+
     WHERE s_u_id = user_id AND s_id = $2
+
+
 
     RETURNING s_id INTO safe_id;
 
 
 
+
+
+
+
     IF safe_id IS NULL THEN
+
+
 
         RETURN -2;
 
+
+
     END IF;
+
+
+
+
 
 
 
@@ -1406,7 +2495,13 @@ BEGIN
 
 
 
+
+
+
+
 END
+
+
 
 $_$;
 
@@ -1421,11 +2516,21 @@ CREATE PROCEDURE public.update_safe_info(IN token character varying, IN safe_id 
     LANGUAGE plpgsql
     AS $_$
 
+
+
 DECLARE
+
+
 
     user_id UUID;
 
+
+
 BEGIN
+
+
+
+
 
 
 
@@ -1433,21 +2538,41 @@ SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1)
 
 
 
+
+
+
+
 IF user_id IS NULL THEN
 
+
+
     RETURN;
+
+
 
 END IF;
 
 
 
+
+
+
+
 UPDATE s_safes
+
+
 
 SET s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
 
+
+
 WHERE s_id = $2 AND s_u_id=user_id;
 
+
+
 END
+
+
 
 $_$;
 
@@ -1464,45 +2589,89 @@ CREATE FUNCTION public.update_secret_string(token character varying, old_secret_
 
 
 
+
+
+
+
 DECLARE
+
+
 
     uid UUID;
 
+
+
     user_id UUID;
 
+
+
 BEGIN
+
+
 
     SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
 
 
 
+
+
+
+
     IF user_id IS NULL THEN
+
+
 
         RETURN -1;
 
+
+
     END IF;
+
+
+
+
 
 
 
     UPDATE u_users SET
 
+
+
     u_secret_string = $3
 
+
+
     WHERE u_secret_string=$2 AND u_id = user_id
+
+
 
     RETURNING u_id INTO uid;
 
 
 
+
+
+
+
     IF uid IS NULL THEN
+
+
 
         RETURN -2;
 
+
+
     END IF;
 
+
+
 	
+
    	delete from t_tokens where t_u_id = user_id;
+
    	
+
+
 
     RETURN 0;
 
@@ -1512,7 +2681,19 @@ BEGIN
 
 
 
+
+
+
+
+
+
+
+
 END
+
+
+
+
 
 
 
@@ -1531,7 +2712,15 @@ CREATE FUNCTION public.update_settings_admin(token character varying, key charac
 
 
 
+
+
+
+
 DECLARE
+
+
+
+
 
 
 
@@ -1539,7 +2728,15 @@ DECLARE
 
 
 
+
+
+
+
     settings_id UUID;
+
+
+
+
 
 
 
@@ -1547,7 +2744,15 @@ DECLARE
 
 
 
+
+
+
+
 BEGIN
+
+
+
+
 
 
 
@@ -1559,7 +2764,19 @@ is_admin := active_token_admin($1);
 
 
 
+
+
+
+
+
+
+
+
 SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND is_admin = 0;
+
+
+
+
 
 
 
@@ -1567,11 +2784,27 @@ IF user_id IS NULL THEN
 
 
 
+
+
+
+
     RETURN is_admin;
 
 
 
+
+
+
+
 END IF;
+
+
+
+
+
+
+
+
 
 
 
@@ -1581,25 +2814,47 @@ END IF;
 
 UPDATE st_settings
 
+
+
 SET st_value = $3
 
+
+
 WHERE st_key = $2
+
+
 
 RETURNING st_id INTO settings_id;
 
 
 
+
+
+
+
 IF settings_id IS NULL THEN
 
+
+
     RETURN -3;
+
+
 
 END IF;
 
 
 
+
+
+
+
 RETURN 0;
 
+
+
 END
+
+
 
 $_$;
 
@@ -1616,19 +2871,39 @@ CREATE FUNCTION public.update_token_info(token character varying, device charact
 
 
 
+
+
+
+
     UPDATE t_tokens
+
+
 
     SET t_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT,
 
+
+
         t_device = $2,
 
+
+
 		t_last_ip = $3
+
+
 
     WHERE active_token($1) = TRUE AND t_token = $1;
 
 
 
+
+
+
+
     RETURN FOUND;
+
+
+
+
 
 
 
@@ -1901,14 +3176,6 @@ ALTER TABLE ONLY public.u_users
 
 ALTER TABLE ONLY public.u_users
     ADD CONSTRAINT u_users_pkey PRIMARY KEY (u_id);
-
-
---
--- Name: u_users u_users_u_secret_string_key; Type: CONSTRAINT; Schema: public; Owner: mindfulguard
---
-
-ALTER TABLE ONLY public.u_users
-    ADD CONSTRAINT u_users_u_secret_string_key UNIQUE (u_secret_string);
 
 
 --

@@ -50,8 +50,6 @@ pip-i:
 	git submodule update --init --recursive	
 	git -C libs/l10n checkout 0.0.2_python
 	pip install -e .
-
-generate-locales:
 	python -m l10n.generator --config="mindfulguard/languages/configuration.yml"
 
 run:
