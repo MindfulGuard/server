@@ -809,7 +809,7 @@ PUT /v1/user/settings/auth/secret_string
 
 | Status code | Description |
 | - | - |
-| [OK](#user_update_secret_string_200) | | |
+| [OK](#user_update_secret_string_200) | All access tokens will be deleted. | |
 | [UNAUTHORIZED](#401) | | |
 | [BAD REQUEST](#400) | | |
 | [NOT_FOUND](#user_update_secret_string_404) | | |
