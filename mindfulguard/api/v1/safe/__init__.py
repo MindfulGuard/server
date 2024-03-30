@@ -6,20 +6,20 @@ router = APIRouter()
 
 @router.post("/")
 async def create_safe(
-    name:Annotated[str, Form()], 
-    description:Annotated[str, Form()],
+    name: Annotated[str, Form()], 
     response: Response,
+    description: Annotated[str, Form()] = "",
     token: str = Header(default=None, alias="Authorization"),
     ):
     safe = Safe(response)
-    return await safe.create(token,name,description)
+    return await safe.create(token, name, description)
 
 @router.put("/{id}")
 async def update_safe(
     id,
-    name:Annotated[str, Form()],
-    description:Annotated[str, Form()],
+    name: Annotated[str, Form()],
     response: Response,
+    description: Annotated[str, Form()] = "",
     token: str = Header(default=None, alias="Authorization"),
     ):
     safe = Safe(response)
