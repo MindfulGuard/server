@@ -59,15 +59,8 @@ jobs:
         run: |
           sudo apt-get update
 
-          curl -sSL https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz \
-          --create-dirs \
-          -o /home/$USER/temp/migrate.linux-amd64.tar.gz
-
-          tar -xzf /home/$USER/temp/migrate.linux-amd64.tar.gz
-
-          sudo mv /home/$USER/temp/migrate /bin/migrate
-
-          sudo chmod +x /bin/migrate
+          curl -sSL https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.deb \
+          --create-dirs -o /home/$USER/migrate.linux-amd64.deb && dpkg -i /home/$USER/migrate.linux-amd64.deb
 
       - name: Database Initialization
         run: make migration-up
