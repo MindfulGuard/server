@@ -5,19 +5,19 @@ import asyncpg
 
 class Config:
     def get_host(self) -> str:
-        return os.environ.get('DATABASE_HOST', 'localhost')
+        return os.environ.get('POSTGRES_HOST', 'localhost')
 
     def get_port(self) -> str:
-        return os.environ.get('DATABASE_PORT', '5432')
+        return os.environ.get('POSTGRES_PORT', '5432')
 
     def get_database(self) -> str:
-        return "mindfulguard_production"
+        return os.environ.get('POSTGRES_DB', 'mindfulguard_production')
 
     def get_user(self) -> str:
-        return os.environ.get('DATABASE_USER', '')
+        return os.environ.get('POSTGRES_USER', '')
 
     def get_password(self) -> str:
-        return os.environ.get('DATABASE_PASSWORD', '')
+        return os.environ.get('POSTGRES_PASSWORD', '')
 
 class Connection:
     def __init__(self):

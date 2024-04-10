@@ -35,9 +35,9 @@ jobs:
       minio_root_secret_key: "rootpassword123"
       MINIO_USER_ACCESS_KEY: "useruser123"
       MINIO_USER_SECRET_KEY: "userpassword123"
-      DATABASE_PORT: 5432
-      DATABASE_USER: mindfulguard
-      DATABASE_PASSWORD: mindfulguard_password
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: mindfulguard
+      POSTGRES_PASSWORD: mindfulguard_password
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       REDIS_USERNAME: default
