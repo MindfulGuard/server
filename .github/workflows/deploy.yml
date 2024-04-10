@@ -60,7 +60,7 @@ jobs:
           sudo apt-get update
 
           curl -sSL https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.deb \
-          --create-dirs -o /home/$USER/migrate.linux-amd64.deb && dpkg -i /home/$USER/migrate.linux-amd64.deb
+          --create-dirs -o /home/$USER/migrate.linux-amd64.deb && sudo dpkg -i /home/$USER/migrate.linux-amd64.deb
 
       - name: Database Initialization
         run: make migration-up
