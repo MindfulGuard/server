@@ -9,7 +9,6 @@ LINUX_PATH = ./$(VENV)/bin
 CONTAINER_NAME = docker-postgresql-1
 DATABASE_USER = mindfulguard
 DATABASE_NAME = mindfulguard_production
-PATH-TO-DUMP = $(DOCKER_WORK_DIR)/dumps/pgsql.sql
 
 admin_login =
 admin_password =
@@ -50,6 +49,3 @@ init:
 	$(PATH_TO_PIP) install -r build/requirements.txt
 	$(PATH_TO_PYTHON_VENV) build/scripts/mindfulguard_init_admin.py $(admin_login) $(admin_password) $(database_host) $(database_port) $(database_user) $(database_password)
 	$(MINIO_INIT_USER)
-
-database-dump:
-	docker exec -t $(CONTAINER_NAME) pg_dump -U $(DATABASE_USER) $(DATABASE_NAME) > $(PATH-TO-DUMP)

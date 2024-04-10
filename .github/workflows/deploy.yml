@@ -36,7 +36,9 @@ jobs:
       MINIO_USER_ACCESS_KEY: "useruser123"
       MINIO_USER_SECRET_KEY: "userpassword123"
       POSTGRES_PORT: 5432
+      POSTGRES_HOST: localhost
       POSTGRES_USER: mindfulguard
+      POSTGRES_DB: mindfulguard_production
       POSTGRES_PASSWORD: mindfulguard_password
       REDIS_HOST: localhost
       REDIS_PORT: 6379
@@ -53,17 +55,22 @@ jobs:
       - name: Run Redis Server
         run: docker run -d --name redis -p 6379:6379 -v cache:/data -e REDIS_ARGS="--loglevel warning --requirepass $REDIS_PASSWORD" redis/redis-stack:latest
 
-      - name: Install PostgreSQL client
+      - name: Install Migrate
         run: |
           sudo apt-get update
-          sudo apt-get install --yes postgresql-client
+
+          curl -sSL https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz \
+          --create-dirs \
+          -o /home/$USER/temp/migrate.linux-amd64.tar.gz
+
+          tar -xzf /home/$USER/temp/migrate.linux-amd64.tar.gz
+
+          sudo mv /home/$USER/temp/migrate /bin/migrate
+
+          sudo chmod +x /bin/migrate
 
       - name: Database Initialization
-        run: |
-          pwd
-          psql -h localhost -d mindfulguard_production -U mindfulguard -f docker/dumps/pgsql.sql
-        env:
-          PGPASSWORD: mindfulguard_password
+        run: make migration-up
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4

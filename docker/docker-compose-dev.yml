@@ -7,7 +7,6 @@ services:
     env_file:
       - .SERVER.env
     volumes:
-      - ./dumps/pgsql.sql:/docker-entrypoint-initdb.d/pgsql.sql
       - pgdata:/var/lib/postgresql/data
     ports:
       - 5432:5432

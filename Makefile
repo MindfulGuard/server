@@ -12,6 +12,9 @@ DEACTIVATE-VENV-MSG = TO DEACTIVATE, USE THE COMMAND "deactivate"
 PORT = 8080
 HOST = 0.0.0.0
 
+PATH-TO-DB=db
+PATH-TO-MIGRATIONS=$(PATH-TO-DB)/migrations
+
 #docker
 DOCKER_WORK_DIR = docker
 DOCKER_COMPOSE_YML= $(DOCKER_WORK_DIR)/docker-compose.yml
@@ -26,6 +29,9 @@ else
 	PYTHON_TYPE = python$(VERSION)
 	SETUP-VENV = python$(VERSION) -m venv $(VENV)
 	RUN-VENV = $(ACTIVATE-VENV-MSG) "source $(VENV)/bin/activate"
+
+	MIGRATION-UP=./$(PATH-TO-DB)/migration.sh $(PATH-TO-MIGRATIONS) up ${POSTGRES_USER} ${POSTGRES_PASSWORD} ${POSTGRES_HOST} ${POSTGRES_PORT} ${POSTGRES_DB}
+	MIGRATION-DOWN=./$(PATH-TO-DB)/migration.sh $(PATH-TO-MIGRATIONS) down ${POSTGRES_USER} ${POSTGRES_PASSWORD} ${POSTGRES_HOST} ${POSTGRES_PORT} ${POSTGRES_DB}
 endif
 
 setup:
@@ -43,8 +49,15 @@ pip-i:
 
 run:
 	python -m uvicorn $(PROJECT-NAME).__main__:app --host $(HOST) --port $(PORT)
+
 test:
 	python -m pytest -rA tests
+
+migration-up:
+	$(MIGRATION-UP)
+
+migration-down:
+	$(MIGRATION-DOWN)
 
 clean:
 	$(RM) $(INFO)
