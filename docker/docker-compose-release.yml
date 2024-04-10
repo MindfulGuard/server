@@ -5,7 +5,7 @@ services:
     image: postgres:15.4
     restart: always
     env_file:
-      - .POSTGRESQL.env
+      - .SERVER.env
     volumes:
       - ./dumps/pgsql.sql:/docker-entrypoint-initdb.d/pgsql.sql
       - pgdata:/var/lib/postgresql/data
@@ -32,7 +32,7 @@ services:
     image: redis/redis-stack-server:latest
     restart: always
     env_file: 
-      - .REDIS.env
+      - .SERVER.env
     volumes: 
       - cache:/data
     networks:
@@ -45,7 +45,7 @@ services:
     volumes:
       - ~/.minio/data:/data
     env_file:
-      - .MINIO.env
+      - .SERVER.env
     networks:
       - internal-network
 

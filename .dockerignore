@@ -1,1 +1,5 @@
 client/
+tests/
+docker/
+build/
+.github/

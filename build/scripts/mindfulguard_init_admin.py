@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 import hashlib
-import os
+import json
 import re
 import sys
 import uuid
@@ -200,7 +200,29 @@ class Run:
             and validate_password(password_rule,secret_string) == True
         )
 
+def write_to_file(
+    file_name: str,
+    login: str,
+    password: str,
+    private_key: str,
+    secret_code: str,
+    backup_codes:  list[str]
+) -> None:
+    data: dict[str, str] = {
+        "login": login,
+        "password": password,
+        "private_key": private_key,
+        "secret_code": secret_code,
+        "backup_codes": backup_codes
+    }
+    with open(file_name, "w") as f:
+        json.dump(data, f)
+
+    return
+
 async def main(login:str,password:str):
+    FILE_NAME: str = "build/admin_data.json"
+
     exec = await Run().execute(
         login,
         password
@@ -208,7 +230,7 @@ async def main(login:str,password:str):
     if exec[0] == "":
         return
 
-    print("Login:",login,"\nPassword:",password,"\nSalt:",exec[0],"\nSecret code:",exec[1],"\nBackup codes:",exec[2])
+    write_to_file(FILE_NAME, login, password, exec[0], exec[1], exec[2])
 
 if __name__ == '__main__':
     if len(arguments) < 1:

@@ -134,9 +134,6 @@ jobs:
       - name: Updating
         run: |
           sudo apt-get update
-      
-      - name: Deleting unnecessary files and directories
-        run: sudo rm -rf docker build .github
 
       - name: Login to GitHub Container Registry
         run: echo ${{ secrets.ACTIONS }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
