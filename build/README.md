@@ -16,28 +16,30 @@
 
 ## Сhanges to files named
    ```bash
-   nano docker/*.env
+   nano docker/.SERVER.env
    ```
     
 ## Initial setup
 
    ```bash
-   docker-compose -f docker/docker-compose-release.yml up -d
+   docker-compose -f docker/docker-compose-dev.yml up -d
    ```
 
-   - LOGIN - must contain no less than 2 and no more than 50 characters, may contain Latin characters, digits, hyphen and underscore
-   - PASSWORD - not less than 8 and not more than 64 characters, must have 1 upper case character, 1 lower case character, 1 special character and 1 digit.
-   - Values in angle brackets should be changed based on the data that has been changed in the .env files.
-   - **IT IS STRONGLY RECOMMENDED TO STORE "LOGIN" AND "PASSWORD" IN A SAFE PLACE AND NOT IN THE ENVIRONMENT.**
+   - ENV_FILE - path to the settings file.
+   - POSTGRES_HOST - the host on which the database is running.
+   - MINIO_HOSTNAME - the host running s3 storage.
+   - ADMIN_LOGIN - name for the administrator.
+   - ADMIN_PASSWORD - administrator password.
      
-   ```bash
-   make -f build/Makefile init admin_login=LOGIN admin_password=PASSWORD database_host=<DATABASE_HOST> database_port=<DATABASE_PORT> database_user=<DATABASE_USER> database_password=<DATABASE_PASSWORD> minio_hostname=<MINIO_HOSTNAME> minio_root_access_key=<MINIO_ROOT_ACCESS_KEY> minio_root_secret_key=<MINIO_ROOT_SECRET_KEY> minio_user_access_key=<MINIO_USER_ACCESS_KEY> minio_user_secret_key=<MINIO_USER_SECRET_KEY>
-   ```
-   - Response
-   ```bash
-   Login: your_login
-   Password: your_password
-   Salt: salt_value
-   Secret code: secret_code_value
-   Backup codes: backup_codes_value
-   ```
+  ```bash
+  chmod +x build/init.sh
+  ```
+  ```bash
+  ./build/init.sh <ENV_FILE> <POSTGRES_HOST> <MINIO_HOSTNAME> <ADMIN_LOGIN> <ADMIN_PASSWORD>
+  ```
+
+  #### Example.
+  ```bash
+  ./build/init.sh docker/.SERVER.env localhost "http://localhost:9000" "Admin" "AdminPassword"
+  ```
+### If the service has been configured successfully, then the `build/admin_data.json` file will be created, which will contain the admin data for logging into the account.
