@@ -27,27 +27,28 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    env:
-      admin_login: "UserADmin12345_-"
-      admin_password: "AdminPassword_-4234__-43223"
-      MINIO_HOSTNAME: "http://localhost:9000"
-      minio_root_access_key: "rootuser123"
-      minio_root_secret_key: "rootpassword123"
-      MINIO_USER_ACCESS_KEY: "useruser123"
-      MINIO_USER_SECRET_KEY: "userpassword123"
-      POSTGRES_PORT: 5432
-      POSTGRES_HOST: localhost
-      POSTGRES_USER: mindfulguard
-      POSTGRES_DB: mindfulguard_production
-      POSTGRES_PASSWORD: mindfulguard_password
-      REDIS_HOST: localhost
-      REDIS_PORT: 6379
-      REDIS_USERNAME: default
-      REDIS_PASSWORD: userpassword
-      REDIS_LD: 0
-      
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set envs
+        run: |
+          export admin_login="UserADmin12345_-"
+          export admin_password="AdminPassword_-4234__-43223"
+          export MINIO_HOSTNAME="http://localhost:9000"
+          export minio_root_access_key="rootuser123"
+          export minio_root_secret_key="rootpassword123"
+          export MINIO_USER_ACCESS_KEY="useruser123"
+          export MINIO_USER_SECRET_KEY="userpassword123"
+          export POSTGRES_PORT=5432
+          export POSTGRES_HOST=localhost
+          export POSTGRES_USER=mindfulguard
+          export POSTGRES_DB=mindfulguard_production
+          export POSTGRES_PASSWORD=mindfulguard_password
+          export REDIS_HOST=localhost
+          export REDIS_PORT=6379
+          export REDIS_USERNAME=default
+          export REDIS_PASSWORD=userpassword
+          export REDIS_LD=0
 
       - name: Run MinIO Server
         run: docker run -d --name minio -p 9000:9000 -v ~/minio/data:/data -e MINIO_ACCESS_KEY=$minio_root_access_key -e MINIO_SECRET_KEY=$minio_root_secret_key quay.io/minio/minio server /data --console-address ":9090"
