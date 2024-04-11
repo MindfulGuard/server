@@ -32,11 +32,7 @@ class Connection:
                 host = self.__db_config.get_host(),
                 port = self.__db_config.get_port()
             )
-        except (ConnectionRefusedError, asyncpg.CannotConnectNowError) as e:
-            logging.error(e)
-            await asyncio.sleep(5)
-            return await self.connect()
-        except asyncpg.InvalidAuthorizationSpecificationError as e:
+        except (ConnectionRefusedError, asyncpg.CannotConnectNowError, asyncpg.InvalidAuthorizationSpecificationError, asyncpg.exceptions.UndefinedTableError) as e:
             logging.error(e)
             await asyncio.sleep(5)
             return await self.connect()

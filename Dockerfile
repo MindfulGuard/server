@@ -16,4 +16,4 @@ RUN curl -sSL https://github.com/golang-migrate/migrate/releases/download/v4.17.
 # Copy Nginx configuration file
 RUN mv proxy/nginx.conf /etc/nginx/nginx.conf
 
-CMD ["sh", "-c", "service nginx restart && make migration-up && make run & python -m routines.__main__"]
+CMD ["sh", "-c", "service nginx restart && make migration-up >/dev/null 2>&1 && make run & python -m routines.__main__"]
