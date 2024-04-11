@@ -99,7 +99,7 @@ CREATE UNIQUE INDEX t_token_idx ON public.t_tokens (t_token);
 CREATE UNIQUE INDEX st_key_idx ON public.st_settings (st_key);
 
 INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('25bf1152-0507-4ebc-8c46-f297c07e5f37', 'item_types', '["STRING","PASSWORD","EMAIL","CONCEALED","URL","OTP","DATE","MONTH_YEAR","MENU","FILE"]');
-INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('1e187a16-4e75-42f2-93a4-caf003cec774', 'password_rule', '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[\\W]).{8,64}$');
+INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('1e187a16-4e75-42f2-93a4-caf003cec774', 'password_rule', '^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W]).{8,64}$');
 INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('3f2385ba-e3c3-4d80-bbe1-3d3746de8d9f', 'scan_time_routines_tokens', '60');
 INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('c82d4aeb-b250-4032-a989-15256de626de', 'scan_time_routines_users', '60');
 INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('24775562-22d7-4f71-873b-2503ff1135fd', 'confirmation_period', '604800');
