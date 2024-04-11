@@ -5,13 +5,13 @@ import asyncpg
 
 class Config:
     def get_host(self) -> str:
-        return os.environ.get('POSTGRES_HOST', 'localhost')
+        return os.environ.get('POSTGRES_HOST', '')
 
     def get_port(self) -> str:
-        return os.environ.get('POSTGRES_PORT', '5432')
+        return os.environ.get('POSTGRES_PORT', '')
 
     def get_database(self) -> str:
-        return os.environ.get('POSTGRES_DB', 'mindfulguard_production')
+        return os.environ.get('POSTGRES_DB', '')
 
     def get_user(self) -> str:
         return os.environ.get('POSTGRES_USER', '')

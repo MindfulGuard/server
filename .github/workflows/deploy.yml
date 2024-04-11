@@ -13,13 +13,32 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
 
+    env:
+      admin_login: UserADmin12345_-
+      admin_password: AdminPassword_-4234__-43223
+      MINIO_HOSTNAME: http://localhost:9000
+      minio_root_access_key: rootuser123
+      minio_root_secret_key: rootpassword123
+      MINIO_USER_ACCESS_KEY: useruser123
+      MINIO_USER_SECRET_KEY: userpassword123
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: localhost
+      POSTGRES_USER: mindfulguard
+      POSTGRES_DB: mindfulguard_production
+      POSTGRES_PASSWORD: mindfulguard_password
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      REDIS_USERNAME: default
+      REDIS_PASSWORD: userpassword
+      REDIS_LD: 0
+
     services:
       postgresql:
         image: postgres:15.4
         env:
-          POSTGRES_USER: mindfulguard
-          POSTGRES_PASSWORD: mindfulguard_password
-          POSTGRES_DB: mindfulguard_production
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
         ports:
           - 5432:5432
         options: >-
@@ -27,34 +46,15 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set envs
-        run: |
-          export admin_login="UserADmin12345_-"
-          export admin_password="AdminPassword_-4234__-43223"
-          export MINIO_HOSTNAME="http://localhost:9000"
-          export minio_root_access_key="rootuser123"
-          export minio_root_secret_key="rootpassword123"
-          export MINIO_USER_ACCESS_KEY="useruser123"
-          export MINIO_USER_SECRET_KEY="userpassword123"
-          export POSTGRES_PORT=5432
-          export POSTGRES_HOST=localhost
-          export POSTGRES_USER=mindfulguard
-          export POSTGRES_DB=mindfulguard_production
-          export POSTGRES_PASSWORD=mindfulguard_password
-          export REDIS_HOST=localhost
-          export REDIS_PORT=6379
-          export REDIS_USERNAME=default
-          export REDIS_PASSWORD=userpassword
-          export REDIS_LD=0
-
       - name: Run MinIO Server
-        run: docker run -d --name minio -p 9000:9000 -v ~/minio/data:/data -e MINIO_ACCESS_KEY=$minio_root_access_key -e MINIO_SECRET_KEY=$minio_root_secret_key quay.io/minio/minio server /data --console-address ":9090"
+        run: docker run -d --name minio -p 9000:9000 -v ~/minio/data:/data -e MINIO_ACCESS_KEY=${{env.minio_root_access_key}} -e MINIO_SECRET_KEY=${{env.minio_root_secret_key}} quay.io/minio/minio server /data --console-address ":9090"
 
       - name: Run Redis Server
-        run: docker run -d --name redis -p 6379:6379 -v cache:/data -e REDIS_ARGS="--loglevel warning --requirepass $REDIS_PASSWORD" redis/redis-stack:latest
+        run: docker run -d --name redis -p 6379:6379 -v cache:/data -e REDIS_ARGS="--loglevel warning --requirepass ${{env.REDIS_PASSWORD}}" redis/redis-stack:latest
 
       - name: Install Migrate
         run: |
@@ -65,6 +65,12 @@ jobs:
 
       - name: Database Initialization
         run: make migration-up
+        env:
+          POSTGRES_USER: ${{env.POSTGRES_USER}}
+          POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
+          POSTGRES_HOST: ${{env.POSTGRES_HOST}}
+          POSTGRES_PORT: ${{env.POSTGRES_PORT}}
+          POSTGRES_DB: ${{env.POSTGRES_DB}}
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -108,16 +114,39 @@ jobs:
           fi
 
       - name: Initializing the administrator
-        run: make -f build/Makefile init admin_login="$admin_login" admin_password="$admin_password" database_host="localhost" database_port="5432" database_user="$POSTGRES_USER" database_password="$POSTGRES_PASSWORD" minio_hostname="$MINIO_HOSTNAME" minio_root_access_key="$minio_root_access_key" minio_root_secret_key="$minio_root_secret_key" minio_user_access_key="$MINIO_USER_ACCESS_KEY" minio_user_secret_key="$MINIO_USER_SECRET_KEY"
+        run: make -f build/Makefile init admin_login="${{env.admin_login}}" admin_password="${{env.admin_password}}" database_host="localhost" database_port="5432" database_user="${{env.POSTGRES_USER}}" database_password="${{env.POSTGRES_PASSWORD}}" minio_hostname="${{env.MINIO_HOSTNAME}}" minio_root_access_key="${{env.minio_root_access_key}}" minio_root_secret_key="${{env.minio_root_secret_key}}" minio_user_access_key="${{env.MINIO_USER_ACCESS_KEY}}" minio_user_secret_key="${{env.MINIO_USER_SECRET_KEY}}"
 
       - name: Setup service "routines"
         run: |
           sudo chmod +x routines/setup_service.sh
           sudo ./routines/setup_service.sh
+        env:
+          POSTGRES_HOST: ${{env.POSTGRES_HOST}}
+          POSTGRES_PORT: ${{env.POSTGRES_PORT}}
+          POSTGRES_DB: ${{env.POSTGRES_DB}}
+          POSTGRES_USER: ${{env.POSTGRES_USER}}
+          POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
 
       - name: Running Tests
         run: |
           python -m pytest -rA tests
+        env:
+          POSTGRES_HOST: ${{env.POSTGRES_HOST}}
+          POSTGRES_PORT: ${{env.POSTGRES_PORT}}
+          POSTGRES_DB: ${{env.POSTGRES_DB}}
+          POSTGRES_USER: ${{env.POSTGRES_USER}}
+          POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
+          MINIO_HOSTNAME: ${{env.MINIO_HOSTNAME}}
+          MINIO_ROOT_USER: ${{env.MINIO_ROOT_USER}}
+          MINIO_ROOT_PASSWORD: ${{env.MINIO_ROOT_PASSWORD}}
+          MINIO_USER_ACCESS_KEY: ${{env.MINIO_USER_ACCESS_KEY}}
+          MINIO_USER_SECRET_KEY: ${{env.MINIO_USER_SECRET_KEY}}
+          REDIS_PASSWORD: ${{env.REDIS_PASSWORD}}
+          REDIS_HOST: ${{env.REDIS_HOST}}
+          REDIS_PORT: ${{env.REDIS_PORT}}
+          REDIS_USERNAME: ${{env.REDIS_USERNAME}}
+          REDIS_LD: ${{env.REDIS_LD}}
+
 
   deploy:
     name: Deploy
