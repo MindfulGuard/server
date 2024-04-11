@@ -17,7 +17,7 @@ class Sql:
                 key, value = row['st_key'], row['st_value']
                 settings_dict[key] = value
             return (settings_dict, OK)
-        except asyncpg.exceptions.ConnectionDoesNotExistError:
+        except:
             return ({}, INTERNAL_SERVER_ERROR)
         finally:
             if connection:
@@ -31,7 +31,7 @@ class Sql:
             DELETE FROM t_tokens
             WHERE EXTRACT(EPOCH FROM current_timestamp)::bigint > t_expiration;
             ''')
-        except asyncpg.exceptions.ConnectionDoesNotExistError:
+        except:
             return ({}, INTERNAL_SERVER_ERROR)
         finally:
             if connection:
@@ -52,7 +52,7 @@ class Sql:
             ''',
             expiration
             )
-        except asyncpg.exceptions.ConnectionDoesNotExistError:
+        except:
             return ({}, INTERNAL_SERVER_ERROR)
         finally:
             if connection:

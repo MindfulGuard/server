@@ -13,13 +13,13 @@ async def tks():
     tokens = Tokens(UPDATE_SETTINGS_PER_SECONDS)
     while True:
         await tokens.execute()
-        print('Tokens. number of current threads is ', threading.active_count())
+        logging.debug('Tokens. number of current threads is ', threading.active_count())
 
 async def usrs():
     users = Users(UPDATE_SETTINGS_PER_SECONDS)
     while True:
         await users.execute()
-        print('Users. number of current threads is ', threading.active_count())
+        logging.debug('Users. number of current threads is ', threading.active_count())
 
 async def main():
     task1 = asyncio.create_task(tks())
