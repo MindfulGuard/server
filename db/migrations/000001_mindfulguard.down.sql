@@ -8,6 +8,7 @@ DROP FUNCTION public.active_token_admin(character varying);
 DROP FUNCTION public.update_token_info(character varying, character varying, inet);
 DROP FUNCTION public.create_safe(character varying, character varying, character varying);
 DROP FUNCTION public.update_safe(character varying, uuid, character varying, character varying);
+DROP PROCEDURE public.update_safe_info(character varying, uuid);
 DROP FUNCTION public.delete_safe(character varying, uuid);
 DROP FUNCTION public.safe_and_element_exists(character varying, uuid);
 DROP FUNCTION public.create_item(character varying, uuid, character varying, json, character varying, character varying[], character varying, boolean);

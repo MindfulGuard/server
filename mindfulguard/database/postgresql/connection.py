@@ -7,8 +7,6 @@ class PostgreSqlConnection(PostgreSqlConnectionBase):
         super().__init__()
 
     async def open(self) -> None:
-        print(self._database, self._host, self._port)
-        print(self._user, self._password,)
         try:
             self.connection = await asyncpg.connect(
                 database=self._database,

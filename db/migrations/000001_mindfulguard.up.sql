@@ -93,7 +93,6 @@ CREATE TABLE public.st_settings (
 );
 
 CREATE UNIQUE INDEX u_login_idx ON public.u_users (u_login);
-CREATE UNIQUE INDEX u_admin_idx ON public.u_users (u_admin);
 
 CREATE UNIQUE INDEX t_token_idx ON public.t_tokens (t_token);
 
@@ -111,7 +110,7 @@ INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('498e9042-1492-
 CREATE FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, backup_codes integer[]) RETURNS integer
     LANGUAGE plpgsql
     AS $_$
-declare
+DECLARE
     user_id UUID;
     code_id UUID;
     user_id_insert UUID;
@@ -143,7 +142,6 @@ BEGIN
         IF code_id_insert IS NULL THEN
             RETURN -2;
         END IF;
-
         RETURN 0;
     END IF;
 
@@ -452,6 +450,24 @@ BEGIN
     CALL update_safe_info($1,$2);
 
     RETURN 0;
+END;
+$_$;
+
+CREATE PROCEDURE public.update_safe_info(IN token character varying, IN safe_id uuid)
+    LANGUAGE plpgsql
+    AS $_$
+DECLARE
+    user_id UUID;
+BEGIN
+    SELECT t_u_id INTO user_id FROM t_tokens WHERE t_token = $1 AND active_token($1) = TRUE;
+
+    IF user_id IS NULL THEN
+        RETURN;
+    END IF;
+
+    UPDATE s_safes
+    SET s_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT
+    WHERE s_id = $2 AND s_u_id=user_id;
 END;
 $_$;
 
