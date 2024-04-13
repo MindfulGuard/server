@@ -14,7 +14,7 @@ services:
      - app-network
 
   mindfulguard_server:
-    image: mdguard:test
+    image: ghcr.io/mindfulguard/server:main
     container_name: mindfulguard_server
     restart: always
     env_file:
