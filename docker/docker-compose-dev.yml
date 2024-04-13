@@ -14,13 +14,14 @@ services:
      - app-network
 
   mindfulguard_server:
-    image: ghcr.io/mindfulguard/server:main
+    image: mdguard:test
     container_name: mindfulguard_server
     restart: always
     env_file:
       - .SERVER.env
     ports:
       - 80:80
+      - 443:443
     depends_on:
       - cacheredis
       - postgresql

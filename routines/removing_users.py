@@ -1,6 +1,6 @@
 import asyncio
 from http.client import OK
-import time
+import logging
 from routines.pgsql.sql import Sql
 
 class Users:
@@ -13,7 +13,7 @@ class Users:
         tr = await self.__get_scan_time_routines()
         if tr == -1:
             return
-        print("2. Users")
+        logging.debug("2. Users")
         await self.__sql.delete_users(await self.__get_confirm_expiration())
         await asyncio.sleep(tr)
 

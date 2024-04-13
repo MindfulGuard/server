@@ -1,6 +1,6 @@
 import asyncio
 from http.client import OK
-import time
+import logging
 from routines.pgsql.sql import Sql
 
 class Tokens:
@@ -13,7 +13,7 @@ class Tokens:
         tr = await self.__get_scan_time_routines()
         if tr == -1:
             return
-        print("1. Tokens")
+        logging.debug("1. Tokens")
         await self.__sql.delete_tokens()
         await asyncio.sleep(tr)
 
