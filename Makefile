@@ -21,12 +21,10 @@ DOCKER_COMPOSE_YML= $(DOCKER_WORK_DIR)/docker-compose.yml
 
 ifeq ($(OS),Windows_NT)
     RM = rmdir /s /q
-	PYTHON_TYPE = python -$(VERSION)
-	SETUP-VENV = python -$(VERSION) -m venv $(VENV)
+	SETUP-VENV = python -m venv $(VENV)
 	RUN-VENV = $(ACTIVATE-VENV-MSG) .\$(VENV)\Scripts\activate
 else
     RM = rm -rf
-	PYTHON_TYPE = python$(VERSION)
 	SETUP-VENV = python$(VERSION) -m venv $(VENV)
 	RUN-VENV = $(ACTIVATE-VENV-MSG) "source $(VENV)/bin/activate"
 
