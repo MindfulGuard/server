@@ -2011,11 +2011,10 @@ DELETE /v1/safe/<safe_id>/content
 ```json
 {
   "msg": {
-    "en": "failed to delete the safe",
-    "ru": "не удалось удалить сейф"
+    "ru": "неправильные данные",
+    "en": "the data is not valid"
   }
 }
-
 ```
 
 -
