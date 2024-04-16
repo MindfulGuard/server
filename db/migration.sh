@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 7 ]; then
-    echo "Missing parameters <PATH_TO_MIGRATIONS> <UP_OR_DROP> <POSTGRES_USER> <POSTGRES_PASSWORD> <POSTGRES_HOST> <POSTGRES_PORT> <POSTGRES_DB>"
+    echo "Missing parameters <PATH_TO_MIGRATIONS> <UP_OR_DOWN> <POSTGRES_USER> <POSTGRES_PASSWORD> <POSTGRES_HOST> <POSTGRES_PORT> <POSTGRES_DB>"
     exit 1
 fi
 
