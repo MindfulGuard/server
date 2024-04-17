@@ -80,7 +80,7 @@ class AdminUsersGetByPage(AdminBase):
             (limit, offset)
         """
         pp = (self.__per_page * page)
-        return (pp, pp - self.__per_page)
+        return (self.__per_page, pp - self.__per_page)
     
     def __get_pages(self, count_users: int) -> int:
         if self.__per_page <= 0:

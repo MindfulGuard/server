@@ -80,7 +80,7 @@ class AuditGet(AuditBase):
             (limit, offset)
         """
         pp: int = (self.__items_per_page * page)
-        return (pp, pp - self.__items_per_page)
+        return (self.__items_per_page, pp - self.__items_per_page)
     
     def __get_pages(self, count_item: int) -> int:
         if self.__items_per_page <= 0:
