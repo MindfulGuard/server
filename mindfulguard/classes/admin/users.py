@@ -32,7 +32,7 @@ class AdminUsers:
 
         response: dict[str, Any] = {}
         response['page'] = page
-        response['per_page'] = per_page
+        response['items_per_page'] = per_page
         response['total_pages'] = obj.total_pages
         response['total_users'] = obj.total_users
         response['total_storage_size'] = obj.total_storage_size
