@@ -194,7 +194,7 @@ DELETE /v1/auth/sign_out/{token_id}
 - ### Request
 
 ```http
-GET /v1/admin/users/all?page=1|2|3,...
+GET /v1/admin/users/all?page=1|2|3,...&per_page=2
 
 ```
 
@@ -205,6 +205,13 @@ GET /v1/admin/users/all?page=1|2|3,...
 | Content-Type | application/x-www-form-urlencoded |  | |
 | Device | App name version/Device name Version |  | |
 | Authorization | Bearer &lt;token> |  | |
+
+- Query
+
+| Parameter | Description | Required |
+| - | - | - |
+| page | Default value 1. | &#10007; |
+| per_page | The number of items per page to be returned in the response. Default value 5. | &#10007; |
 
 - Body
 
@@ -226,6 +233,7 @@ GET /v1/admin/users/all?page=1|2|3,...
 ```json
 {
     "page": 1,
+    "items_per_page": 2,
     "total_pages": 1,
     "total_users": 2,
     "total_storage_size": 0,
@@ -603,8 +611,15 @@ GET /v1/user
 | Authorization | Bearer &lt;token> |  | |
 
 ```http
-GET /v1/user/audit?page=1
+GET /v1/user/audit?page=1&per_page=4
 ```
+
+- Query
+
+| Parameter | Description | Required |
+| - | - | - |
+| page | Default value 1. | &#10007; |
+| per_page | The number of items per page to be returned in the response. Default value 5. | &#10007; |
 
 - ### Responses
 
@@ -618,7 +633,7 @@ GET /v1/user/audit?page=1
 {
     "page": 1,
     "total_pages": 1,
-    "items_per_page": 20,
+    "items_per_page": 4,
     "total_items": 7,
     "list": [
         {
