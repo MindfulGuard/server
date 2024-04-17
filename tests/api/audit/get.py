@@ -9,5 +9,5 @@ class AuditGetApi:
         self.__client = TestClient(app)
         self.__path: str=  path
 
-    def execute(self, headers: dict[str, str]):
-        return self.__client.get(f"{self.__path}/audit?page=1", headers = headers)
+    def execute(self, headers: dict[str, str], page: int, per_page: int):
+        return self.__client.get(f"{self.__path}/audit?page={page}&per_page={per_page}", headers = headers)

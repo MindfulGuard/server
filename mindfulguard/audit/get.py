@@ -8,7 +8,7 @@ from mindfulguard.classes.audit.base import AuditBase
 class AuditGet(AuditBase):
     def __init__(self, request: Request) -> None:
         super().__init__(request)
-        self.__items_per_page: int = 20
+        self.__items_per_page: int
         self.__count_items: int = 0
         self.__total_pages: int = 0
         self.__response_list: list[dict[str, Any]] = []
@@ -32,7 +32,8 @@ class AuditGet(AuditBase):
     async def execute(
         self,
         token: str,
-        page: int
+        page: int,
+        items_per_page: int,
     ) -> None:
         try:
             self._model_token.token = token
@@ -43,6 +44,8 @@ class AuditGet(AuditBase):
             await db_count_items.execute()
             
             self.__count_items = db_count_items.count
+
+            self.__items_per_page = items_per_page
 
             if db_count_items.count == 0:
                 self._status_code = OK
@@ -79,5 +82,7 @@ class AuditGet(AuditBase):
         pp: int = (self.__items_per_page * page)
         return (pp, pp - self.__items_per_page)
     
-    def __get_pages(self, count_item: int)->int:
+    def __get_pages(self, count_item: int) -> int:
+        if self.__items_per_page <= 0:
+            return 0
         return ceil(count_item / self.__items_per_page)

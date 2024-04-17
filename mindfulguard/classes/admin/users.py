@@ -19,11 +19,12 @@ class AdminUsers:
         self.__response: Response = response
         self.__admin_class = admin_class
     
-    async def get_by_page(self, token: str, page: int):
+    async def get_by_page(self, token: str, page: int, per_page: int):
         obj = self.__admin_class.users().get_by_page()
         await obj.execute(
             token,
-            page
+            page,
+            per_page
         )
         self.__response.status_code = obj.status_code
         if obj.status_code != OK:
@@ -31,6 +32,7 @@ class AdminUsers:
 
         response: dict[str, Any] = {}
         response['page'] = page
+        response['per_page'] = per_page
         response['total_pages'] = obj.total_pages
         response['total_users'] = obj.total_users
         response['total_storage_size'] = obj.total_storage_size

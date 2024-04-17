@@ -7,7 +7,7 @@ from mindfulguard.classes.admin.base import AdminBase
 class AdminUsersGetByPage(AdminBase):
     def __init__(self) -> None:
         super().__init__()
-        self.__PER_PAGE: int = 10
+        self.__per_page: int
         self.__users_list: list[dict[str, Any]] = []
         self.__total_pages: int = 0
         self.__total_users: int = 0 
@@ -29,7 +29,7 @@ class AdminUsersGetByPage(AdminBase):
     def users_list(self) -> list[dict[str, Any]]:
         return self.__users_list
 
-    async def execute(self, token: str, page: int) -> None:
+    async def execute(self, token: str, page: int, per_page: int) -> None:
         try:
             self._model_token.token = token
 
@@ -41,6 +41,7 @@ class AdminUsersGetByPage(AdminBase):
             await count_users.execute()
 
             self.__total_users = count_users.count
+            self.__per_page = per_page
             self.__total_pages = self.__get_pages(self.__total_users)
             calculate_page = self.__calculate_page(page)
 
@@ -78,8 +79,10 @@ class AdminUsersGetByPage(AdminBase):
         Returns:
             (limit, offset)
         """
-        pp = (self.__PER_PAGE * page)
-        return (pp, pp - self.__PER_PAGE)
+        pp = (self.__per_page * page)
+        return (pp, pp - self.__per_page)
     
-    def __get_pages(self, count_users: int)->int:
-        return ceil(count_users / self.__PER_PAGE)
+    def __get_pages(self, count_users: int) -> int:
+        if self.__per_page <= 0:
+            return 0
+        return ceil(count_users / self.__per_page)

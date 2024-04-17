@@ -93,9 +93,11 @@ def test_audit_api():
     assert safe_create.execute(with_token_OK(token), safe_body).status_code == OK
 
     audit_get = AuditGetApi(USER_PATH_V1)
-    assert audit_get.execute(without_token).status_code == BAD_REQUEST
-    assert audit_get.execute(with_token_OK(token)).status_code == OK
+    assert audit_get.execute(without_token, 1, 0).status_code == BAD_REQUEST
+    assert audit_get.execute(with_token_OK(token), 1, -1).status_code == UNPROCESSABLE_ENTITY
+    assert audit_get.execute(with_token_OK(token), 0, 1).status_code == UNPROCESSABLE_ENTITY
+    assert audit_get.execute(with_token_OK(token), 1, 10).status_code == OK
 
-    audit_get_info: dict = audit_get.execute(with_token_OK(token)).json()
+    audit_get_info: dict = audit_get.execute(with_token_OK(token), 1, 10).json()
 
     assert len(audit_get_info['list']) > 0, len(audit_get_info['list'])

@@ -8,10 +8,11 @@ router = APIRouter()
 async def get_info(
     response: Response,
     token: str = Header(default=None, alias="Authorization"),
-    page: int  = Query(..., ge=1)
+    page: Annotated[int, Query(..., ge = 1)] = 1,
+    per_page: Annotated[int, Query(..., ge = 0, le = 400)] = 5,
 ):
     admin = AdminClass(response).users()
-    return await admin.get_by_page(token, page)
+    return await admin.get_by_page(token, page, per_page)
 
 @router.get("/users/search")
 async def search(

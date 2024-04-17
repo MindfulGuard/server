@@ -17,9 +17,9 @@ class Audit:
             device
         )
     
-    async def get(self, token: str, page: int, response: Response):
+    async def get(self, token: str, page: int, items_per_page: int, response: Response):
         obj = AuditGet(self.__request)
-        await obj.execute(token, page)
+        await obj.execute(token, page, items_per_page)
 
         response.status_code = obj.status_code
         result: dict[str, Any] = {

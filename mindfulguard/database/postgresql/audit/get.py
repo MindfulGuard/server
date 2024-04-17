@@ -1,5 +1,4 @@
-from http.client import INTERNAL_SERVER_ERROR, OK, UNAUTHORIZED
-from typing import Any
+from http.client import OK
 from mindfulguard.classes.database.postgresql.queries_base import PostgreSqlQueriesBase
 from mindfulguard.classes.models.audit import ModelAudit
 from mindfulguard.classes.models.token import ModelToken
