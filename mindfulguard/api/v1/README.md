@@ -1352,7 +1352,7 @@ GET /v1/safe/all/item
                 },
                 {
                     "id": "20d9a8c6-5da6-4df1-92c5-defb025e35a9",
-                    "title": "Title 2",
+                    "title": "Title 22",
                     "category": "LOGIN",
                     "notes": "There should be notes here",
                     "tags": [
@@ -1403,7 +1403,7 @@ GET /v1/safe/all/item
             "items": [
                 {
                     "id": "75622f14-adbd-4a23-b374-2ce9cbb7291b",
-                    "title": "Title mew",
+                    "title": "Title 44",
                     "category": "LOGIN",
                     "notes": "There should be notes here",
                     "tags": [
@@ -1428,7 +1428,7 @@ GET /v1/safe/all/item
                             ]
                         },
                         {
-                            "section": "Other sections f",
+                            "section": "Other sections 4",
                             "fields": [
                                 {
                                     "type": "URL",
@@ -1448,7 +1448,7 @@ GET /v1/safe/all/item
                 },
                 {
                     "id": "86057143-8e30-40c8-aa4d-887a48920cef",
-                    "title": "Title mew",
+                    "title": "Title 2",
                     "category": "LOGIN",
                     "notes": "There should be notes here",
                     "tags": [
@@ -1473,7 +1473,7 @@ GET /v1/safe/all/item
                             ]
                         },
                         {
-                            "section": "Other sections f",
+                            "section": "Other sections 2",
                             "fields": [
                                 {
                                     "type": "URL",
@@ -1493,7 +1493,7 @@ GET /v1/safe/all/item
                 },
                 {
                     "id": "cee5638a-5b33-4e57-90ab-0228d1935880",
-                    "title": "Title mew",
+                    "title": "Title 3",
                     "category": "LOGIN",
                     "notes": "There should be notes here",
                     "tags": [
@@ -1518,7 +1518,7 @@ GET /v1/safe/all/item
                             ]
                         },
                         {
-                            "section": "Other sections f",
+                            "section": "Other sections 3",
                             "fields": [
                                 {
                                     "type": "URL",
@@ -1544,7 +1544,7 @@ GET /v1/safe/all/item
             "items": [
                 {
                     "id": "eaf7c608-f857-48ff-aec4-9cac14b15b4c",
-                    "title": "Title mew",
+                    "title": "Title 4",
                     "category": "LOGIN",
                     "notes": "There should be notes here",
                     "tags": [
@@ -1899,7 +1899,7 @@ POST /v1/safe/<safe_id>/content
 
 | Parameters | Type | Description | Encrypt |
 | - | - | - | - |
-| files | File | files should be encrypted before sending, names should not be changed, but files should only have names that are supported by ASCII encoding | &#10007; | |
+| files | file (bytes) | The file name must consist only of characters that are contained in ASCII encoding. | &#10007; | |
 
 - ### Responses
 
@@ -2075,15 +2075,14 @@ sha256(login|password|privateKey)
 
 ```
 
-- #### iterations = 10000 ([can be obtained from the response "authentication.pbkdf2.iterations"](#configuration__200)) _(Abandoned)_
+- #### iterations = 10000
 
-- #### mode = "GCM" ([can be obtained from the response "authentication.aes256.mode"](#configuration__200))
+- #### mode = "GCM"
 
 ## Text
 
 ```python
 cypherKey = PBKDF2(password, salt = privateKey, iterations, length = 32)
-ciphertext = aes256_encrypt(text, cypherKey, mode)
-return (iv(16 bytes)+cyphertext+tag(16 bytes)).hex_encode() = "e60c203ae89b8ec4cc3d4917..."
+ciphertext = aes256_encrypt(text, cypherKey, mode) = (iv(16 bytes)+cyphertext+tag(16 bytes)).hex_encode() = "e60c203ae89b8ec4cc3d4917..."
 decrypt_text = aes256_decrypt(ciphertext.hex_decode(), cypherKey, mode)
 ```
