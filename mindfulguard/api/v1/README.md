@@ -358,23 +358,11 @@ PUT /v1/admin/settings?key=<str>
 
 | Status code | Description |
 | - | - |
-| [OK](#admin_update_settings_200) | | |
+| [OK](#response-template) | | |
 | [BAD REQUEST](#response-template) | | |
 | [UNAUTHORIZED](#response-template) | | |
 | [FORBIDDEN](#response-template) | | |
 | [INTERNAL_SERVER_ERROR](#response-template) | | |
-
-##### admin_update_settings_200
-
-```json
-{
-  "msg": {
-        "en": "the settings have been successfully updated",
-        "ru": "настройки были успешно обновлены"
-    }
-}
-
-```
 
 - ## Creating a user by an administrator
 
@@ -382,7 +370,6 @@ PUT /v1/admin/settings?key=<str>
 
 ```http
 POST /v1/admin/users
-
 ```
 
 - Headers
