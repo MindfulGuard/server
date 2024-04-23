@@ -25,7 +25,7 @@ class UpdateTokenInformationMiddleware(MiddlewareBase):
             if not authorization_header or not device_header:
                 return JSONResponse(
                     status_code = BAD_REQUEST,
-                    content = self._responses.default().get(BAD_REQUEST)
+                    content = self._http_response.get(BAD_REQUEST).to_json()
                 )
             
             connection = DataBase().postgresql().connection()
@@ -41,7 +41,7 @@ class UpdateTokenInformationMiddleware(MiddlewareBase):
                 if db.status_code == UNAUTHORIZED:
                     return JSONResponse(
                         status_code = UNAUTHORIZED,
-                        content = self._responses.default().get(UNAUTHORIZED)
+                        content = self._http_response.get(UNAUTHORIZED).to_json()
                     )
                 
                 if not request.url.path.startswith('/v1/auth/sign_out') and not (request.url.path.startswith('/v1/user/settings') and request.method.lower() == 'delete'):
@@ -51,7 +51,7 @@ class UpdateTokenInformationMiddleware(MiddlewareBase):
             except ValueError:
                 return JSONResponse(
                     status_code = BAD_REQUEST,
-                    content = self._responses.default().get(BAD_REQUEST)
+                    content = self._http_response.get(BAD_REQUEST).to_json()
                 )
             finally:
                 await connection.close()

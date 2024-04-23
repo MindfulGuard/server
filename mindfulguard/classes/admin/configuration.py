@@ -1,16 +1,16 @@
 from http.client import OK
 from typing import Any
 from fastapi import Response
-from mindfulguard.classes.responses import Responses
+from mindfulguard.classes.responses import HttpResponse
 
 class AdminConfiguration:
     def __init__(
         self,
         response: Response,
-        responses: Responses,
+        responses: HttpResponse,
         admin_class
     ) -> None:
-        self.__responses: Responses = responses
+        self.__http_response: HttpResponse = responses
         self.__response: Response = response
         self.__admin_class = admin_class
 
@@ -20,7 +20,7 @@ class AdminConfiguration:
         self.__response.status_code = obj.status_code
 
         if obj.status_code != OK:
-            return self.__responses.default().get(obj.status_code)
+            return self.__http_response.get(obj.status_code).to_json()
 
         return obj.response
     
@@ -37,9 +37,4 @@ class AdminConfiguration:
             value
         )
         self.__response.status_code = obj.status_code
-        return self.__responses.default(
-            ok = {
-            
-            },
-            internal_server_error = self.__responses.custom().get("failed_to_update_settings")
-        ).get(obj.status_code)
+        return self.__http_response.get(obj.status_code).to_json()

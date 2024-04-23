@@ -1,6 +1,5 @@
 from http.client import OK
 from io import BytesIO
-from typing import Any
 from fastapi import Request, Response, UploadFile
 from fastapi.responses import StreamingResponse
 from mindfulguard.files.delete import Delete

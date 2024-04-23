@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 from mindfulguard.classes.database import DataBase
 from mindfulguard.classes.database.redis import Redis
-from mindfulguard.classes.models.item_json import Item
 from mindfulguard.classes.models.record import ModelRecord
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.database.postgresql.items import PostgreSqlItems

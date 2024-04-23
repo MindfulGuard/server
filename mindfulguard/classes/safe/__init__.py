@@ -5,7 +5,7 @@ from typing import Any
 from fastapi import Response
 from mindfulguard.classes.database.redis import Redis
 from mindfulguard.classes.models.token import ModelToken
-from mindfulguard.classes.responses import Responses
+from mindfulguard.classes.responses import HttpResponse
 from mindfulguard.files.get import Get as FilesGet
 from mindfulguard.items.get import Get as ItemsGet
 from mindfulguard.safe.create import Create
@@ -18,37 +18,31 @@ from redis.commands.json.path import Path
 
 class Safe:
     def __init__(self, response: Response) -> None:
-        self.__responses = Responses()
+        self.__http_response = HttpResponse()
         self.__response: Response = response
 
     async def create(self, token: str, name: str, description: str) -> dict[str, Any]:
         obj = Create()
         await obj.execute(token, name, description)
+        
         self.__response.status_code = obj.status_code
-        response = self.__responses.default(
-            ok = self.__responses.custom().get("safe_was_successfully_created"),
-            internal_server_error= self.__responses.custom().get("failed_to_create_a_safe"),
-        ).get(obj.status_code)
-        return response
+
+        return self.__http_response.get(obj.status_code).to_json()
 
     async def update(self, token: str, safe_id: str, name: str, description: str) -> dict[str, Any]:
         obj = Update()
         await obj.execute(token, safe_id, name, description)
         self.__response.status_code = obj.status_code
-        response = self.__responses.default(
-            ok = self.__responses.custom().get("safe_was_successfully_updated"),
-            internal_server_error= self.__responses.custom().get("failed_to_update_safe"),
-        ).get(obj.status_code)
-        return response
+
+        return self.__http_response.get(obj.status_code).to_json()
 
     async def delete(self, token: str, safe_id: str) -> dict[str, Any]:
         obj = Delete()
         await obj.execute(token, safe_id)
-        response = self.__responses.default(
-            ok = self.__responses.custom().get("safe_has_been_successfully_deleted"),
-            internal_server_error= self.__responses.custom().get("failed_to_delete_the_safe"),
-        ).get(obj.status_code)
-        return response
+
+        self.__response.status_code = obj.status_code
+
+        return self.__http_response.get(obj.status_code).to_json()
 
     async def get(self, token: str) -> dict[str, Any]:
         model_token = ModelToken()
@@ -99,13 +93,13 @@ class Safe:
             or get_safe.status_code == BAD_REQUEST
         ):
             self.__response.status_code = get_safe.status_code
-            return self.__responses.default().get(get_safe.status_code)
+            return self.__http_response.get(get_safe.status_code).to_json()
         elif (
             get_items.status_code == UNAUTHORIZED
             or get_safe.status_code == UNAUTHORIZED
         ):
             self.__response.status_code = get_safe.status_code
-            return self.__responses.default().get(get_safe.status_code)
+            return self.__http_response.get(get_safe.status_code).to_json()
         elif (
             get_items.status_code == OK
             and get_safe.status_code == OK
@@ -138,4 +132,4 @@ class Safe:
         
         else:
             self.__response.status_code = get_safe.status_code
-            return self.__responses.default().get(get_safe.status_code)
+            return self.__http_response.get(get_safe.status_code).to_json()

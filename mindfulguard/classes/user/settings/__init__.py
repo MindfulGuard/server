@@ -1,11 +1,11 @@
 from http.client import OK
 from typing import Any, Literal
 from fastapi import Response
-from mindfulguard.classes.responses import Responses
+from mindfulguard.classes.responses import HttpResponse
 
 class UserSettings:
-    def __init__(self, responses: Responses, response: Response) -> None:
-        self.__responses: Responses = responses
+    def __init__(self, responses: HttpResponse, response: Response) -> None:
+        self.__http_response: HttpResponse = responses
         self.__response: Response = response 
 
     async def update_one_time_codes(
@@ -23,13 +23,10 @@ class UserSettings:
         )
         self.__response.status_code = obj.status_code
 
-        response = self.__responses.default(
-            ok =  self.__responses.custom().get("successfully_updated")
-        ).get(obj.status_code)
-
         if obj.status_code != OK:
-            return response
+            return self.__http_response.get(obj.status_code).to_json()
 
+        response: dict[str, Any] = {}
         response['data'] = obj.response
         return response
     
@@ -49,11 +46,7 @@ class UserSettings:
             one_time_code
         )
         self.__response.status_code = obj.status_code
-        response = self.__responses.default(
-            ok =  self.__responses.custom().get("successfully_updated"),
-            not_found = self.__responses.custom().get("failed_to_update"),
-            internal_server_error = self.__responses.custom().get("failed_to_update")
-        ).get(obj.status_code)
+        response = self.__http_response.get(obj.status_code).to_json()
 
         return response
     
@@ -71,9 +64,6 @@ class UserSettings:
             one_time_code
         )
         self.__response.status_code = obj.status_code
-        response = self.__responses.default(
-            ok =  self.__responses.custom().get("user_has_been_successfully_deleted"),
-            internal_server_error = self.__responses.custom().get("failed_to_delete_user")
-        ).get(obj.status_code)
+        response = self.__http_response.get(obj.status_code).to_json()
 
         return response

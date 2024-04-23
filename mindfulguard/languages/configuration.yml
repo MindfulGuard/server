@@ -1,4 +1,0 @@
-pathToTranslates: mindfulguard/languages/locales/
-pathToOut: mindfulguard/languages/localization.py
-defaultTranslateFile: l10n_en.json
-className: Localization

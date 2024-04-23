@@ -40,10 +40,7 @@ setup:
 	@echo *****$(DEACTIVATE-VENV-MSG)*****
 
 pip-i:
-	git submodule update --init --recursive	
-	git -C libs/l10n checkout 0.0.2_python
 	pip install -e .
-	python -m l10n.generator --config="mindfulguard/languages/configuration.yml"
 
 run:
 	python -m uvicorn $(PROJECT-NAME).__main__:app --host $(HOST) --port $(PORT)

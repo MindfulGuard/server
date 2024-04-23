@@ -1,15 +1,15 @@
-from http.client import CONFLICT, OK
-from typing import Literal
+from http.client import OK
+from typing import Any, Literal
 from fastapi import Request, Response
 from mindfulguard.authentication.sign_out import SignOut
 from mindfulguard.authentication.sign_in import SignIn
 from mindfulguard.authentication.sign_up import SignUp
-from mindfulguard.classes.responses import Responses
+from mindfulguard.classes.responses import HttpResponse
 
 
 class Authentication:
     def __init__(self, response: Response, request: Request) -> None:
-        self.__responses = Responses()
+        self.__http_response = HttpResponse()
         self.__response = response
         self.__request = request
 
@@ -18,19 +18,10 @@ class Authentication:
         await obj.execute(login, secret_string, confirm)
         self.__response.status_code = obj.status_code
         
-        response = self.__responses.default(
-            ok = self.__responses.custom().get("registration_was_successful"),
-            service_is_not_available = self.__responses.custom().get("registration_not_allowed"),
-            conflict = self.__responses.custom().get("user_already_exists")
-        ).get(obj.status_code)
+        response: dict[str, Any] = {}
 
         if obj.status_code != OK:
-            if obj.status_code == CONFLICT:
-                response['secret_code'] = None
-                response['backup_codes'] = None
-                return response
-            else:
-                return response
+            return self.__http_response.get(obj.status_code).to_json()
 
         response['secret_code'] = obj.secret_code
         response['backup_codes'] = obj.backup_codes
@@ -48,13 +39,10 @@ class Authentication:
         obj = SignIn(self.__request)
         await obj.execute(login, secret_string, device, expiration, type, code)
         self.__response.status_code = obj.status_code
-        response = self.__responses.default(
-            ok = self.__responses.custom().get("successful_login"),
-            not_found= self.__responses.custom().get("user_not_found")
-        ).get(obj.status_code)
+        response: dict[str, str] = {}
 
         if obj.status_code != OK:
-            return response
+            return self.__http_response.get(obj.status_code).to_json()
         
         response['token'] = obj.token
         return response
@@ -67,8 +55,6 @@ class Authentication:
         obj = SignOut(self.__request)
         await obj.execute(token, token_id)
         self.__response.status_code = obj.status_code
-        response = self.__responses.default(
-            ok = self.__responses.custom().get("session_token_has_been_deleted"),
-            not_found= self.__responses.custom().get("failed_to_delete_token")
-        ).get(obj.status_code)
+
+        response = self.__http_response.get(obj.status_code).to_json()
         return response
