@@ -29,39 +29,21 @@ POST /v1/auth/sign_up
 | Status code | Description |
 | - | - |
 | [OK](#sign_up__200) | | |
-| [Service Unavailable](#503) | | |
-| [BAD REQUEST](#400) | | |
-| [CONFLICT](#sign_up__409) | | |
-| [INTERNAL_SERVER_ERROR](#500) | | |
+| [Service Unavailable](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [CONFLICT](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ##### sign_up__200
 
 ```json
 {
-  "msg": {
-        "en": "registration was successful",
-        "ru": "регистрация прошла успешно"
-    },
     "secret_code": "base32 string for TOTP client",
     "backup_codes": [
         111111,
         222222,
         333333,
     ]
-}
-
-```
-
-##### sign_up__409
-
-```json
-{
-  "msg": {
-        "en": "the user already exists",
-        "ru": "пользователь уже существует"
-    },
-    "secret_code": null,
-    "backup_codes": null
 }
 
 ```
@@ -96,33 +78,16 @@ POST /v1/auth/sign_in?type=basic|backup
 | Status code | Description |
 | - | - |
 | [OK](#sign_in__200) | | |
-| [BAD REQUEST](#400) | | |
-| [NOT_FOUND](#sign_in__404) | | |
-| [INTERNAL_SERVER_ERROR](#500) | | |
+| [BAD REQUEST](#response-template) | | |
+| [NOT_FOUND](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ##### sign_in__200
 
 ```json
 {
-    "msg": {
-        "en": "successful login",
-        "ru": "удачный вход в систему"
-    },
-    "token": "b888...128bytes"
+    "token": "b888...length128"
 }
-
-```
-
-##### sign_in__404
-
-```json
-{
-    "msg": {
-        "en": "user not found",
-        "ru": "пользователь не найден"
-    }
-}
-
 ```
 
 - ## Sign out
@@ -131,7 +96,6 @@ POST /v1/auth/sign_in?type=basic|backup
 
 ```http
 DELETE /v1/auth/sign_out/{token_id}
-
 ```
 
 - Params
@@ -157,35 +121,11 @@ DELETE /v1/auth/sign_out/{token_id}
 
 | Status code | Description |
 | - | - |
-| [OK](#sign_out__200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [NOT_FOUND](#sign_out__404) | | |
-| [INTERNAL_SERVER_ERROR](#500) | | |
-
-##### sign_out__200
-
-```json
-{
-  "msg": {
-    "en": "the session token has been deleted",
-    "ru": "токен сеанса был удален"
-  }
-}
-
-```
-
-##### sign_out__404
-
-```json
-{
-  "msg": {
-        "en": "failed to delete token",
-        "ru": "не удалось удалить токен"
-    },
-}
-
-```
+| [OK](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [NOT_FOUND](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ## • Administrator
 
@@ -223,10 +163,10 @@ GET /v1/admin/users/all?page=1|2|3,...&per_page=2
 | Status code | Description |
 | - | - |
 | [OK](#admin_get_all_users_200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [FORBIDDEN](#403) | | |
-| [INTERNAL_SERVER_ERROR](#500) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [FORBIDDEN](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ##### admin_get_all_users_200
 
@@ -292,11 +232,11 @@ GET /v1/admin/users/search?by=id|username
 | Status code | Description |
 | - | - |
 | [OK](#admin_search_users_200) | | |
-| [NOT_FOUND](#admin_search_users_404) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [FORBIDDEN](#403) | | |
-| [INTERNAL_SERVER_ERROR](#500) | | |
+| [NOT_FOUND](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [FORBIDDEN](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ##### admin_search_users_200
 
@@ -308,19 +248,6 @@ GET /v1/admin/users/search?by=id|username
     "confirm": true,
     "created_at": 1698245381
 }
-
-```
-
-##### admin_search_users_404
-
-```json
-{
-    "msg": {
-        "en": "user not found",
-        "ru": "пользователь не найден"
-    }
-}
-
 ```
 
 - ## Get Settings
@@ -350,10 +277,10 @@ GET /v1/admin/settings
 | Status code | Description |
 | - | - |
 | [OK](#admin_get_settings_200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [FORBIDDEN](#403) | | |
-| [INTERNAL_SERVER_ERROR](#500) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [FORBIDDEN](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ##### admin_get_settings_200
 
@@ -432,10 +359,10 @@ PUT /v1/admin/settings?key=<str>
 | Status code | Description |
 | - | - |
 | [OK](#admin_update_settings_200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [FORBIDDEN](#403) | | |
-| [INTERNAL_SERVER_ERROR](#admin_update_settings_500) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [FORBIDDEN](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ##### admin_update_settings_200
 
@@ -444,18 +371,6 @@ PUT /v1/admin/settings?key=<str>
   "msg": {
         "en": "the settings have been successfully updated",
         "ru": "настройки были успешно обновлены"
-    }
-}
-
-```
-
-##### admin_update_settings_500
-
-```json
-{
-  "msg": {
-        "en": "failed to update settings",
-        "ru": "не удалось обновить настройки"
     }
 }
 
@@ -488,12 +403,12 @@ POST /v1/admin/users
 | Status code | Description |
 | - | - |
 | [OK](#sign_up__200) | | |
-| [Service Unavailable](#503) | | |
-| [BAD REQUEST](#400) | | |
-| [CONFLICT](#sign_up__409) | | |
-| [UNAUTHORIZED](#401) | | |
-| [FORBIDDEN](#403) | | |
-| [INTERNAL_SERVER_ERROR](#500) | | |
+| [Service Unavailable](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [CONFLICT](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [FORBIDDEN](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 - ## Delete User
 
@@ -501,7 +416,6 @@ POST /v1/admin/users
 
 ```http
 DELETE /v1/admin/users?id=<uuid.v4>
-
 ```
 
 - Headers
@@ -522,10 +436,10 @@ DELETE /v1/admin/users?id=<uuid.v4>
 | Status code | Description |
 | - | - |
 | [OK](#user_delete_200) | | |
-| [UNAUTHORIZED](#401) | | |
-| [BAD REQUEST](#400) | | |
-| [FORBIDDEN](#403) | | |
-| [INTERNAL_SERVER_ERROR](#user_delete_500) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [FORBIDDEN](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ## • User
 
@@ -535,7 +449,6 @@ DELETE /v1/admin/users?id=<uuid.v4>
 
 ```http
 GET /v1/user
-
 ```
 
 - Headers
@@ -556,9 +469,9 @@ GET /v1/user
 | Status code | Description |
 | - | - |
 | [OK](#user_info_200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [INTERNAL_SERVER_ERROR](#500) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ##### user_info_200
 
@@ -626,8 +539,8 @@ GET /v1/user/audit?page=1&per_page=4
 | Status code | Description |
 | - | - |
 | [OK](#user_info_200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
 
 ```json
 {
@@ -708,18 +621,14 @@ PUT /v1/user/settings/auth/one_time_code?type=basic|backup
 | Status code | Description |
 | - | - |
 | [OK](#user_auth_one_time_code_200) | | |
-| [UNAUTHORIZED](#401) | | |
-| [BAD REQUEST](#400) | | |
-| [INTERNAL_SERVER_ERROR](#user_auth_one_time_code_500) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ##### user_auth_one_time_code_200
 
 ```json
 {
-  "msg": {
-        "en": "successfully updated",
-        "ru": "успешно обновлено"
-    }
   "data":"base32 string for TOTP client",
 }
 
@@ -729,10 +638,6 @@ PUT /v1/user/settings/auth/one_time_code?type=basic|backup
 
 ```json
 {
-  "msg": {
-        "en": "successfully updated",
-        "ru": "успешно обновлено"
-    }
   "data":[534543,123456]
 }
 
@@ -744,7 +649,6 @@ PUT /v1/user/settings/auth/one_time_code?type=basic|backup
 
 ```http
 DELETE /v1/user/settings
-
 ```
 
 - Headers
@@ -766,34 +670,10 @@ DELETE /v1/user/settings
 
 | Status code | Description |
 | - | - |
-| [OK](#user_delete_200) | | |
-| [UNAUTHORIZED](#401) | | |
-| [BAD REQUEST](#400) | | |
-| [INTERNAL_SERVER_ERROR](#user_delete_500) | | |
-
-##### user_delete_200
-
-```json
-{
-  "msg": {
-        "en": "the user has been successfully deleted",
-        "ru": "пользователь успешно удален"
-    }
-}
-
-```
-
-##### user_delete_500
-
-```json
-{
-  "msg": {
-        "en": "не удалось удалить пользователя",
-        "ru": "failed to delete user"
-    }
-}
-
-```
+| [OK](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 - ## Update `secret_string`
 
@@ -801,7 +681,6 @@ DELETE /v1/user/settings
 
 ```http
 PUT /v1/user/settings/auth/secret_string
-
 ```
 
 - Headers
@@ -824,47 +703,11 @@ PUT /v1/user/settings/auth/secret_string
 
 | Status code | Description |
 | - | - |
-| [OK](#user_update_secret_string_200) | All access tokens will be deleted. | |
-| [UNAUTHORIZED](#401) | | |
-| [BAD REQUEST](#400) | | |
-| [NOT_FOUND](#user_update_secret_string_404) | | |
-| [INTERNAL_SERVER_ERROR](#user_update_secret_string_500) | | |
-
-##### user_update_secret_string_200
-
-```json
-{
-  "msg": {
-        "en": "successfully updated",
-        "ru": "успешно обновлено"
-    }
-}
-
-```
-
-##### user_update_secret_string_404
-
-```json
-{
-  "msg": {
-        "en": "failed to update",
-        "ru": "не удалось обновить"
-    }
-}
-
-```
-
-##### user_update_secret_string_500
-
-```json
-{
-  "msg": {
-        "en": "failed to update",
-        "ru": "не удалось обновить"
-    }
-}
-
-```
+| [OK](#response-template) | All access tokens will be deleted. | |
+| [UNAUTHORIZED](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [NOT_FOUND](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ## • Safe
 
@@ -874,7 +717,6 @@ PUT /v1/user/settings/auth/secret_string
 
 ```http
 POST /v1/safe
-
 ```
 
 - Headers
@@ -896,34 +738,10 @@ POST /v1/safe
 
 | Status code | Description |
 | - | - |
-| [OK](#create__200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [INTERNAL_SERVER_ERROR](#create__500) | | |
-
-##### create__200
-
-```json
-{
-  "msg": {
-        "en": "the safe was successfully created",
-        "ru": "сейф удачно создан"
-    },
-}
-
-```
-
-##### create__500
-
-```json
-{
-  "msg": {
-        "en": "failed to create a safe",
-        "ru": "не удалось создать сейф"
-    },
-}
-
-```
+| [OK](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 - ## Update
 
@@ -931,7 +749,6 @@ POST /v1/safe
 
 ```http
 PUT /v1/safe/{safe_id}
-
 ```
 
 - Params
@@ -959,34 +776,10 @@ PUT /v1/safe/{safe_id}
 
 | Status code | Description |
 | - | - |
-| [OK](#update__200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [INTERNAL_SERVER_ERROR](#update__500) | | |
-
-##### update__200
-
-```json
-{
-  "msg": {
-        "en": "the safe was successfully updated",
-        "ru": "сейф успешно обновлен"
-    },
-}
-
-```
-
-##### update__500
-
-```json
-{
-    "msg": {
-        "en": "failed to update the safe",
-        "ru": "не удалось обновить сейф"
-    }
-}
-
-```
+| [OK](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 - ## Delete
 
@@ -994,7 +787,6 @@ PUT /v1/safe/{safe_id}
 
 ```http
 DELETE /v1/safe/{safe_id}
-
 ```
 
 - Params
@@ -1020,35 +812,11 @@ DELETE /v1/safe/{safe_id}
 
 | Status code | Description |
 | - | - |
-| [OK](#delete__200) | | |
-| [BAD REQUEST](#400) | | |
-| [NOT FOUND](#delete__404) | | |
-| [UNAUTHORIZED](#401) | | |
-| [INTERNAL_SERVER_ERROR](#500) | | |
-
-##### delete__200
-
-```json
-{
-    "msg": {
-        "en": "the safe has been successfully deleted",
-        "ru": "сейф был успешно удален"
-    }
-}
-
-```
-
-##### delete__404
-
-```json
-{
-    "msg": {
-        "en": "failed to delete the safe",
-        "ru": "не удалось удалить сейф"
-    }
-}
-
-```
+| [OK](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [NOT FOUND](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ## • Public
 
@@ -1058,7 +826,6 @@ DELETE /v1/safe/{safe_id}
 
 ```http
 GET /v1/public/configuration
-
 ```
 
 - Headers
@@ -1118,7 +885,6 @@ GET /v1/public/configuration
         "FILE"
     ]
 }
-
 ```
 
 ## • Records
@@ -1129,7 +895,6 @@ GET /v1/public/configuration
 
 ```http
 POST /v1/safe/{safe_id}/item
-
 ```
 
 - Params
@@ -1209,34 +974,10 @@ POST /v1/safe/{safe_id}/item
 
 | Status code | Description |
 | - | - |
-| [OK](#item_create__200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [INTERNAL_SERVER_ERROR](#item_create__500) | | |
-
-##### item_create__200
-
-```json
-{
-  "msg": {
-    "en": "the item was successfully created",
-    "ru": "элемент был успешно создан"
-  }
-}
-
-```
-
-##### item_create__500
-
-```json
-{
-  "msg": {
-    "en": "failed to create item",
-    "ru": "не удалось создать элемент"
-  }
-}
-
-```
+| [OK](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 - ## Get
 
@@ -1244,7 +985,6 @@ POST /v1/safe/{safe_id}/item
 
 ```http
 GET /v1/safe/all/item
-
 ```
 
 - Params
@@ -1270,9 +1010,9 @@ GET /v1/safe/all/item
 | Status code | Description |
 | - | - |
 | [OK](#records_get__200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [INTERNAL_SERVER_ERROR](#500) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ##### records_get__200
 
@@ -1648,7 +1388,6 @@ GET /v1/safe/all/item
 
 ```http
 PUT /v1/safe/{from}/{to}/item/{item_id}
-
 ```
 
 - Params
@@ -1676,34 +1415,10 @@ PUT /v1/safe/{from}/{to}/item/{item_id}
 
 | Status code | Description |
 | - | - |
-| [OK](#safe_move__200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [INTERNAL_SERVER_ERROR](#safe_move__500) | | |
-
-##### safe_move__200
-
-```json
-{
-  "msg": {
-        "en": "the item was successfully moved to the safe",
-        "ru": "элемент был успешно перемещен в сейф"
-    },
-}
-
-```
-
-##### safe_move__500
-
-```json
-{
-    "msg": {
-        "en": "failed to move item to safe",
-        "ru": "не удалось переместить элемент в сейф"
-    }
-}
-
-```
+| [OK](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 - ## Set favorite
 
@@ -1711,7 +1426,6 @@ PUT /v1/safe/{from}/{to}/item/{item_id}
 
 ```http
 PUT /v1/safe/{safe_id}/item/{item_id}/favorite
-
 ```
 
 - Params
@@ -1738,34 +1452,10 @@ PUT /v1/safe/{safe_id}/item/{item_id}/favorite
 
 | Status code | Description |
 | - | - |
-| [OK](#item_favorite__200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [INTERNAL_SERVER_ERROR](#item_favorite__500) | | |
-
-##### item_favorite__200
-
-```json
-{
-  "msg": {
-    "en": "the item was successfully added to favorites",
-    "ru": "элемент успешно добавлен в избранное"
-  }
-}
-
-```
-
-##### item_favorite__500
-
-```json
-{
-  "msg": {
-    "en": "couldn't add item to favorites",
-    "ru": "не удалось добавить элемент в избранное"
-  }
-}
-
-```
+| [OK](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 - ## Update
 
@@ -1773,7 +1463,6 @@ PUT /v1/safe/{safe_id}/item/{item_id}/favorite
 
 ```http
 PUT /v1/safe/{safe_id}/item/{item_id}
-
 ```
 
 - Params
@@ -1801,34 +1490,10 @@ PUT /v1/safe/{safe_id}/item/{item_id}
 
 | Status code | Description |
 | - | - |
-| [OK](#item_update__200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [INTERNAL_SERVER_ERROR](#item_update__500) | | |
-
-##### item_update__200
-
-```json
-{
-  "msg": {
-    "en": "the item was successfully updated",
-    "ru": "элемент был успешно обновлен"
-  }
-}
-
-```
-
-##### item_update__500
-
-```json
-{
-  "msg": {
-    "en": "failed to update the item",
-    "ru": "не удалось обновить элемент"
-  }
-}
-
-```
+| [OK](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 - ## Delete
 
@@ -1862,34 +1527,10 @@ DELETE /v1/safe/{safe_id}/item/{item_id}
 
 | Status code | Description |
 | - | - |
-| [OK](#item_delete__200) | | |
-| [BAD REQUEST](#400) | | |
-| [UNAUTHORIZED](#401) | | |
-| [INTERNAL_SERVER_ERROR](#item_delete__500) | | |
-
-##### item_delete__200
-
-```json
-{
-  "msg": {
-    "en": "the item was successfully deleted",
-    "ru": "элемент был успешно удален"
-  }
-}
-
-```
-
-##### item_delete__500
-
-```json
-{
-  "msg": {
-    "en": "не удалось удалить элемент",
-    "ru": "failed to delete item"
-  }
-}
-
-```
+| [OK](#response-template) | | |
+| [BAD REQUEST](#response-template) | | |
+| [UNAUTHORIZED](#response-template) | | |
+| [INTERNAL_SERVER_ERROR](#response-template) | | |
 
 ## • Files
 
@@ -1899,7 +1540,6 @@ DELETE /v1/safe/{safe_id}/item/{item_id}
 
 ```http
 POST /v1/safe/<safe_id>/content
-
 ```
 
 - Headers
@@ -1933,7 +1573,6 @@ POST /v1/safe/<safe_id>/content
 
 ```http
 GET /v1/safe/<safe_id>/<file_name>/content
-
 ```
 
 [__find out the path to the content here__](#records_get__200)
@@ -1967,7 +1606,6 @@ GET /v1/safe/<safe_id>/<file_name>/content
 
 ```http
 DELETE /v1/safe/<safe_id>/content
-
 ```
 
 [__all the information you need can be found here__](#records_get__200)
@@ -2005,74 +1643,24 @@ DELETE /v1/safe/<safe_id>/content
 
 ## • JSON Responses
 
--
-
-### *401*
+### Response Template.
 
 ```json
 {
-  "msg": {
-    "en": "unauthorized",
-    "ru": "не авторизован"
-  }
+  "status_code": int
+  "description": string
 }
-
 ```
 
--
-
-### *400*
-
+### *Example.*
 ```json
 {
-  "msg": {
-    "ru": "неправильные данные",
-    "en": "the data is not valid"
-  }
+  "status_code": 200
+  "description": "OK"
 }
 ```
 
--
-
-### *403*
-
-```json
-{
-  "msg": {
-    "en": "отказано в доступе",
-    "ru": "access denied"
-  }
-}
-
-```
-
--
-
-### *503*
-
-```json
-{
-    "msg": {
-      "en": "the service is not available",
-      "ru": "сервис недоступен"
-    },
-}
-
-```
-
--
-
-### *500*
-
-```json
-{
-  "msg": {
-    "en": "server error",
-    "ru": "ошибка сервера"
-  },
-}
-
-```
+### **All http protocol responses can be seen [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status).**
 
 # Encryption
 
@@ -2087,7 +1675,6 @@ DELETE /v1/safe/<safe_id>/content
 ```python
 length = 128
 sha256(login|password|privateKey)
-
 ```
 
 - #### iterations = 10000
