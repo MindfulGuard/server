@@ -17,6 +17,7 @@ make -f build/Makefile init \
 admin_login="$ADMIN_LOGIN" \
 admin_password="$ADMIN_PASSWORD" \
 database_host="$_POSTGRES_HOST_" \
+database_name="$POSTGRES_DB" \
 database_port="$POSTGRES_PORT" \
 database_user="$POSTGRES_USER" \
 database_password="$POSTGRES_PASSWORD" \

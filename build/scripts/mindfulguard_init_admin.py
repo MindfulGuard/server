@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import logging
 import re
 import sys
 import uuid
@@ -13,6 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('admin_login', type=str, help="Login")
 parser.add_argument('admin_password', type=str, help="Password")
 parser.add_argument('database_host', type=str, help="")
+parser.add_argument('database_name', type=str, help="")
 parser.add_argument('database_port', type=str, help="")
 parser.add_argument('database_user', type=str, help="")
 parser.add_argument('database_password', type=str, help="")
@@ -26,7 +28,7 @@ class Config:
     def get_port(self)->str:
         return args.database_port
     def get_database(self)->str:
-        return "mindfulguard_production"
+        return args.database_name
     def get_user(self)->str:
         return args.database_user
     def get_password(self)->str:
@@ -57,12 +59,14 @@ class Db:
             if value == 0 or value == 1 or value == 2:
                 return 0
             return value
-        except asyncpg.exceptions.DataError:
+        except asyncpg.exceptions.DataError as e:
+            logging.fatal(e)
             return -6
-        except asyncpg.exceptions.ConnectionDoesNotExistError:
+        except asyncpg.exceptions.ConnectionDoesNotExistError as e:
+            logging.fatal(e)
             return -6
         except asyncpg.exceptions.UniqueViolationError as e:
-            print(e)
+            logging.fatal(e)
             return -1
         finally:
             if connection:
@@ -76,7 +80,7 @@ class Db:
             UPDATE u_users SET u_admin = TRUE WHERE u_login = $1 AND u_secret_string = $2;
             ''',login,secret_string)
         except Exception as e:
-            print(e)
+            logging.fatal(e)
         finally:
             if connection:
                 await connection.close()
@@ -90,9 +94,10 @@ class Db:
             FROM u_users
             WHERE u_admin = TRUE;
             ''')
-            print(value)
+            logging.debug(f"Admin exists: {value}")
             return value == None
-        except asyncpg.exceptions.ConnectionDoesNotExistError:
+        except asyncpg.exceptions.ConnectionDoesNotExistError as e:
+            logging.fatal(e)
             return False
         finally:
             if connection:
@@ -112,7 +117,8 @@ class Db:
                 key, value = row['st_key'], row['st_value']
                 settings_dict[key] = value
             return settings_dict
-        except asyncpg.exceptions.ConnectionDoesNotExistError:
+        except asyncpg.exceptions.ConnectionDoesNotExistError as e:
+            logging.fatal(e)
             return {}
         finally:
             if connection:
@@ -145,8 +151,10 @@ class Run:
     
     async def execute(self,login:str,password:str):
         if await self.__validate_data(login,password) == False:
+            logging.warning("Failed to create an administrator because incorrect data entered.")
             return ("","",[])
         elif await self.__db.admin_exist() == False:
+            logging.warning("Failed to create an administrator, it already exists.")
             return ("","",[])
         totp = Totp("")
         secret_code:str = totp.generate_secret_code()
@@ -159,9 +167,12 @@ class Run:
             salt
         )
 
+        ss_hash = hashlib.sha256()
+        ss_hash.update(get_secret_string.encode('utf-8'))
+
         result:int = await self.__db.sign_up(
             login=login,
-            secret_string=get_secret_string,
+            secret_string=ss_hash.hexdigest(),
             secret_code=secret_code,
             backup_codes=backup_codes
         )
@@ -231,10 +242,16 @@ async def main(login:str,password:str):
         return
 
     write_to_file(FILE_NAME, login, password, exec[0], exec[1], exec[2])
+    logging.info("Administrator successfully created.")
 
 if __name__ == '__main__':
-    if len(arguments) < 1:
-        print("Error no args")
+    logging.basicConfig(
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+    if len(arguments) < 7:
+        logging.info("Error no args.")
 
     login_arg = args.admin_login
     password_arg = args.admin_password

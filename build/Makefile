@@ -13,6 +13,7 @@ DATABASE_NAME = mindfulguard_production
 admin_login =
 admin_password =
 database_host =
+database_name =
 database_port =
 database_user =
 database_password =
@@ -47,5 +48,5 @@ endif
 init:
 	$(SETUP-VENV)
 	$(PATH_TO_PIP) install -r build/requirements.txt
-	$(PATH_TO_PYTHON_VENV) build/scripts/mindfulguard_init_admin.py $(admin_login) $(admin_password) $(database_host) $(database_port) $(database_user) $(database_password)
+	$(PATH_TO_PYTHON_VENV) build/scripts/mindfulguard_init_admin.py $(admin_login) $(admin_password) $(database_host) $(database_name) $(database_port) $(database_user) $(database_password)
 	$(MINIO_INIT_USER)

@@ -114,7 +114,7 @@ jobs:
           fi
 
       - name: Initializing the administrator
-        run: make -f build/Makefile init admin_login="${{env.admin_login}}" admin_password="${{env.admin_password}}" database_host="localhost" database_port="5432" database_user="${{env.POSTGRES_USER}}" database_password="${{env.POSTGRES_PASSWORD}}" minio_hostname="${{env.MINIO_HOSTNAME}}" minio_root_access_key="${{env.minio_root_access_key}}" minio_root_secret_key="${{env.minio_root_secret_key}}" minio_user_access_key="${{env.MINIO_USER_ACCESS_KEY}}" minio_user_secret_key="${{env.MINIO_USER_SECRET_KEY}}"
+        run: make -f build/Makefile init admin_login="${{env.admin_login}}" admin_password="${{env.admin_password}}" database_host="localhost" database_name=${{env.POSTGRES_DB}}"" database_port="5432" database_user="${{env.POSTGRES_USER}}" database_password="${{env.POSTGRES_PASSWORD}}" minio_hostname="${{env.MINIO_HOSTNAME}}" minio_root_access_key="${{env.minio_root_access_key}}" minio_root_secret_key="${{env.minio_root_secret_key}}" minio_user_access_key="${{env.MINIO_USER_ACCESS_KEY}}" minio_user_secret_key="${{env.MINIO_USER_SECRET_KEY}}"
 
       - name: Setup service "routines"
         run: |

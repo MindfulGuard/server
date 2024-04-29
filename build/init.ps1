@@ -25,6 +25,7 @@ try {
         admin_login="$adminlogin" `
         admin_password="$adminpassword" `
         database_host="$pghost" `
+        database_name="$env:POSTGRES_DB" `
         database_port="$env:POSTGRES_PORT" `
         database_user="$env:POSTGRES_USER" `
         database_password="$env:POSTGRES_PASSWORD" `
