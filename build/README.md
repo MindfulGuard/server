@@ -40,6 +40,6 @@
 
   #### Example.
   ```bash
-  ./build/init.sh docker/.SERVER.env localhost "http://localhost:9000" "Admin" "AdminPassword"
+  ./build/init.sh docker/.SERVER.env localhost "http://localhost:9000" "Admin" "AdminPassword1!"
   ```
 ### If the service has been configured successfully, then the `build/admin_data.json` file will be created, which will contain the admin data for logging into the account.
