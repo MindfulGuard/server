@@ -181,7 +181,7 @@ class Run:
         
         await self.__db.set_admin_status(
             login=login,
-            secret_string=get_secret_string
+            secret_string=ss_hash.hexdigest()
         )
 
         return (salt,secret_code,backup_codes)
