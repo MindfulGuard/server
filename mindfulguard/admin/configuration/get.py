@@ -37,7 +37,7 @@ class AdminConfigurationGet(AdminBase):
 
             await self.__public_configuration.execute()
             response: dict[str, Any] = self.__public_configuration.response
-            response['registration_status'] = self.__public_configuration.settings['registration']
+            response['registration'] = self.__public_configuration.settings['registration']
             response['scan_time_routines_tokens'] = self.__public_configuration.settings['scan_time_routines_tokens']
             response['scan_time_routines_users'] = self.__public_configuration.settings['scan_time_routines_users']
             response['confirmation_period'] = self.__public_configuration.settings['confirmation_period']
