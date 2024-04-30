@@ -322,7 +322,7 @@ GET /v1/admin/settings
         "MENU",
         "FILE"
     ],
-    "registration_status": true,
+    "registration": true,
     "scan_time_routines_tokens": 60,
     "scan_time_routines_users": 60,
     "confirmation_period": 604800,
