@@ -82,6 +82,17 @@ class AuditInsert(AuditBase):
                     elif request_method == 'delete':
                         action = self._model_audit.audit_action_type.delete
 
+            elif request_url_path.startswith('/v1/admin'):
+                object = self._model_audit.audit_object.admin
+                if request_url_path.startswith('/v1/admin/settings'):
+                    if request_method == 'put':
+                        action = self._model_audit.audit_action_type.update
+                elif request_url_path.startswith('/v1/admin/users'):
+                    if request_method == 'post':
+                        action = self._model_audit.audit_action_type.create
+                    elif request_method == 'delete':
+                        action = self._model_audit.audit_action_type.delete
+
             else:
                 raise InvalidUrlPath(f"Invalid url path: {request_url_path}")
 

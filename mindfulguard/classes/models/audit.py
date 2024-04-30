@@ -17,6 +17,10 @@ class TypeAuditObject:
     def user(self):
         return 'user'
     
+    @property
+    def admin(self):
+        return 'admin'
+    
 class TypeAuditActionStatus:
     @property
     def create(self):
