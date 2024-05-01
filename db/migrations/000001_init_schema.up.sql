@@ -42,7 +42,7 @@ CREATE TABLE public.c_codes (
     c_id uuid NOT NULL PRIMARY KEY,
     c_u_id uuid NOT NULL,
     c_secret_code character varying(32) NOT NULL,
-    c_backup_codes integer[] NOT NULL,
+    c_backup_codes integer [] NOT NULL,
     c_created_at bigint NOT NULL,
     c_updated_at bigint NOT NULL,
     FOREIGN KEY (c_u_id) REFERENCES public.u_users (u_id)
@@ -65,7 +65,7 @@ CREATE TABLE public.r_records (
     r_title character varying(512) NOT NULL,
     r_item json NOT NULL,
     r_notes character varying(1024) NOT NULL,
-    r_tags character varying[] NOT NULL,
+    r_tags character varying [] NOT NULL,
     r_created_at bigint NOT NULL,
     r_updated_at bigint NOT NULL,
     r_category character varying(64) NOT NULL,
@@ -97,18 +97,47 @@ CREATE UNIQUE INDEX t_token_idx ON public.t_tokens (t_token);
 
 CREATE UNIQUE INDEX st_key_idx ON public.st_settings (st_key);
 
-INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('25bf1152-0507-4ebc-8c46-f297c07e5f37', 'item_types', '["STRING","PASSWORD","EMAIL","CONCEALED","URL","OTP","DATE","MONTH_YEAR","MENU","FILE"]');
-INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('1e187a16-4e75-42f2-93a4-caf003cec774', 'password_rule', '^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W]).{8,64}$');
-INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('3f2385ba-e3c3-4d80-bbe1-3d3746de8d9f', 'scan_time_routines_tokens', '60');
-INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('c82d4aeb-b250-4032-a989-15256de626de', 'scan_time_routines_users', '60');
-INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('24775562-22d7-4f71-873b-2503ff1135fd', 'confirmation_period', '604800');
-INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('057327e8-1f62-4d70-af07-623a62d6f2fe', 'item_categories', '["LOGIN","PASSWORD","API_CREDENTIAL","SERVER","DATABASE","CREDIT_CARD","MEMBERSHIP","PASSPORT","SOFTWARE_LICENSE","OUTDOOR_LICENSE","SECURE_NOTE","WIRELESS_ROUTER","BANK_ACCOUNT","DRIVER_LICENSE","IDENTITY","REWARD_PROGRAM","DOCUMENT","EMAIL_ACCOUNT","SOCIAL_SECURITY_NUMBER","MEDICAL_RECORD","SSH_KEY","OTHER"]');
-INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('5c55e596-5b88-40e6-869b-4cb6fb3a931e', 'disk_space_per_user', '1073741824');
-INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES ('498e9042-1492-44d8-8697-76b9a73967ec', 'registration', 'true');
+INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES (
+    '25bf1152-0507-4ebc-8c46-f297c07e5f37',
+    'item_types',
+    '["STRING","PASSWORD","EMAIL","CONCEALED","URL","OTP","DATE","MONTH_YEAR","MENU","FILE"]'
+);
+INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES (
+    '1e187a16-4e75-42f2-93a4-caf003cec774',
+    'password_rule',
+    '^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W]).{8,64}$'
+);
+INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES (
+    '3f2385ba-e3c3-4d80-bbe1-3d3746de8d9f', 'scan_time_routines_tokens', '60'
+);
+INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES (
+    'c82d4aeb-b250-4032-a989-15256de626de', 'scan_time_routines_users', '60'
+);
+INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES (
+    '24775562-22d7-4f71-873b-2503ff1135fd', 'confirmation_period', '604800'
+);
+INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES (
+    '057327e8-1f62-4d70-af07-623a62d6f2fe',
+    'item_categories',
+    '["LOGIN","PASSWORD","API_CREDENTIAL","SERVER","DATABASE","CREDIT_CARD","MEMBERSHIP","PASSPORT","SOFTWARE_LICENSE","OUTDOOR_LICENSE","SECURE_NOTE","WIRELESS_ROUTER","BANK_ACCOUNT","DRIVER_LICENSE","IDENTITY","REWARD_PROGRAM","DOCUMENT","EMAIL_ACCOUNT","SOCIAL_SECURITY_NUMBER","MEDICAL_RECORD","SSH_KEY","OTHER"]'
+);
+INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES (
+    '5c55e596-5b88-40e6-869b-4cb6fb3a931e', 'disk_space_per_user', '1073741824'
+);
+INSERT INTO public.st_settings (st_id, st_key, st_value) VALUES (
+    '498e9042-1492-44d8-8697-76b9a73967ec', 'registration', 'true'
+);
 
-CREATE FUNCTION public.sign_up(login character varying, secret_string character varying, reg_ip inet, confirm boolean, secret_code character varying, backup_codes integer[]) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.sign_up(
+    login character varying,
+    secret_string character varying,
+    reg_ip inet,
+    confirm boolean,
+    secret_code character varying,
+    backup_codes integer []
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     code_id UUID;
@@ -165,9 +194,17 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.sign_in(login character varying, secret_string character varying, token character varying, device character varying, ip inet, expiration bigint, is_verified_code boolean) RETURNS boolean
-    LANGUAGE plpgsql
-    AS $_$DECLARE
+CREATE FUNCTION public.sign_in(
+    login character varying,
+    secret_string character varying,
+    token character varying,
+    device character varying,
+    ip inet,
+    expiration bigint,
+    is_verified_code boolean
+) RETURNS boolean
+LANGUAGE plpgsql
+AS $_$DECLARE
     user_id UUID;
     user_confirm BOOLEAN;
     timestmp BIGINT;
@@ -198,9 +235,11 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.sign_out(token character varying, token_id uuid) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.sign_out(
+    token character varying, token_id uuid
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     deletion_successful INTEGER;
@@ -230,8 +269,8 @@ END;
 $_$;
 
 CREATE FUNCTION public.active_token(token character varying) RETURNS boolean
-    LANGUAGE plpgsql
-    AS $_$DECLARE
+LANGUAGE plpgsql
+AS $_$DECLARE
     record_exists BOOLEAN;
 BEGIN
     SELECT EXISTS (SELECT t_id FROM t_tokens WHERE t_token = $1 AND EXTRACT(EPOCH FROM current_timestamp)::BIGINT <= t_expiration) INTO record_exists;
@@ -240,9 +279,11 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.active_token_admin(token character varying) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$DECLARE
+CREATE FUNCTION public.active_token_admin(
+    token character varying
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$DECLARE
     user_id UUID;
     is_admin BOOLEAN;
 BEGIN
@@ -263,9 +304,11 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.update_token_info(token character varying, device character varying, ip inet) RETURNS boolean
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.update_token_info(
+    token character varying, device character varying, ip inet
+) RETURNS boolean
+LANGUAGE plpgsql
+AS $_$
 BEGIN
     UPDATE t_tokens
     SET t_updated_at = EXTRACT(EPOCH FROM current_timestamp)::BIGINT,
@@ -277,9 +320,13 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.create_safe(token character varying, name character varying, description character varying) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.create_safe(
+    token character varying,
+    name character varying,
+    description character varying
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 
 DECLARE
     user_id UUID;
@@ -305,9 +352,14 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.update_safe(token character varying, safe_id uuid, name character varying, description character varying) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.update_safe(
+    token character varying,
+    safe_id uuid,
+    name character varying,
+    description character varying
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     safe_id UUID;
     user_id UUID;
@@ -330,9 +382,11 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.delete_safe(token character varying, id uuid) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.delete_safe(
+    token character varying, id uuid
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     safe_id UUID;
@@ -355,9 +409,11 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.safe_and_element_exists(token character varying, safe_id uuid) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.safe_and_element_exists(
+    token character varying, safe_id uuid
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     _safe_id UUID;
@@ -384,9 +440,18 @@ RETURN 0;
 END;
 $_$;
 
-CREATE FUNCTION public.create_item(token character varying, safe_id uuid, title character varying, item json, notes character varying, tags character varying[], category character varying, favorite boolean) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.create_item(
+    token character varying,
+    safe_id uuid,
+    title character varying,
+    item json,
+    notes character varying,
+    tags character varying [],
+    category character varying,
+    favorite boolean
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     _safe_id UUID;
@@ -419,9 +484,18 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.update_item(token character varying, safe_id uuid, item_id uuid, title character varying, item json, notes character varying, tags character varying[], category character varying) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.update_item(
+    token character varying,
+    safe_id uuid,
+    item_id uuid,
+    title character varying,
+    item json,
+    notes character varying,
+    tags character varying [],
+    category character varying
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     record_id UUID;
@@ -452,9 +526,11 @@ BEGIN
 END;
 $_$;
 
-CREATE PROCEDURE public.update_safe_info(IN token character varying, IN safe_id uuid)
-    LANGUAGE plpgsql
-    AS $_$
+CREATE PROCEDURE public.update_safe_info(
+    IN token character varying, IN safe_id uuid
+)
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
 BEGIN
@@ -470,9 +546,11 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.move_item_to_new_safe(token character varying, old_safe_id uuid, new_safe_id uuid, item_id uuid) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.move_item_to_new_safe(
+    token character varying, old_safe_id uuid, new_safe_id uuid, item_id uuid
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     _old_safe_id UUID;
@@ -521,9 +599,11 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.item_favorite(token character varying, safe_id uuid, item_id uuid) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.item_favorite(
+    token character varying, safe_id uuid, item_id uuid
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     record_id UUID;
@@ -550,9 +630,11 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.delete_item(token character varying, safe_id uuid, item_id uuid) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.delete_item(
+    token character varying, safe_id uuid, item_id uuid
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     record_id UUID;
@@ -580,9 +662,15 @@ BEGIN
 END;
 $_$;
 
-CREATE PROCEDURE public.create_audit_item(IN token character varying, IN ip inet, IN _object public.object_, IN action_ public.action_status, IN device character varying)
-    LANGUAGE plpgsql
-    AS $_$
+CREATE PROCEDURE public.create_audit_item(
+    IN token character varying,
+    IN ip inet,
+    IN _object public.object_,
+    IN action_ public.action_status,
+    IN device character varying
+)
+LANGUAGE plpgsql
+AS $_$
 DECLARE 
     user_id UUID;
     timestmp BIGINT;
@@ -608,8 +696,8 @@ END;
 $_$;
 
 CREATE FUNCTION public.insert_audit_data_limit() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
+LANGUAGE plpgsql
+AS $$
 DECLARE
     num_to_delete INT;
 BEGIN
@@ -635,9 +723,11 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION public.update_c_codes_code(token character varying, secret_string character varying, data integer[]) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.update_c_codes_code(
+    token character varying, secret_string character varying, data integer []
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     code_id UUID;
@@ -664,9 +754,13 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.update_c_codes_code(token character varying, secret_string character varying, data character varying) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.update_c_codes_code(
+    token character varying,
+    secret_string character varying,
+    data character varying
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     code_id UUID;
@@ -692,9 +786,13 @@ BEGIN
 END
 $_$;
 
-CREATE FUNCTION public.update_secret_string(token character varying, old_secret_string character varying, new_secret_string character varying) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.update_secret_string(
+    token character varying,
+    old_secret_string character varying,
+    new_secret_string character varying
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     uid UUID;
     user_id UUID;
@@ -721,8 +819,8 @@ END;
 $_$;
 
 CREATE FUNCTION public.delete_user(user_id uuid) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     verification_secret_string UUID;
     code_u_id UUID;
@@ -766,9 +864,13 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.delete_user(token character varying, secret_string character varying, one_time_code_confirm boolean) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.delete_user(
+    token character varying,
+    secret_string character varying,
+    one_time_code_confirm boolean
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     verification_secret_string UUID;
     user_id UUID;
@@ -822,9 +924,11 @@ BEGIN
 END;
 $_$;
 
-CREATE FUNCTION public.update_settings_admin(token character varying, key character varying, value character varying) RETURNS integer
-    LANGUAGE plpgsql
-    AS $_$
+CREATE FUNCTION public.update_settings_admin(
+    token character varying, key character varying, value character varying
+) RETURNS integer
+LANGUAGE plpgsql
+AS $_$
 DECLARE
     user_id UUID;
     settings_id UUID;

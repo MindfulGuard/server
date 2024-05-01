@@ -10,13 +10,25 @@ ALTER COLUMN a_object
 TYPE public.temp_object_
 USING a_object::text::public.temp_object_;
 
-DROP PROCEDURE public.create_audit_item(character varying, inet, public.object_, public.action_status, character varying);
+DROP PROCEDURE public.create_audit_item(
+    character varying,
+    inet,
+    public.object_,
+    public.action_status,
+    character varying
+);
 DROP TYPE public.object_;
 ALTER TYPE public.temp_object_ RENAME TO object_;
 
-CREATE PROCEDURE public.create_audit_item(IN token character varying, IN ip inet, IN _object public.object_, IN action_ public.action_status, IN device character varying)
-    LANGUAGE plpgsql
-    AS $_$
+CREATE PROCEDURE public.create_audit_item(
+    IN token character varying,
+    IN ip inet,
+    IN _object public.object_,
+    IN action_ public.action_status,
+    IN device character varying
+)
+LANGUAGE plpgsql
+AS $_$
 DECLARE 
     user_id UUID;
     timestmp BIGINT;
