@@ -22,12 +22,12 @@ jobs:
         architecture: 'x64'
     
     - name: Dependency installation
-      run: pip install pylint sqlfluff
+      run: |
+        pip install pylint sqlfluff
+        make pip-i
 
     - name: Starting the analyzer (Python)
-      run: |
-        make pip-i
-        pylint --rcfile=.github/workflows/pylintrc.ini setup.py mindfulguard tests routines
+      run: pylint --rcfile=.github/workflows/pylintrc.ini setup.py mindfulguard tests routines
       continue-on-error: true
 
     - name: Starting the analyzer (PostgreSQL)
