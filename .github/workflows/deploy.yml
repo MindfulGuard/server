@@ -27,11 +27,11 @@ jobs:
         make pip-i
 
     - name: Starting the analyzer (Python)
-      run: pylint --rcfile=.github/workflows/pylintrc.ini setup.py mindfulguard tests routines
+      run: pylint --rcfile=.github/configs/pylintrc.ini setup.py mindfulguard tests routines
       continue-on-error: true
 
     - name: Starting the analyzer (PostgreSQL)
-      run: sqlfluff lint --config .github/workflows/sqlfluff.toml db/migrations/*.sql
+      run: sqlfluff lint --config .github/configs/sqlfluff.toml db/migrations/*.sql
       continue-on-error: true
 
   test:
