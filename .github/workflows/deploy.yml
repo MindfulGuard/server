@@ -25,11 +25,13 @@ jobs:
       run: pip install pylint sqlfluff
 
     - name: Starting the analyzer (Python)
-      run: pylint --rcfile=.github/workflows/pylintrc.ini setup.py mindfulguard tests routines
+      run: |
+        make pip-i
+        pylint --rcfile=.github/workflows/pylintrc.ini setup.py mindfulguard tests routines
       continue-on-error: true
 
     - name: Starting the analyzer (PostgreSQL)
-      run: sqlfluff lint --config .github/workflows/sqlfluff.toml db/migrations/**/*.sql
+      run: sqlfluff lint --config .github/workflows/sqlfluff.toml db/migrations/*.sql
       continue-on-error: true
 
   test:
