@@ -1,4 +1,3 @@
-
 CREATE TYPE public.object_ AS ENUM (
     'user',
     'safe',
