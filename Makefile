@@ -46,7 +46,7 @@ run:
 	python $(PROJECT-NAME)/__main__.py --host $(HOST) --port $(PORT) ${MINDFULGUARD_ARGS}
 
 test:
-	pytest
+	python -m pytest
 
 migration-up:
 	$(MIGRATION-UP)
