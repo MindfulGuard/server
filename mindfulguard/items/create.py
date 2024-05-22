@@ -2,6 +2,7 @@ import copy
 from http.client import BAD_REQUEST, OK
 import json
 from typing import Any
+from loguru import logger
 from mindfulguard.classes.items.base import ItemsBase
 from mindfulguard.classes.models.item_json import Item
 from mindfulguard.classes.models.record import ModelRecord
@@ -10,7 +11,8 @@ from mindfulguard.classes.models.record import ModelRecord
 class Create(ItemsBase):
     def __init__(self) -> None:
         super().__init__()
-    
+        logger.debug("Create class initialized.")
+
     class __ModelRecordExtend(ModelRecord):
         def __init__(self):
             super().__init__()
@@ -77,6 +79,7 @@ class Create(ItemsBase):
         safe_id: str,
         model_item_json: Item
     ) -> None:
+        logger.debug("Execute method called with token: {}, safe_id: {}, model_item_json: {}", token, safe_id, model_item_json)
         try:
             model_record = self.__ModelRecordExtend()
             self._model_token.token = token
@@ -88,6 +91,8 @@ class Create(ItemsBase):
                 tags=model_item_json.tags,
                 sections=model_item_json.sections
             )
+            logger.debug("Model item created: {}", model_item)
+            
             copied_item = copy.deepcopy(model_item)
             del copied_item.title, copied_item.category, copied_item.notes, copied_item.tags
 
@@ -97,19 +102,28 @@ class Create(ItemsBase):
             model_record.tags = model_item.tags
             model_record.category = model_item.category
             
+            logger.debug("Model record prepared: {}", model_record)
+            
             db = self._pgsql_items.create(self._model_token, model_record)
             db_user_info = self._pgsql_user.get_information(self._model_token)
             await self._connection.open()
+            logger.debug("Database connection opened.")
+            
             await db.execute()
             await db_user_info.execute()
             self._status_code = db.status_code
+            logger.debug("Database operations executed with status code: {}", db.status_code)
+            
             if db.status_code == OK and db_user_info.status_code == OK:
                 for i in self._redis.client().connection.scan_iter(
                     f'{db_user_info.response.login}:{self._redis.PATH_SAFE_ALL_ITEM}'
                 ):
                     self._redis.client().connection.delete(i)
+                logger.debug("Redis cache cleared for user: {}", db_user_info.response.login)
             return
-        except ValueError:
+        except ValueError as e:
             self._status_code = BAD_REQUEST
+            logger.error("ValueError occurred: {}", e)
         finally:
             await self._connection.close()
+            logger.debug("Database connection closed.")

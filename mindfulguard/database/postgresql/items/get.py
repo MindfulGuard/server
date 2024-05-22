@@ -5,7 +5,8 @@ from mindfulguard.classes.models.record import ModelRecord
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.database.postgresql.authentication.is_auth import PostgreSqlIsAuth
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
-
+from loguru import logger
+import time
 
 class PostgreSqlItemsGet(PostgreSqlQueriesBase):
     def __init__(self, connection: PostgreSqlConnection, model_token: ModelToken) -> None:
@@ -44,9 +45,13 @@ class PostgreSqlItemsGet(PostgreSqlQueriesBase):
         return self._response
 
     async def execute(self) -> None:
+        start_time = time.time()
+        logger.debug("Executing SQL query to get items...")
+
         await self.__pgsql_is_auth.execute()
         if self.__pgsql_is_auth.status_code == UNAUTHORIZED:
             self._status_code = self.__pgsql_is_auth.status_code
+            logger.warning("Unauthorized access during item retrieval.")
             return
         
         values = await self._connection.connection.fetch('''
@@ -60,6 +65,11 @@ class PostgreSqlItemsGet(PostgreSqlQueriesBase):
         ''',
         self.__model_token.token
         )
+
         self._response = self.__Iterator(values)
         self._status_code = OK
-        return
+
+        end_time = time.time()
+        execution_time = end_time - start_time
+        logger.trace("Item retrieval execution time: {} seconds", execution_time)
+        logger.debug("Execution of item retrieval query completed.")

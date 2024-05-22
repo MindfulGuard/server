@@ -1,5 +1,6 @@
 from http.client import BAD_REQUEST
 from fastapi import Request, Response
+from loguru import logger
 from mindfulguard.classes.authentication.base import AuthenticationBase
 from mindfulguard.net.ip import get_client_ip
 
@@ -24,6 +25,12 @@ class SignUp(AuthenticationBase):
             secret_string: str,
             confirm: bool
         ) -> None:
+            logger.debug(
+                "Input data: login: {}, secret_string: {}, confirm: {}",
+                login,
+                secret_string,
+                confirm
+            )
             try:
                 self._model_user.login = login
                 self._model_user.secret_string = secret_string

@@ -3,7 +3,8 @@ from mindfulguard.classes.database.postgresql.queries_base import PostgreSqlQuer
 from mindfulguard.classes.models.settings import ModelSettings
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
-
+from loguru import logger
+import time
 
 class PostgreSqlAdminConfigurationUpdate(PostgreSqlQueriesBase):
     def __init__(
@@ -17,22 +18,35 @@ class PostgreSqlAdminConfigurationUpdate(PostgreSqlQueriesBase):
         self.__model_settings: ModelSettings = model_settings
 
     async def execute(self) -> None:
-        response: int = await self._connection.connection.fetchval('''
-        SELECT update_settings_admin($1,$2,$3);
-        ''',
-        self.__model_token.token,
-        self.__model_settings.key,
-        self.__model_settings.value
-        )
-        if response == 0:
-            self._status_code = OK
-            return
-        elif response == -1:
-            self._status_code = UNAUTHORIZED
-            return
-        elif response == -2:
-            self._status_code = FORBIDDEN
-            return
-        else:
-            self._status_code = INTERNAL_SERVER_ERROR
-            return
+        start_time = time.time()
+        logger.debug("Executing SQL query for admin configuration update...")
+        
+        try:
+            response: int = await self._connection.connection.fetchval('''
+            SELECT update_settings_admin($1,$2,$3);
+            ''',
+            self.__model_token.token,
+            self.__model_settings.key,
+            self.__model_settings.value
+            )
+            
+            logger.debug("SQL query executed successfully with response: {}.", response)
+
+            if response == 0:
+                self._status_code = OK
+                logger.debug("Admin configuration updated successfully.")
+            elif response == -1:
+                self._status_code = UNAUTHORIZED
+                logger.warning("Unauthorized access for admin configuration update.")
+            elif response == -2:
+                self._status_code = FORBIDDEN
+                logger.warning("Forbidden access for admin configuration update.")
+            else:
+                self._status_code = INTERNAL_SERVER_ERROR
+                logger.error("Internal server error occurred while updating admin configuration.")
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("Admin configuration update execution time: {} seconds", execution_time)
+            
+            logger.debug("Admin configuration update execution completed.")

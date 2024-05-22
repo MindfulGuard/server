@@ -1,6 +1,7 @@
 from http.client import BAD_REQUEST, OK
 from math import ceil
 from typing import Any
+from loguru import logger
 from mindfulguard.classes.admin.base import AdminBase
 
 
@@ -31,6 +32,7 @@ class AdminUsersGetByPage(AdminBase):
 
     async def execute(self, token: str, page: int, per_page: int) -> None:
         try:
+            logger.info("Executing 'AdminUsersGetByPage' with token: {}, page: {}, per_page: {}", token, page, per_page)
             self._model_token.token = token
 
             db = self._pgsql_admin.get_users(
@@ -51,12 +53,14 @@ class AdminUsersGetByPage(AdminBase):
             )
             if db.status_code != OK:
                 self._status_code = db.status_code
+                logger.error("Failed to execute query to get users. Status Code: {}", db.status_code)
                 return
             
             self.__total_storage_size = self._s3.bucket().total_size
 
             self._status_code = OK
             if page > self.__total_pages:
+                logger.warning("Requested page exceeds total pages. Requested Page: {}, Total Pages: {}", page, self.__total_pages)
                 return
 
             for i in db.response:
@@ -69,10 +73,12 @@ class AdminUsersGetByPage(AdminBase):
                 }
                 self.__users_list.append(value_dict)
 
-        except ValueError:
+        except ValueError as e:
             self._status_code = BAD_REQUEST
+            logger.error("An error occurred: {}", e)
         finally:
             await self._connection.close()
+            logger.debug("Connection closed.")
 
     def __calculate_page(self, page: int) -> tuple[int, int]:
         """

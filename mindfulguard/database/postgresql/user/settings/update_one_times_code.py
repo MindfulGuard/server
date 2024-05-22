@@ -6,7 +6,8 @@ from mindfulguard.classes.models.code import ModelCode
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.models.user import ModelUser
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
-
+from loguru import logger
+import time
 
 class PostgreSqlUserSettingsUpdateOneTimeCode:
     def __init__(
@@ -51,6 +52,9 @@ class PostgreSqlUserSettingsUpdateOneTimeCodeTotp(PostgreSqlQueriesBase):
         self.__model_code: ModelCode = model_code
 
     async def execute(self) -> None:
+        start_time = time.time()
+        logger.debug("Updating one-time code for TOTP...")
+
         try:
             value: int = await self._connection.connection.fetchval('''
             SELECT update_c_codes_code($1, $2, $3);
@@ -59,20 +63,33 @@ class PostgreSqlUserSettingsUpdateOneTimeCodeTotp(PostgreSqlQueriesBase):
             self.__model_user.secret_string,
             self.__model_code.secret_code
             )
+
             if value == 0:
                 self._status_code = OK
+                logger.debug("One-time code for TOTP updated successfully.")
                 return
             elif value == -1:
                 self._status_code = UNAUTHORIZED
+                logger.warning("Unauthorized access to update one-time code for TOTP.")
                 return
             elif value == -2:
                 self._status_code = INTERNAL_SERVER_ERROR
+                logger.error("An error occurred while updating one-time code for TOTP.")
                 return
             else:
                 self._status_code = INTERNAL_SERVER_ERROR
+                logger.error("An unknown error occurred while updating one-time code for TOTP.")
                 return
         except asyncpg.exceptions.UniqueViolationError:
             self._status_code = INTERNAL_SERVER_ERROR
+            logger.error("An error occurred while updating one-time code for TOTP: Unique violation error.")
+        except Exception as e:
+            self._status_code = INTERNAL_SERVER_ERROR
+            logger.error(f"An error occurred while updating one-time code for TOTP: {e}")
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("One-time code update for TOTP execution time: {} seconds", execution_time)
 
 class PostgreSqlUserSettingsUpdateOneTimeCodeBackup(PostgreSqlQueriesBase):
     def __init__(
@@ -88,6 +105,9 @@ class PostgreSqlUserSettingsUpdateOneTimeCodeBackup(PostgreSqlQueriesBase):
         self.__model_code: ModelCode = model_code
 
     async def execute(self) -> None:
+        start_time = time.time()
+        logger.debug("Updating one-time code for backup...")
+
         try:
             value: int = await self._connection.connection.fetchval('''
             SELECT update_c_codes_code($1, $2, $3::INTEGER[]);
@@ -96,17 +116,30 @@ class PostgreSqlUserSettingsUpdateOneTimeCodeBackup(PostgreSqlQueriesBase):
             self.__model_user.secret_string,
             self.__model_code.backup_codes
             )
+
             if value == 0:
                 self._status_code = OK
+                logger.debug("One-time code for backup updated successfully.")
                 return
             elif value == -1:
                 self._status_code = UNAUTHORIZED
+                logger.warning("Unauthorized access to update one-time code for backup.")
                 return
             elif value == -2:
                 self._status_code = INTERNAL_SERVER_ERROR
+                logger.error("An error occurred while updating one-time code for backup.")
                 return
             else:
                 self._status_code = INTERNAL_SERVER_ERROR
+                logger.error("An unknown error occurred while updating one-time code for backup.")
                 return
         except asyncpg.exceptions.UniqueViolationError:
             self._status_code = INTERNAL_SERVER_ERROR
+            logger.error("An error occurred while updating one-time code for backup: Unique violation error.")
+        except Exception as e:
+            self._status_code = INTERNAL_SERVER_ERROR
+            logger.error(f"An error occurred while updating one-time code for backup: {e}")
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("One-time code update for backup execution time: {} seconds", execution_time)

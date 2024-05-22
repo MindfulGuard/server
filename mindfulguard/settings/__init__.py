@@ -1,9 +1,8 @@
 import json
 from typing import Any
+from loguru import logger
 from mindfulguard.classes.database import DataBase
 from mindfulguard.database.postgresql.settings import PostgreSqlSettings
-from mindfulguard.exceptions.unknown_type import ExceptionUnknownType
-import ast
 
 
 class Settings:
@@ -18,20 +17,29 @@ class Settings:
 
     async def execute(self) -> None:
         try:
+            logger.info("Opening database connection...")
             await self.__connection.open()
+            logger.info("Database connection opened successfully.")
+            logger.info("Executing PostgreSQL settings...")
             await self.__pgsql_settings.execute()
+            logger.info("PostgreSQL settings executed successfully.")
             self.__response = self.__pgsql_settings.response
+            logger.debug("Converting response values to correct types...")
             for key, value in self.__pgsql_settings.response.items():
                 self.__response[key] = self.__converting_from_string_to_correct_type(value)
+            logger.info("Response values converted successfully.")
             return
         finally:
+            logger.info("Closing database connection...")
             await self.__connection.close()
+            logger.info("Database connection closed.")
 
     def __converting_from_string_to_correct_type(self, value: str) -> Any:
         if isinstance(value, str):
             try:
                 return json.loads(value)
-            except (json.JSONDecodeError, ValueError):
+            except (json.JSONDecodeError, ValueError) as e:
+                logger.warning("Error converting string to JSON: {}", e)
                 return value
         elif isinstance(value, int):
             return int(value)
@@ -43,16 +51,14 @@ class Settings:
             elif value.lower() == 'false':
                 return False
             else:
+                logger.warning('Invalid boolean value')
                 raise ValueError('Invalid boolean value')
-        elif isinstance(value, list):
+        elif isinstance(value, (list, dict)):
             try:
                 return json.loads(value)
-            except (json.JSONDecodeError, ValueError):
-                return value
-        elif isinstance(value, dict):
-            try:
-                return json.loads(value)
-            except (json.JSONDecodeError, ValueError):
+            except (json.JSONDecodeError, ValueError) as e:
+                logger.warning("Error converting string to JSON: {}", e)
                 return value
         else:
+            logger.error('Unknown Type, type: {}', type(value))
             raise Exception(f'Unknown Type, type: {type(value)}')

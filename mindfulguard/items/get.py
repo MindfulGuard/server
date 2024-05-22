@@ -2,15 +2,16 @@ from http.client import BAD_REQUEST, OK
 import json
 from typing import Any
 from uuid import UUID
+from loguru import logger
 from mindfulguard.classes.items.base import ItemsBase
 
 
 class Get(ItemsBase):
     def __init__(self) -> None:
         super().__init__()
-        self.__json: dict[str, list[Any]]
-        self.__tags: list[str]
-        self.__favorites: list[str]
+        self.__json: dict[str, list[Any]] = {}
+        self.__tags: list[str] = []
+        self.__favorites: list[str] = []
 
     @property
     def json(self) -> dict[str, list[Any]]:
@@ -30,13 +31,16 @@ class Get(ItemsBase):
         raise TypeError(f'Object of type {obj.__class__.__name__} is not JSON serializable')
 
     async def execute(self, token: str) -> None:
+        logger.debug("Executing 'execute' method with token: {}", token)
         try:
             self._model_token.token = token
             db = self._pgsql_items.get(self._model_token)
             await self._connection.open()
+            logger.debug("Database connection opened for get operation.")
             await db.execute()
             if db.status_code != OK:
                 self._status_code = db.status_code
+                logger.warning("Failed to retrieve data from the database with status code: {}", db.status_code)
                 return
 
             result_dict = {"list": []}
@@ -101,8 +105,11 @@ class Get(ItemsBase):
                 self.__tags = tags_list
                 self.__favorites = favorites_list
             self._status_code = OK
+            logger.debug("Get operation completed successfully.")
             return
-        except ValueError:
+        except ValueError as e:
             self._status_code = BAD_REQUEST
+            logger.error("ValueError occurred: {}", e)
         finally:
             await self._connection.close()
+            logger.debug("Database connection closed.")

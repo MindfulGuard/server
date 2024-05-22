@@ -4,7 +4,8 @@ from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.models.user import ModelUser
 from mindfulguard.database.postgresql.authentication import PostgreSqlAuthentication
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
-
+from loguru import logger
+import time
 
 class PostgreSqlAdminGetUsers(PostgreSqlQueriesBase):
     def __init__(self, connection: PostgreSqlConnection, model_token: ModelToken) -> None:
@@ -41,28 +42,37 @@ class PostgreSqlAdminGetUsers(PostgreSqlQueriesBase):
         return self._response
 
     async def execute(self, limit: int, offset: int) -> None:
-        is_auth = self.__auth_is_auth_admin.is_auth_admin(
-            self.__model_token
-        )
-        await is_auth.execute()
-
-        if is_auth.status_code != OK:
-            self._status_code = is_auth.status_code
-            return
+        start_time = time.time()
+        logger.debug("Executing SQL query to get admin users...")
         
-        values = await self._connection.connection.fetch('''
-        SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at
-        FROM u_users
-        ORDER BY u_id
-        LIMIT $1 OFFSET $2;
-        ''',
-        limit,
-        offset
-        )
+        try:
+            is_auth = self.__auth_is_auth_admin.is_auth_admin(self.__model_token)
+            await is_auth.execute()
 
-        self._response = self.__Iterator(values)
-        self._status_code = OK
-        return
+            if is_auth.status_code != OK:
+                self._status_code = is_auth.status_code
+                logger.error("Admin user retrieval failed due to authentication failure.")
+                return
+            
+            values = await self._connection.connection.fetch('''
+            SELECT u_id, u_login, u_reg_ip, u_confirm, u_created_at
+            FROM u_users
+            ORDER BY u_id
+            LIMIT $1 OFFSET $2;
+            ''',
+            limit,
+            offset
+            )
+
+            self._response = self.__Iterator(values)
+            self._status_code = OK
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("Admin user retrieval execution time: {} seconds", execution_time)
+            
+            logger.debug("Admin user retrieval execution completed.")
+            return
     
 class PostgreSqlAdminGetCountUsers(PostgreSqlQueriesBase):
     def __init__(self, connection: PostgreSqlConnection) -> None:
@@ -74,11 +84,17 @@ class PostgreSqlAdminGetCountUsers(PostgreSqlQueriesBase):
         return self.__count
     
     async def execute(self) -> None:
-        value: int = await self._connection.connection.fetchval('''
-        SELECT count(*) FROM u_users;
-        ''')
-        if value == None:
-            self.__count = 0
+        logger.debug("Executing SQL query to get count of admin users...")
+        
+        try:
+            value: int = await self._connection.connection.fetchval('''
+            SELECT count(*) FROM u_users;
+            ''')
+            
+            if value is None:
+                self.__count = 0
+            else:
+                self.__count = value
+        finally:
+            logger.debug("Count of admin users retrieved successfully.")
             return
-        self.__count = value
-        return

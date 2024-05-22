@@ -1,6 +1,7 @@
 from http.client import BAD_REQUEST, OK
 from typing import Literal
 from fastapi import Request
+from loguru import logger
 from mindfulguard.classes.authentication.base import AuthenticationBase
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.models.totp_code import ModelTotpCode
@@ -76,6 +77,16 @@ class SignIn(AuthenticationBase):
         type: Literal['backup', 'basic'],
         code: str
     ):
+        logger.debug(
+            "Input data: login: {}, secret_string: {}, device: {}, expiration: {}, type: {}, code: {}",
+            login,
+            secret_string,
+            device,
+            expiration,
+            type,
+            code
+        )
+
         model_token_extend = self.__ModelTokenExtend()
         try:
             if type != 'basic' and type != 'backup':
@@ -89,12 +100,24 @@ class SignIn(AuthenticationBase):
             model_token_extend.last_ip = get_client_ip(self._request)
             model_token_extend.expiration = expiration
             
+            logger.debug(
+                "Verified data: login: {}, hashed secret_string: {}, totp_code: {}, generated token: {}, hashed token: {}, last_ip: {}, expiration: {}",
+                self._model_user.login,
+                self._model_user.secret_string,
+                self.__model_totp_code.totp_code,
+                self.__token,
+                model_token_extend.token,
+                model_token_extend.last_ip,
+                model_token_extend.expiration
+            )
+
             db = self._pgsql_auth.sign_in(self._model_user, model_token_extend)
             db_secret_code = db.secret_code()
             await self._connection.open()
             await db_secret_code.execute()
             if db_secret_code.status_code != OK:
                 self._status_code = db_secret_code.status_code
+                logger.info("Failed to execute secret code insertion, status code: {}", db_secret_code.status_code)
                 return
 
             confirm: bool = await self.__confirm(
@@ -106,15 +129,19 @@ class SignIn(AuthenticationBase):
             await db.execute(confirm)
             self._status_code = db.status_code
             if db.status_code != OK:
+                logger.info("Failed to execute confirmation, status code: {}", db.status_code)
                 return
 
             self._s3.set_bucket_name(self._model_user.login)
             self._s3.bucket().make_bucket()
+            logger.info("User sign-in successful: {}", self._model_user.login)
             return
-        except ValueError:
+        except ValueError as e:
             self._status_code = BAD_REQUEST
-        except ExceptionIncorrectParameters:
+            logger.info("Value error during sign-in: {}", e)
+        except ExceptionIncorrectParameters as e:
             self._status_code = BAD_REQUEST
+            logger.error("Incorrect parameters during sign-in: {}", e)
         finally:
             await self._connection.close()
 
@@ -138,4 +165,3 @@ class SignIn(AuthenticationBase):
                 if dbubc.status_code == OK:
                     return True
             return False
-        raise ExceptionIncorrectParameters(f'Type must have a value of backup or basic, value: {type}')

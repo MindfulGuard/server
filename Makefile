@@ -43,10 +43,10 @@ pip-i:
 	pip install -e .
 
 run:
-	python -m uvicorn $(PROJECT-NAME).__main__:app --host $(HOST) --port $(PORT)
+	python $(PROJECT-NAME)/__main__.py --host $(HOST) --port $(PORT) ${MINDFULGUARD_ARGS}
 
 test:
-	python -m pytest -rA tests
+	pytest
 
 migration-up:
 	$(MIGRATION-UP)

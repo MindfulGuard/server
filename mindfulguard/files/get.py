@@ -1,7 +1,7 @@
 import datetime
 from http.client import BAD_REQUEST, OK
+from loguru import logger
 from mindfulguard.classes.files.base import FilesBase
-
 
 class Get(FilesBase):
     def __init__(self) -> None:
@@ -49,9 +49,12 @@ class Get(FilesBase):
                 }
                 file_info["objects"].append(resp)
 
+                logger.debug("Processed object: {}", resp)
+
             self.__response = response_dict
             self._status_code = OK
-        except ValueError:
+        except ValueError as e:
+            logger.exception("An error occurred: {}", e)
             self._status_code = BAD_REQUEST
         finally:
             await self._connection.close()

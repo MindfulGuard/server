@@ -154,7 +154,7 @@ jobs:
 
       - name: Running Tests
         run: |
-          python -m pytest -rA tests
+          make test
         env:
           POSTGRES_HOST: ${{env.POSTGRES_HOST}}
           POSTGRES_PORT: ${{env.POSTGRES_PORT}}

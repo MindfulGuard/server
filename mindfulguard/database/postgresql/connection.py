@@ -1,5 +1,5 @@
-from asyncio import log
 import asyncpg
+from loguru import logger
 from mindfulguard.classes.database.postgresql.connection_base import PostgreSqlConnectionBase
 
 class PostgreSqlConnection(PostgreSqlConnectionBase):
@@ -15,9 +15,11 @@ class PostgreSqlConnection(PostgreSqlConnectionBase):
                 host=self._host,
                 port=self._port
             )
+            logger.debug("Connection to PostgreSQL database opened. Database: {}, User: {}, Host: {}, Port: {}", self._database, self._user, self._host, self._port)
         except asyncpg.exceptions.ConnectionDoesNotExistError as e:
-            print(e)
+            logger.critical("Error when connecting to PostgreSQL database. Error: {}", e)
 
     async def close(self) -> None:
         if self.connection:
             await self.connection.close()
+            logger.debug("Connection to PostgreSQL database closed.")

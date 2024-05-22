@@ -1,7 +1,9 @@
 from http.client import OK, UNAUTHORIZED
+import time
+
+from loguru import logger
 from mindfulguard.classes.database.postgresql.queries_base import PostgreSqlQueriesBase
 from mindfulguard.classes.models.token import ModelToken
-from mindfulguard.classes.models.user import ModelUser
 from mindfulguard.database.postgresql.authentication.is_auth import PostgreSqlIsAuth
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
 
@@ -114,22 +116,30 @@ class PostgreSqlUserGetTokens(PostgreSqlQueriesBase):
         return self._response
 
     async def execute(self) -> None:
-        await self.__pgsql_is_auth.execute()
-        if self.__pgsql_is_auth.status_code == UNAUTHORIZED:
-            self._status_code = self.__pgsql_is_auth.status_code
-            return
+        start_time = time.time()
+        logger.debug("Getting user access tokens...")
+        
+        try:
+            await self.__pgsql_is_auth.execute()
+            if self.__pgsql_is_auth.status_code == UNAUTHORIZED:
+                self._status_code = self.__pgsql_is_auth.status_code
+                return
 
-        values = await self._connection.connection.fetch('''
-        SELECT t_id, t_token, t_created_at, t_updated_at, t_device, t_last_ip, t_expiration
-        FROM t_tokens
-        WHERE t_u_id IN (
-            SELECT t_u_id
+            values = await self._connection.connection.fetch('''
+            SELECT t_id, t_token, t_created_at, t_updated_at, t_device, t_last_ip, t_expiration
             FROM t_tokens
-            WHERE t_token = $1 AND active_token($1) = TRUE
-        );
-        ''',
-        self._model_token.token
-        )
-        self._response = self.__Iterator(values)
-        self._status_code = OK
-        return
+            WHERE t_u_id IN (
+                SELECT t_u_id
+                FROM t_tokens
+                WHERE t_token = $1 AND active_token($1) = TRUE
+            );
+            ''',
+            self._model_token.token
+            )
+            self._response = self.__Iterator(values)
+            self._status_code = OK
+            return
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("Getting user access tokens execution time: {} seconds", execution_time)

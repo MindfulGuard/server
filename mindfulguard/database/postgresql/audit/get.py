@@ -3,6 +3,8 @@ from mindfulguard.classes.database.postgresql.queries_base import PostgreSqlQuer
 from mindfulguard.classes.models.audit import ModelAudit
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
+from loguru import logger
+import time
 
 class PostgreSqlAuditGet(PostgreSqlQueriesBase):
     def __init__(
@@ -44,21 +46,31 @@ class PostgreSqlAuditGet(PostgreSqlQueriesBase):
         return self._response
 
     async def execute(self, limit: int, offset: int) -> None:
-        values = await self._connection.connection.fetch('''
-        select a_id, a_created_at , a_ip, a_object, a_action, a_device
-        from a_audit
-        where a_u_id = (select t_u_id from t_tokens where t_token = $1)
-        order by a_created_at desc
-        limit $2 OFFSET $3;
-        ''',
-        self.__model_token.token,
-        limit,
-        offset
-        )
- 
-        self._response = self.__Iterator(values)
-        self._status_code = OK
-        return
+        start_time = time.time()
+        logger.debug("Executing SQL query to get audit logs...")
+
+        try:
+            values = await self._connection.connection.fetch('''
+            select a_id, a_created_at , a_ip, a_object, a_action, a_device
+            from a_audit
+            where a_u_id = (select t_u_id from t_tokens where t_token = $1)
+            order by a_created_at desc
+            limit $2 OFFSET $3;
+            ''',
+            self.__model_token.token,
+            limit,
+            offset
+            )
+    
+            self._response = self.__Iterator(values)
+            self._status_code = OK
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("Audit logs retrieval execution time: {} seconds", execution_time)
+            
+            logger.debug("Audit logs retrieval execution completed.")
+            return
     
 class PostgreSqlAuditGetCount(PostgreSqlQueriesBase):
     def __init__(self, connection: PostgreSqlConnection, model_token: ModelToken) -> None:
@@ -71,13 +83,18 @@ class PostgreSqlAuditGetCount(PostgreSqlQueriesBase):
         return self.__count
     
     async def execute(self) -> None:
-        value: int = await self._connection.connection.fetchval('''
-        SELECT count(*) FROM a_audit where a_u_id = (select t_u_id from t_tokens where t_token = $1);
-        ''',
-        self.__model_token.token
-        )
-        if value == None:
-            self.__count = 0
+        logger.debug("Executing SQL query to get count of audit logs...")
+
+        try:
+            value: int = await self._connection.connection.fetchval('''
+            SELECT count(*) FROM a_audit where a_u_id = (select t_u_id from t_tokens where t_token = $1);
+            ''',
+            self.__model_token.token
+            )
+            if value is None:
+                self.__count = 0
+            else:
+                self.__count = value
+        finally:
+            logger.debug("Count of audit logs retrieved successfully.")
             return
-        self.__count = value
-        return

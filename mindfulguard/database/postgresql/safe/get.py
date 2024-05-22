@@ -1,9 +1,11 @@
-from http.client import OK, UNAUTHORIZED
+from http.client import INTERNAL_SERVER_ERROR, OK, UNAUTHORIZED
 from mindfulguard.classes.database.postgresql.queries_base import PostgreSqlQueriesBase
 from mindfulguard.classes.models.safe import ModelSafe
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.database.postgresql.authentication.is_auth import PostgreSqlIsAuth
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
+from loguru import logger
+import time
 
 class PostgreSqlSafeGet(PostgreSqlQueriesBase):
     def __init__(self, connection: PostgreSqlConnection, model_token: ModelToken) -> None:
@@ -62,24 +64,37 @@ class PostgreSqlSafeGet(PostgreSqlQueriesBase):
         return self._response
 
     async def execute(self) -> None:
+        start_time = time.time()
+        logger.debug("Executing SQL query to get safes...")
+
         await self.__pgsql_is_auth.execute()
         if self.__pgsql_is_auth.status_code == UNAUTHORIZED:
             self._status_code = self.__pgsql_is_auth.status_code
+            logger.warning("Unauthorized access during safe retrieval.")
             return
 
-        values = await self._connection.connection.fetch('''
-        SELECT s.s_id, s.s_name, s.s_description, s.s_created_at, s.s_updated_at, COUNT(r.r_id) AS r_count
-        FROM s_safes AS s
-        JOIN t_tokens AS t ON t.t_u_id = s.s_u_id
-        LEFT JOIN r_records AS r ON r.r_s_id = s.s_id
-        WHERE t.t_token = $1
-        AND active_token($1) = True
-        GROUP BY s.s_id, s.s_name, s.s_description, s.s_created_at, s.s_updated_at
-        ORDER BY s.s_updated_at DESC;
-        ''',
-        self.__model_token.token
-        )
-        
-        self._response = self.__Iterator(values)
-        self._status_code = OK
-        return
+        try:
+            values = await self._connection.connection.fetch('''
+            SELECT s.s_id, s.s_name, s.s_description, s.s_created_at, s.s_updated_at, COUNT(r.r_id) AS r_count
+            FROM s_safes AS s
+            JOIN t_tokens AS t ON t.t_u_id = s.s_u_id
+            LEFT JOIN r_records AS r ON r.r_s_id = s.s_id
+            WHERE t.t_token = $1
+            AND active_token($1) = True
+            GROUP BY s.s_id, s.s_name, s.s_description, s.s_created_at, s.s_updated_at
+            ORDER BY s.s_updated_at DESC;
+            ''',
+            self.__model_token.token
+            )
+
+            self._response = self.__Iterator(values)
+            self._status_code = OK
+            logger.debug("Safe retrieval successful.")
+            return
+        except Exception as e:
+            self._status_code = INTERNAL_SERVER_ERROR
+            logger.error(f"An error occurred during safe retrieval: {e}")
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("Safe retrieval execution time: {} seconds", execution_time)

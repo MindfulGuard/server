@@ -1,5 +1,6 @@
 from http.client import BAD_REQUEST, OK
 from typing import Any
+from loguru import logger
 from mindfulguard.classes.admin.base import AdminBase
 from mindfulguard.classes.database.redis import Redis
 from mindfulguard.configuration.public import ConfigurationPublic
@@ -21,6 +22,7 @@ class AdminConfigurationGet(AdminBase):
         try:
             self._model_token.token = token
 
+            logger.info("Checking admin authentication...")
             db = self.__pgsql_auth_admin.is_auth_admin(
                 self._model_token
             )
@@ -28,13 +30,17 @@ class AdminConfigurationGet(AdminBase):
             await db.execute()
             self._status_code = db.status_code
             if db.status_code != OK:
+                logger.warning(f"Admin authentication failed with status code: {db.status_code}")
                 return
 
+            logger.info("Fetching configuration from cache...")
             self._response = self._redis.client().connection.json().get(self.__cache_name)
             if self._response:
+                logger.info("Configuration found in cache.")
                 self._status_code = db.status_code
                 return
 
+            logger.info("Configuration not found in cache, fetching from database...")
             await self.__public_configuration.execute()
             response: dict[str, Any] = self.__public_configuration.response
             response['registration'] = self.__public_configuration.settings['registration']
@@ -44,15 +50,22 @@ class AdminConfigurationGet(AdminBase):
             response['disk_space_per_user'] = self.__public_configuration.settings['disk_space_per_user']
 
             self._response = response
+
+            logger.debug("Data: {}", self._response)
+
+            logger.info("Caching fetched configuration...")
             self._redis.client().connection.json().set(
-            self.__cache_name,
-            Path.root_path(),
-            self._response
+                self.__cache_name,
+                Path.root_path(),
+                self._response
             )
             self._redis.client().connection.expire(self.__cache_name, 3600)
             self._status_code = OK
+            logger.info("Configuration cached successfully.")
             return
-        except ValueError:
+        except ValueError as e:
+            logger.error("An error occurred: {}", e)
             self._status_code = BAD_REQUEST
         finally:
+            logger.info("Closing database connection...")
             await self._connection.close()

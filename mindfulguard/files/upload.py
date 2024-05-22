@@ -2,6 +2,7 @@ from http.client import BAD_REQUEST, INTERNAL_SERVER_ERROR, OK
 from typing import Any
 
 from fastapi import UploadFile
+from loguru import logger
 from mindfulguard.classes.files.base import FilesBase
 from mindfulguard.database.postgresql.safe import PostgreSqlSafe
 
@@ -29,6 +30,7 @@ class Upload(FilesBase):
             return False
         return True
 
+    @logger.catch
     async def execute(
         self,
         files: list[UploadFile]

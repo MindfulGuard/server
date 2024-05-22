@@ -5,7 +5,7 @@ from typing import Any
 from mindfulguard.classes.items.base import ItemsBase
 from mindfulguard.classes.models.item_json import Item
 from mindfulguard.classes.models.record import ModelRecord
-
+from loguru import logger
 
 class Update(ItemsBase):
     def __init__(self) -> None:
@@ -30,6 +30,7 @@ class Update(ItemsBase):
         record_id: str,
         model_item_json: Item
     ) -> None:
+        logger.debug("Executing 'execute' method to update record with ID: {}", record_id)
         try:
             model_record = self.__ModelRecordExtend()
             self._model_token.token = token
@@ -55,6 +56,7 @@ class Update(ItemsBase):
             db = self._pgsql_items.update(self._model_token, model_record)
             db_user_info = self._pgsql_user.get_information(self._model_token)
             await self._connection.open()
+            logger.debug("Database connection opened for update operation.")
             await db.execute()
             await db_user_info.execute()
             self._status_code = db.status_code
@@ -63,8 +65,9 @@ class Update(ItemsBase):
                     f'{db_user_info.response.login}:{self._redis.PATH_SAFE_ALL_ITEM}'
                 ):
                     self._redis.client().connection.delete(i)
-            return
-        except ValueError:
+        except ValueError as e:
             self._status_code = BAD_REQUEST
+            logger.error("ValueError occurred: {}", e)
         finally:
             await self._connection.close()
+            logger.debug("Database connection closed.")

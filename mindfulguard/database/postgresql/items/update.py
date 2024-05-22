@@ -4,7 +4,8 @@ from mindfulguard.classes.database.postgresql.queries_base import PostgreSqlQuer
 from mindfulguard.classes.models.record import ModelRecord
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
-
+from loguru import logger
+import time
 
 class PostgreSqlItemsUpdate(PostgreSqlQueriesBase):
     def __init__(
@@ -18,6 +19,9 @@ class PostgreSqlItemsUpdate(PostgreSqlQueriesBase):
         self.__model_record: ModelRecord = model_record
 
     async def execute(self) -> None:
+        start_time = time.time()
+        logger.debug("Executing SQL query to update item...")
+
         try:
             value: int = await self._connection.connection.fetchval('''
             SELECT update_item($1, $2, $3, $4, $5, $6, $7, $8);
@@ -33,17 +37,27 @@ class PostgreSqlItemsUpdate(PostgreSqlQueriesBase):
             )
             if value == 0:
                 self._status_code = OK
+                logger.debug("Item updated successfully.")
                 return
             elif value == -1:
                 self._status_code = UNAUTHORIZED
+                logger.warning("Unauthorized access during item update operation.")
                 return
             elif value == -2:
                 self._status_code = INTERNAL_SERVER_ERROR
+                logger.error("Internal server error occurred during item update operation.")
                 return
             else:
                 self._status_code = INTERNAL_SERVER_ERROR
+                logger.error("Unknown error occurred during item update operation.")
                 return
         except asyncpg.exceptions.ForeignKeyViolationError:
             self._status_code = INTERNAL_SERVER_ERROR
+            logger.error("Foreign key violation error occurred during item update operation.")
         except asyncpg.exceptions.UniqueViolationError:
             self._status_code = INTERNAL_SERVER_ERROR
+            logger.error("Unique violation error occurred during item update operation.")
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("Item update execution time: {} seconds", execution_time)

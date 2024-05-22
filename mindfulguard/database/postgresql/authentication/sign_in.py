@@ -6,7 +6,8 @@ from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.models.totp_code import ModelTotpCode
 from mindfulguard.classes.models.user import ModelUser
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
-
+from loguru import logger
+import time
 
 class PostgreSqlSignIn(PostgreSqlQueriesBase):
     def __init__(
@@ -38,6 +39,9 @@ class PostgreSqlSignIn(PostgreSqlQueriesBase):
             self,
             is_verified_code: bool
         ) -> None:
+        start_time = time.time()
+        logger.debug("Executing SQL query for user sign in...")
+        
         try:
             value = await self._connection.connection.fetchval('''
             SELECT sign_in($1, $2, $3, $4, $5, $6, $7)
@@ -52,12 +56,15 @@ class PostgreSqlSignIn(PostgreSqlQueriesBase):
             )
             if value:
                 self._status_code = OK
-                return
             else:
                 self._status_code = NOT_FOUND
-                return
         except asyncpg.exceptions.DataError:
             self._status_code = INTERNAL_SERVER_ERROR
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("User sign in execution time: {} seconds", execution_time)
+            logger.debug("Execution of user sign in query completed.")
 
 class PostgreSqlSignInSecretCode(PostgreSqlQueriesBase):
     def __init__(
@@ -80,29 +87,39 @@ class PostgreSqlSignInSecretCode(PostgreSqlQueriesBase):
         return self.__backup_codes
 
     async def execute(self):
-        values = await self._connection.connection.fetch('''
-        SELECT c_secret_code, c_backup_codes
-        FROM c_codes 
-        JOIN u_users ON u_users.u_id = c_codes.c_u_id 
-        WHERE u_users.u_login = $1
-        AND u_users.u_secret_string = $2
-        ''',
-        self.__model_user.login,
-        self.__model_user.secret_string
-        )
+        start_time = time.time()
+        logger.debug("Executing SQL query to retrieve secret code and backup codes...")
+        
+        try:
+            values = await self._connection.connection.fetch('''
+            SELECT c_secret_code, c_backup_codes
+            FROM c_codes 
+            JOIN u_users ON u_users.u_id = c_codes.c_u_id 
+            WHERE u_users.u_login = $1
+            AND u_users.u_secret_string = $2
+            ''',
+            self.__model_user.login,
+            self.__model_user.secret_string
+            )
 
-        if len(values) == 0:
-            self._status_code = UNAUTHORIZED
-            return
+            if len(values) == 0:
+                self._status_code = UNAUTHORIZED
+                return
 
-        for value in values:
-            self.__secret_code = value['c_secret_code']
-            self.__backup_codes = value['c_backup_codes']
+            for value in values:
+                self.__secret_code = value['c_secret_code']
+                self.__backup_codes = value['c_backup_codes']
 
-        self._response = self.__model_code
-        self._status_code = OK
-        return
-    
+            self._response = self.__model_code
+            self._status_code = OK
+        except asyncpg.exceptions.DataError:
+            self._status_code = INTERNAL_SERVER_ERROR
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("Secret code retrieval execution time: {} seconds", execution_time)
+            logger.debug("Execution of secret code retrieval query completed.")
+
 class PostgreSqlSignInUpdateBackupCodes(PostgreSqlQueriesBase):
     def __init__(
             self,
@@ -115,22 +132,31 @@ class PostgreSqlSignInUpdateBackupCodes(PostgreSqlQueriesBase):
         self.__backup_codes: list[int] = backup_codes
 
     async def execute(self) -> None:
-        value = await self._connection.connection.fetch(
-            '''
-            UPDATE c_codes SET c_backup_codes = $3
-            WHERE c_u_id =(
-                SELECT u_id FROM u_users
-                WHERE u_login = $1 AND u_users.u_secret_string = $2
-                )
-            RETURNING c_id;
-            ''',
-            self.__model_user.login,
-            self.__model_user.secret_string,
-            self.__backup_codes
-        )
-        if value:
-            self._status_code = OK
-            return
-        else:
-            self._status_code = NOT_FOUND
-            return
+        start_time = time.time()
+        logger.debug("Executing SQL query to update backup codes...")
+        
+        try:
+            value = await self._connection.connection.fetch(
+                '''
+                UPDATE c_codes SET c_backup_codes = $3
+                WHERE c_u_id =(
+                    SELECT u_id FROM u_users
+                    WHERE u_login = $1 AND u_users.u_secret_string = $2
+                    )
+                RETURNING c_id;
+                ''',
+                self.__model_user.login,
+                self.__model_user.secret_string,
+                self.__backup_codes
+            )
+            if value:
+                self._status_code = OK
+            else:
+                self._status_code = NOT_FOUND
+        except asyncpg.exceptions.DataError:
+            self._status_code = INTERNAL_SERVER_ERROR
+        finally:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            logger.trace("Backup codes update execution time: {} seconds", execution_time)
+            logger.debug("Execution of backup codes update query completed.")
