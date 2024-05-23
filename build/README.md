@@ -18,7 +18,18 @@
    ```bash
    nano docker/.SERVER.env
    ```
-    
+
+### Variable `MINDFULGUARD_ARGS` in `docker/.SERVER.env` file.
+
+| Argument | Description | Type |
+| -------- | -------- | --- |
+| --LOG-TO-CONSOLE | Enable logging to console | Bool |
+| --LOG-TO-FILE | Enable logging to file  | Bool |
+| --LOG-FILE-PATH | Path to the log file  | String |
+| --LOG-ROTATION-SIZE | Size limit for log file rotation  | String |
+| --LOG-LEVEL | Set the logging level  | String |
+| --LOG-RETENTION-PERIOD | Duration to retain log files  | String |
+
 ## Initial setup
 
    ```bash
