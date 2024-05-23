@@ -4,7 +4,9 @@ from tests.modules.database.postgresql.authentication.classes.db_authentication_
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_out import DbTestsAuthenticationSignOut
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_up import DbTestsAuthenticationSignUp
 from tests.modules.database.postgresql.authentication.classes.db_user_info import DbTestUserInfo
+from tests.logger import logger
 
+logger()
 
 
 @pytest.mark.asyncio

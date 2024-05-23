@@ -5,9 +5,9 @@ class Logger:
     def __init__(
         self,
         log_file_path: str,  # Include date in the log file name
-        rotation_size: str,
         log_level: str,
-        retention_period: str,
+        retention_period: str = "30 days",
+        rotation_size: str = "10 MB",
         log_to_console: bool = True,
         log_to_file: bool = False,
     ) -> None:
@@ -15,9 +15,9 @@ class Logger:
         Args:
             log_to_console (bool): Determines whether to log to console (default True).
             log_to_file (bool): determines whether to log to a file (default False).
-            log_file_path (str): The path to the log file (default ".logs/app.log").
+            log_file_path (str): The path to the log file.
             rotation_size (str): The size for log file rotation (default "10 MB").
-            log_level (str): The log level for the logger (default "INFO").
+            log_level (str): The log level for the logger.
             retention_period (str): The retention period for old logs (default "30 days").
         """
         self.__log_to_console: bool = log_to_console
@@ -57,7 +57,7 @@ class Logger:
                     "{name}.{file}:{function}:{line} - "
                     "{message}"
                 )
-            )  # Log to stdout (console)
+            )  # Log to stderr (console)
 
         if self.__log_to_file:
             logger.add(

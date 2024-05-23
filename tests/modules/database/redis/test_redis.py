@@ -1,5 +1,7 @@
 from mindfulguard.classes.database.redis import Redis
+from tests.logger import logger
 
+logger()
 
 def test_connection():
     redis = Redis().client()

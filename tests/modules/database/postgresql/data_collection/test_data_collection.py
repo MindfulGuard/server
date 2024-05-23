@@ -5,7 +5,9 @@ from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.database.postgresql.data_collection import PostgreSqlDataCollection
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_in import DbTestsAuthenticationSignIn
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_up import DbTestsAuthenticationSignUp
+from tests.logger import logger
 
+logger()
 
 class DbTestDataCollection:
     def __init__(self) -> None:

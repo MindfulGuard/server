@@ -1,5 +1,8 @@
 import pytest
 from mindfulguard.classes.database import DataBase
+from tests.logger import logger
+
+logger()
 
 @pytest.mark.asyncio
 async def test_postgresql_connection():

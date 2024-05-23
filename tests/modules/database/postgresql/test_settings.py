@@ -3,6 +3,9 @@ from http.client import OK
 import pytest
 from mindfulguard.classes.database import DataBase
 from mindfulguard.database.postgresql.settings import PostgreSqlSettings
+from tests.logger import logger
+
+logger()
 
 @pytest.mark.asyncio
 async def test_settings():

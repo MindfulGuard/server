@@ -4,9 +4,10 @@ from tests.modules.database.postgresql.admin.classes.get_by_page import DbTestAd
 from tests.modules.database.postgresql.admin.classes.search_users import DbTestAdminSearchUsers
 from tests.modules.database.postgresql.admin.classes.update_configuration import DbTestAdminUpdateConfig
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_in import DbTestsAuthenticationSignIn
-
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_up import DbTestsAuthenticationSignUp
+from tests.logger import logger
 
+logger()
 
 @pytest.mark.asyncio
 async def test_admin_without_privileges():

@@ -15,6 +15,9 @@ from tests.api.safe.delete import SafeDeleteApi
 from tests.api.safe.get import SafeGetApi
 from tests.api.safe.udpate import SafeUpdateApi
 from tests.api.user.delete import UserDeleteApi
+from tests.logger import logger
+
+logger()
 
 PATH_TO_FILES = 'tests/api/content/temp_files'
 FILE_NAMES: list[str] = ["400MiB1.bin", "400MiB2.bin", "400MiB3.bin"]

@@ -7,6 +7,9 @@ from tests.api.authentication.sign_up import SignUpApi
 from tests.api.paths import AUTH_PATH_V1, USER_PATH_V1
 from tests.api.headers import *
 from tests.api.user.get_information import UserGetInformationApi
+from tests.logger import logger
+
+logger()
 
 def test_authentication_api():
     LOGIN = "User1"

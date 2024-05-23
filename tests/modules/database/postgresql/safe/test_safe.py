@@ -7,6 +7,9 @@ from tests.modules.database.postgresql.safe.classes.create import DbTestCreateSa
 from tests.modules.database.postgresql.safe.classes.delete import DbTestDeleteSafe
 from tests.modules.database.postgresql.safe.classes.get import DbTestGetSafe
 from tests.modules.database.postgresql.safe.classes.update import DbTestUpdateSafe
+from tests.logger import logger
+
+logger()
 
 @pytest.mark.asyncio
 async def test_safe():

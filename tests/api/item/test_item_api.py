@@ -14,6 +14,9 @@ from tests.api.safe.create import SafeCreateApi
 from tests.api.safe.delete import SafeDeleteApi
 from tests.api.safe.get import SafeGetApi
 from tests.api.safe.udpate import SafeUpdateApi
+from tests.logger import logger
+
+logger()
 
 def test_item_api():
     LOGIN = "User_224"

@@ -7,7 +7,9 @@ from tests.api.authentication.sign_up import SignUpApi
 from tests.api.paths import AUTH_PATH_V1, SAFE_PATH_V1, USER_PATH_V1
 from tests.api.safe.create import SafeCreateApi
 from tests.api.headers import *
+from tests.logger import logger
 
+logger()
 
 def test_audit_api():
     LOGIN = "User_225"

@@ -5,7 +5,9 @@ from tests.modules.database.postgresql.audit.classes.db_audit_get import DbTests
 from tests.modules.database.postgresql.audit.classes.db_audit_insert import DbTestsAuditInsert
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_in import DbTestsAuthenticationSignIn
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_up import DbTestsAuthenticationSignUp
+from tests.logger import logger
 
+logger()
 
 @pytest.mark.asyncio
 async def test_audit():

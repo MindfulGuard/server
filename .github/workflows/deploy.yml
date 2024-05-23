@@ -171,7 +171,15 @@ jobs:
           REDIS_PORT: ${{env.REDIS_PORT}}
           REDIS_USERNAME: ${{env.REDIS_USERNAME}}
           REDIS_LD: ${{env.REDIS_LD}}
+      
+      - name: Archiving of test logs
+        run: |
+          tar -czvf test_logs.tar.gz tests/.logs
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: test_logs.tar.gz
 
   deploy:
     name: Deploy

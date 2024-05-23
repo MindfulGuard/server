@@ -12,3 +12,4 @@ minio-data
 tests/api/content/temp_files
 mindfulguard/languages/localization.py
 .logs/
+tests/.logs/

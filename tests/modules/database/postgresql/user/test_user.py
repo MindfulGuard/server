@@ -6,7 +6,9 @@ from tests.modules.database.postgresql.authentication.classes.db_authentication_
 from tests.modules.database.postgresql.user.classes.get_information import DbTestUserInformationGet
 from tests.modules.database.postgresql.user.classes.get_tokens import DbTestUserGetTokens
 from tests.modules.database.postgresql.user.classes.settings import DbTestUserSettingsDeleteAccount, DbTestUserSettingsUpdateOneTimeCode, DbTestUserSettingsUpdateSecretString
+from tests.logger import logger
 
+logger()
 
 @pytest.mark.asyncio
 async def test_user():

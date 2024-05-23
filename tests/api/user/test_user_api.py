@@ -11,6 +11,9 @@ from tests.api.paths import AUTH_PATH_V1
 from tests.api.headers import *
 from tests.api.user.udpate_secret_code_and_backup_codes import UserUpdateSecretCodeAdnBackupCodesApi
 from tests.api.user.update_secret_string import UserUpdateSecretStringApi
+from tests.logger import logger
+
+logger()
 
 def test_user_api():
     LOGIN = "User_222"

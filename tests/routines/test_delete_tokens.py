@@ -4,7 +4,9 @@ import pytest
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_in import DbTestsAuthenticationSignIn
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_up import DbTestsAuthenticationSignUp
 from tests.modules.database.postgresql.safe.classes.create import DbTestCreateSafe
+from tests.logger import logger
 
+logger()
 
 @pytest.mark.asyncio
 async def test_routines_delete_token():

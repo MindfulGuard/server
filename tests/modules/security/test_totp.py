@@ -1,5 +1,7 @@
 from mindfulguard.classes.security import Security
+from tests.logger import logger
 
+logger()
 
 def test_totp():
     security = Security()
