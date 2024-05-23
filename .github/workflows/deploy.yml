@@ -172,14 +172,15 @@ jobs:
           REDIS_USERNAME: ${{env.REDIS_USERNAME}}
           REDIS_LD: ${{env.REDIS_LD}}
       
-      - name: Archiving of test logs
+      - name: Copying logs
         run: |
-          tar -czvf test_logs.tar.gz tests/.logs
+          mkdir test_logs
+          cp -r tests/.logs/* test_logs/
 
       - uses: actions/upload-artifact@v4
         with:
           name: test-logs
-          path: test_logs.tar.gz
+          path: test_logs
 
   deploy:
     name: Deploy
