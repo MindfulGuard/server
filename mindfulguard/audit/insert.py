@@ -39,10 +39,10 @@ class AuditInsert(AuditBase):
             logger.error("ValueError occurred: {}", e)
             return
         except InvalidHttpMethod as e:
-            logger.error("InvalidHttpMethod occurred: {}", e)
+            logger.info("InvalidHttpMethod occurred: {}", e)
             return
         except InvalidUrlPath as e:
-            logger.warning("InvalidUrlPath occurred: {}", e)
+            logger.critical("Invalid url path: {}", request_url_path)
             return
         finally:
             logger.debug("Closing database connection")
@@ -104,7 +104,6 @@ class AuditInsert(AuditBase):
                     elif request_method == 'delete':
                         action = self._model_audit.audit_action_type.delete
             else:
-                logger.critical("Invalid url path: {}", request_url_path)
                 raise InvalidUrlPath(f"Invalid url path: {request_url_path}")
 
             logger.debug("Defined audit data - Object: {}, Action: {}", object, action)
