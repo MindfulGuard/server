@@ -1,4 +1,4 @@
-# 💩Docker💩 😎Mirrors😎
+# 💩Docker Hub💩 😎Mirrors😎
 
 | Server |
 | ------ |
@@ -6,3 +6,4 @@
 | daocloud.io |
 | c.163.com |
 | dockerhub.timeweb.cloud |
+| cr.yandex/mirror |
