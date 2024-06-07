@@ -206,14 +206,14 @@ jobs:
         
       - name: Check release type
         run:
-          if ["${{ github.ref }}" = "refs/heads/${{ env.MAIN_BRANCH_NAME }}"] && ["${{ env.APP_VERSION_RELEASE }}" = "false"]; then
-            echo "The main branch cannot be used for non-release versions!";
-            exit 1;
+          if [[ "${{ github.ref }}" = "refs/heads/${{ env.MAIN_BRANCH_NAME }}" && "${{ env.APP_VERSION_RELEASE }}" = "false" ]]; then
+            echo "The main branch cannot be used for non-release versions!"
+            exit 1
           fi
 
-          if ["${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}"] && ["${{ env.APP_VERSION_RELEASE }}" = "true"]; then
-            echo "Use the main branch for the release build!";
-            exit 1;
+          if [[ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" && "${{ env.APP_VERSION_RELEASE }}" = "true" ]]; then
+            echo "Use the main branch for the release build!"
+            exit 1
           fi
 
       - name: Set up Docker Buildx
@@ -240,7 +240,7 @@ jobs:
         run: |
           is_dev=""
           echo "TAG_NAME=${{env.APP_VERSION}}" >> $GITHUB_ENV
-          if [ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" ]; then
+          if [[ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" ]]; then
             is_dev="-${{ env.DEV_BRANCH_NAME }}"
           fi
           echo "is_dev=${is_dev}" >> $GITHUB_ENV
