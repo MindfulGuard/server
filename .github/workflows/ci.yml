@@ -273,9 +273,9 @@ jobs:
     - name: Get the latest version from the change logs
       run: |
         echo "PRERELEASE=false" >> $GITHUB_ENV
-        echo "TAG_NAME=${{env.APP_VERSION}}" >> $GITHUB_ENV
+        echo "TAG_NAME=${{ env.APP_VERSION }}" >> $GITHUB_ENV
 
-        if ["${{ env.APP_VERSION_RELEASE }}" = "false"]; then
+        if [[ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" && "${{ env.APP_VERSION_RELEASE }}" = "false" ]]; then
           echo "PRERELEASE=true" >> $GITHUB_ENV
         fi
 
