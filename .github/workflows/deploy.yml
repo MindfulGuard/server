@@ -273,6 +273,6 @@ jobs:
         body_path: ${{ env.CHANGELOG_FILE }}.tmp
         files: build-release.tar.gz
         tag_name: ${TAG_NAME}
-        prerelease: ${env.PRERELEASE}
+        prerelease: ${PRERELEASE}
       env:
         GITHUB_TOKEN: ${{ secrets.ACTIONS }}
