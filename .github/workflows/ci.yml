@@ -220,16 +220,17 @@ jobs:
       - name: Get the latest version from the change logs
         run: |
           version=$(cat ${{ env.CHANGELOG_FILE }}.tmp | grep -oP '^v\d+\.\d+\.\d+')
-
+          is_dev=
           if [ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" ]; then
-            echo "TAG_NAME=${version}-${{ env.DEV_BRANCH_NAME }}" >> $GITHUB_ENV
+            echo "TAG_NAME=${version}" >> $GITHUB_ENV
+            echo "is_dev=-${{ env.DEV_BRANCH_NAME }}" >> $GITHUB_ENV
           else
             echo "TAG_NAME=${version}" >> $GITHUB_ENV
           fi
 
       - name: Build and Push Docker Container
         run: |
-          docker buildx build --push --platform linux/amd64 -t ghcr.io/${{ steps.repo_nameLC.outputs.variable }}:${TAG_NAME} .
+          docker buildx build --push --platform linux/amd64 -t ghcr.io/${{ steps.repo_nameLC.outputs.variable }}:${TAG_NAME}${{env.is_dev}} .
 
   release:
     name: Create Release
@@ -252,7 +253,7 @@ jobs:
         version=$(cat ${{ env.CHANGELOG_FILE }}.tmp | grep -oP '^v\d+\.\d+\.\d+')
 
         if [ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" ]; then
-          echo "TAG_NAME=${version}-${{ env.DEV_BRANCH_NAME }}" >> $GITHUB_ENV
+          echo "TAG_NAME=${version}" >> $GITHUB_ENV
           echo "PRERELEASE=true" >> $GITHUB_ENV
         else
           echo "TAG_NAME=${version}" >> $GITHUB_ENV
