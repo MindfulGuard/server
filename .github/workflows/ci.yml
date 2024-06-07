@@ -201,8 +201,8 @@ jobs:
       - name: Get meta-information
         run: |
           source ${{env.METAINFO_FILE}}
-          echo "${APP_VERSION}" >> $GITHUB_ENV
-          echo "${APP_VERSION_RELEASE}" >> $GITHUB_ENV
+          echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
+          echo "APP_VERSION_RELEASE=${APP_VERSION_RELEASE}" >> $GITHUB_ENV
         
       - name: Check release type
         run:
@@ -262,8 +262,8 @@ jobs:
     - name: Get meta-information
       run: |
         source ${{env.METAINFO_FILE}}
-        echo "${APP_VERSION}" >> $GITHUB_ENV
-        echo "${APP_VERSION_RELEASE}" >> $GITHUB_ENV
+        echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
+        echo "APP_VERSION_RELEASE=${APP_VERSION_RELEASE}" >> $GITHUB_ENV
 
     - name: Get Change log
       run: |
