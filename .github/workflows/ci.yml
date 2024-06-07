@@ -12,6 +12,7 @@ env:
   CHANGELOG_FILE: changelog.txt
   DEV_BRANCH_NAME: dev
   MAIN_BRANCH_NAME: main
+  METAINFO_FILE: metainfo
 
 jobs:
   code_analyzer:
@@ -197,6 +198,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Get meta-information
+        run: |
+          source ${{env.METAINFO_FILE}}
+          echo "${APP_VERSION}" >> $GITHUB_ENV
+          echo "${APP_VERSION_RELEASE}" >> $GITHUB_ENV
+        
+      - name: Check release type
+        run:
+          if ["${{ github.ref }}" = "refs/heads/${{ env.MAIN_BRANCH_NAME }}"] && ["${{ env.APP_VERSION_RELEASE }}" = "false"]; then
+            echo "The main branch cannot be used for non-release versions!";
+            exit 1;
+          fi
+
+          if ["${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}"] && ["${{ env.APP_VERSION_RELEASE }}" = "true"]; then
+            echo "Use the main branch for the release build!";
+            exit 1;
+          fi
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -215,18 +234,16 @@ jobs:
       - name: Get Change log
         run: |
           sudo chmod +x .ci/get_changelog.sh
-          ./.ci/get_changelog.sh ${{env.CHANGELOG_FILE}} > ${{ env.CHANGELOG_FILE }}.tmp
+          ./.ci/get_changelog.sh ${{env.CHANGELOG_FILE}} ${{env.APP_VERSION}} > ${{ env.CHANGELOG_FILE }}.tmp
 
-      - name: Get the latest version from the change logs
+      - name: Get information about the latest version
         run: |
-          version=$(cat ${{ env.CHANGELOG_FILE }}.tmp | grep -oP '^v\d+\.\d+\.\d+')
           is_dev=
+          echo "TAG_NAME=${{env.APP_VERSION}}" >> $GITHUB_ENV
           if [ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" ]; then
-            echo "TAG_NAME=${version}" >> $GITHUB_ENV
-            echo "is_dev=-${{ env.DEV_BRANCH_NAME }}" >> $GITHUB_ENV
-          else
-            echo "TAG_NAME=${version}" >> $GITHUB_ENV
+            is_dev=-${{ env.DEV_BRANCH_NAME }}"
           fi
+          echo "${is_dev}" >> $GITHUB_ENV
 
       - name: Build and Push Docker Container
         run: |
@@ -242,21 +259,24 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
 
+    - name: Get meta-information
+      run: |
+        source ${{env.METAINFO_FILE}}
+        echo "${APP_VERSION}" >> $GITHUB_ENV
+        echo "${APP_VERSION_RELEASE}" >> $GITHUB_ENV
+
     - name: Get Change log
       run: |
         sudo chmod +x .ci/get_changelog.sh
-        ./.ci/get_changelog.sh ${{env.CHANGELOG_FILE}} > ${{ env.CHANGELOG_FILE }}.tmp
+        ./.ci/get_changelog.sh ${{env.CHANGELOG_FILE}} ${{env.APP_VERSION}} > ${{ env.CHANGELOG_FILE }}.tmp
 
     - name: Get the latest version from the change logs
       run: |
         echo "PRERELEASE=false" >> $GITHUB_ENV
-        version=$(cat ${{ env.CHANGELOG_FILE }}.tmp | grep -oP '^v\d+\.\d+\.\d+')
+        echo "TAG_NAME=${{env.APP_VERSION}}" >> $GITHUB_ENV
 
-        if [ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" ]; then
-          echo "TAG_NAME=${version}" >> $GITHUB_ENV
+        if ["${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}"] && ["${{ env.APP_VERSION_RELEASE }}" = "false"]; then
           echo "PRERELEASE=true" >> $GITHUB_ENV
-        else
-          echo "TAG_NAME=${version}" >> $GITHUB_ENV
         fi
 
     - name: Create release directory
