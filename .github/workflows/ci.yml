@@ -1,4 +1,4 @@
-name: CI-CD
+name: CI
 
 on:
   push:
@@ -187,8 +187,8 @@ jobs:
           name: test-logs
           path: test_logs
 
-  deploy:
-    name: Deploy
+  docker:
+    name: Docker
     needs: test
     runs-on: ubuntu-latest
     if: ${{ needs.test.result == 'success' && (startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/dev'))}}
@@ -233,9 +233,9 @@ jobs:
 
   release:
     name: Create Release
-    needs: deploy
+    needs: docker
     runs-on: ubuntu-latest
-    if: ${{ needs.deploy.result == 'success' }}
+    if: ${{ needs.docker.result == 'success' }}
 
     steps:
     - name: Check out code
@@ -272,7 +272,7 @@ jobs:
       with:
         body_path: ${{ env.CHANGELOG_FILE }}.tmp
         files: build-release.tar.gz
-        tag_name: ${TAG_NAME}
-        prerelease: ${PRERELEASE}
+        tag_name: ${{env.TAG_NAME}}
+        prerelease: ${{env.PRERELEASE}}
       env:
         GITHUB_TOKEN: ${{ secrets.ACTIONS }}
