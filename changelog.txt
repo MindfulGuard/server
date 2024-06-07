@@ -1,5 +1,6 @@
 v0.9.1
 
 - Versioning has been updated and CI has been updated.
+- Logging added.
 
 v0.9.0
