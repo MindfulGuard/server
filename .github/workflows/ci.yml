@@ -241,7 +241,7 @@ jobs:
           is_dev=""
           echo "TAG_NAME=${{env.APP_VERSION}}" >> $GITHUB_ENV
           if [ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" ]; then
-            is_dev=-${{ env.DEV_BRANCH_NAME }}"
+            is_dev="-${{ env.DEV_BRANCH_NAME }}"
           fi
           echo "is_dev=${is_dev}" >> $GITHUB_ENV
 
