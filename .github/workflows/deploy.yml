@@ -12,8 +12,6 @@ env:
   CHANGELOG_FILE: changelog.txt
   DEV_BRANCH_NAME: dev
   MAIN_BRANCH_NAME: main
-  TAG_NAME: ""
-  PRERELEASE: false
 
 jobs:
   code_analyzer:
@@ -229,11 +227,9 @@ jobs:
             echo "TAG_NAME=${version}" >> $GITHUB_ENV
           fi
 
-          echo "PRERELEASE=true" >> $GITHUB_ENV
-
       - name: Build and Push Docker Container
         run: |
-          docker buildx build --push --platform linux/amd64 -t ghcr.io/${{ steps.repo_nameLC.outputs.variable }}:${{env.TAG_NAME}} .
+          docker buildx build --push --platform linux/amd64 -t ghcr.io/${{ steps.repo_nameLC.outputs.variable }}:${TAG_NAME} .
 
   release:
     name: Create Release
@@ -250,9 +246,17 @@ jobs:
         sudo chmod +x .ci/get_changelog.sh
         ./.ci/get_changelog.sh ${{env.CHANGELOG_FILE}} > ${{ env.CHANGELOG_FILE }}.tmp
 
-    - name: Get branch name
-      id: branch_name
-      run: echo ::set-output name=branch::$(echo $GITHUB_REF | awk -F'/' '{print $3}')
+    - name: Get the latest version from the change logs
+      run: |
+        version=$(cat ${{ env.CHANGELOG_FILE }}.tmp | grep -oP '^v\d+\.\d+\.\d+')
+
+        if [ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" ]; then
+          echo "TAG_NAME=${version}-${{ env.DEV_BRANCH_NAME }}" >> $GITHUB_ENV
+        else
+          echo "TAG_NAME=${version}" >> $GITHUB_ENV
+        fi
+
+        echo "PRERELEASE=true" >> $GITHUB_ENV
 
     - name: Create release directory
       run: |
@@ -268,7 +272,7 @@ jobs:
       with:
         body_path: ${{ env.CHANGELOG_FILE }}.tmp
         files: build-release.tar.gz
-        tag_name: ${{ env.TAG_NAME }}
-        prerelease: ${{env.PRERELEASE}}
+        tag_name: ${TAG_NAME}
+        prerelease: ${env.PRERELEASE}
       env:
         GITHUB_TOKEN: ${{ secrets.ACTIONS }}
