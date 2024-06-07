@@ -223,8 +223,8 @@ jobs:
         run: |
           version=$(cat ${{ env.CHANGELOG_FILE }}.tmp | grep -oP '^v\d+\.\d+\.\d+')
 
-          if ["${{github.ref}}" -eq "refs/heads/${{env.DEV_BRANCH_NAME}}"] then
-            echo "TAG_NAME=${version}-${{env.DEV_BRANCH_NAME}}" >> $GITHUB_ENV
+          if [ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" ]; then
+            echo "TAG_NAME=${version}-${{ env.DEV_BRANCH_NAME }}" >> $GITHUB_ENV
           else
             echo "TAG_NAME=${version}" >> $GITHUB_ENV
           fi
