@@ -275,7 +275,7 @@ jobs:
         echo "PRERELEASE=false" >> $GITHUB_ENV
         echo "TAG_NAME=${{env.APP_VERSION}}" >> $GITHUB_ENV
 
-        if ["${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}"] && ["${{ env.APP_VERSION_RELEASE }}" = "false"]; then
+        if ["${{ env.APP_VERSION_RELEASE }}" = "false"]; then
           echo "PRERELEASE=true" >> $GITHUB_ENV
         fi
 
