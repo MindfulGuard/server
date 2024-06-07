@@ -24,7 +24,7 @@ jobs:
     - name: Dependency installation
       run: |
         pip install pylint sqlfluff
-        make pip-i
+        make bootstrap
 
     - name: Starting the analyzer (Python)
       run: pylint --rcfile=.github/configs/pylintrc.ini setup.py mindfulguard tests routines
@@ -122,7 +122,7 @@ jobs:
       - name: Installing dependencies
         run: |
           python -m pip install --upgrade pip
-          make pip-i
+          make bootstrap
 
       - name: Check if MinIO is running
         run: |
