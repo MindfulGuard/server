@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Any
 from mindfulguard.classes.database import DataBase
 from mindfulguard.classes.database.redis import Redis
-
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.models.user import ModelUser
 from mindfulguard.classes.s3 import S3

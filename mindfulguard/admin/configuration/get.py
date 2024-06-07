@@ -2,8 +2,7 @@ from http.client import BAD_REQUEST, OK
 from typing import Any
 from loguru import logger
 from mindfulguard.classes.admin.base import AdminBase
-from mindfulguard.classes.database.redis import Redis
-from mindfulguard.configuration.public import ConfigurationPublic
+from mindfulguard.api_configuration.public import ConfigurationPublic
 from mindfulguard.database.postgresql.authentication import PostgreSqlAuthentication
 from redis.commands.json.path import Path
 

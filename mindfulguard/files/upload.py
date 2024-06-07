@@ -1,8 +1,8 @@
 from http.client import BAD_REQUEST, INTERNAL_SERVER_ERROR, OK
 from typing import Any
-
 from fastapi import UploadFile
 from loguru import logger
+
 from mindfulguard.classes.files.base import FilesBase
 from mindfulguard.database.postgresql.safe import PostgreSqlSafe
 

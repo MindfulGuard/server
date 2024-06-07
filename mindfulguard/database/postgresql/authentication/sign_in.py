@@ -3,7 +3,6 @@ import asyncpg
 from mindfulguard.classes.database.postgresql.queries_base import PostgreSqlQueriesBase
 from mindfulguard.classes.models.code import ModelCode
 from mindfulguard.classes.models.token import ModelToken
-from mindfulguard.classes.models.totp_code import ModelTotpCode
 from mindfulguard.classes.models.user import ModelUser
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
 from loguru import logger

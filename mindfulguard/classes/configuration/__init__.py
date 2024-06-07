@@ -6,7 +6,7 @@ from redis.commands.json.path import Path
 
 class Configuration:
     def __init__(self, response: Response) -> None:
-        from mindfulguard.configuration.public import ConfigurationPublic
+        from mindfulguard.api_configuration.public import ConfigurationPublic
         self.__response: Response = response
         self.__configuration_public = ConfigurationPublic()
         self.__redis = Redis()

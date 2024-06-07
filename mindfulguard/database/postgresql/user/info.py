@@ -1,14 +1,12 @@
 from http.client import OK, UNAUTHORIZED
 import time
-from typing import Any
-
 from loguru import logger
+
 from mindfulguard.classes.database.postgresql.queries_base import PostgreSqlQueriesBase
 from mindfulguard.classes.models.token import ModelToken
 from mindfulguard.classes.models.user import ModelUser
 from mindfulguard.database.postgresql.authentication.is_auth import PostgreSqlIsAuth
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
-from mindfulguard.exceptions.incorrect_parameters import ExceptionIncorrectParameters
 
 
 class PostgreSqlUserInformation(PostgreSqlQueriesBase):

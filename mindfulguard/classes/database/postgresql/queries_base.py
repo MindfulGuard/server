@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from mindfulguard.classes.database.postgresql.connection_base import PostgreSqlConnectionBase
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
 
 

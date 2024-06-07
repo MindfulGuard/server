@@ -1,7 +1,5 @@
 from mindfulguard.classes.database.postgresql.queries_base import PostgreSqlQueriesBase
-from mindfulguard.classes.models.code import ModelCode
 from mindfulguard.classes.models.token import ModelToken
-from mindfulguard.classes.models.user import ModelUser
 from mindfulguard.database.postgresql.connection import PostgreSqlConnection
 from mindfulguard.database.postgresql.user.get_tokens import PostgreSqlUserGetTokens
 from mindfulguard.database.postgresql.user.info import PostgreSqlUserInformation

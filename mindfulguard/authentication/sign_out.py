@@ -1,5 +1,4 @@
 from http.client import BAD_REQUEST
-from typing import Any, Coroutine
 from fastapi import Request
 from mindfulguard.classes.authentication.base import AuthenticationBase
 

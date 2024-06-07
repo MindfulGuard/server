@@ -1,5 +1,5 @@
 from http.client import BAD_REQUEST
-from fastapi import Request, Response
+from fastapi import Request
 from loguru import logger
 from mindfulguard.classes.authentication.base import AuthenticationBase
 from mindfulguard.net.ip import get_client_ip

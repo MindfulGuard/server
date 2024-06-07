@@ -2,9 +2,6 @@ import random
 import pyotp
 from loguru import logger
 
-from mindfulguard.validation import Validation
-
-
 class Totp:
     def __init__(self, secret_code: str) -> None:
         self.__secret_code = secret_code
