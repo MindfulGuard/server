@@ -12,7 +12,7 @@ services:
       - internal-network
 
   mindfulguard_server:
-    image: ghcr.io/mindfulguard/server:main
+    image: ghcr.io/mindfulguard/server:v0.9.2
     container_name: mindfulguard_server
     restart: always
     env_file:

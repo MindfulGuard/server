@@ -1,3 +1,8 @@
+v0.9.2
+
+- Fixed a bug that caused an exception to occur when uploading files.
+- Test for uploading files to the server has been updated.
+
 v0.9.1
 
 - Versioning has been updated and CI has been updated.
