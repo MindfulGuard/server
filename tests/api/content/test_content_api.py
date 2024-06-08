@@ -193,6 +193,13 @@ def test_content_api():
     safe_and_items_and_files_information = safe_get_response.json()
     safe_id: str = safe_and_items_and_files_information['safes'][0]['id']
 
+    content_file_str: dict[str, str] = {'files': 'string'}
+    assert content_upload.execute(
+        with_token_OK(token, 'multipart/form-data;'), # type: ignore
+        content_file_str,
+        safe_id
+    ).status_code == BAD_REQUEST
+
     content_file: dict[str, BufferedReader] = {'files': open(f'{PATH_TO_FILES}/{FILE_NAMES[0]}', 'rb')}
     assert content_upload.execute(
         with_token_OK(token, 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'),

@@ -1,4 +1,4 @@
-from http.client import OK
+from http.client import BAD_REQUEST, OK
 from io import BytesIO
 from fastapi import Request, Response, UploadFile
 from fastapi.responses import StreamingResponse
@@ -19,22 +19,28 @@ class Files:
         safe_id: str,
         request: Request
     ) -> None:
-        logger.debug("Upload method called with token: {}, safe_id: {}", token, safe_id)
-        obj = Upload()
-        await obj.auth(token, safe_id)
-        if obj.status_code != OK:
-            logger.debug("Authorization failed with status code: {}", obj.status_code)
-            self.__response.status_code = obj.status_code
-            return
+        try:
+            logger.debug("Upload method called with token: {}, safe_id: {}", token, safe_id)
+            obj = Upload()
+            await obj.auth(token, safe_id)
+            if obj.status_code != OK:
+                logger.debug("Authorization failed with status code: {}", obj.status_code)
+                self.__response.status_code = obj.status_code
+                return
 
-        files = await request.form()
-        files_list: list[UploadFile] = [value for key, value in files.multi_items() if key == 'files']  # type: ignore
-        logger.debug("Files to upload: {}", [file.filename for file in files_list])
-        
-        await obj.execute(files_list)
-        self.__response.status_code = obj.status_code
-        logger.debug("Upload completed with status code: {}", obj.status_code)
-        return
+            files = await request.form()
+            files_list: list[UploadFile] = [value for key, value in files.multi_items() if key == 'files']  # type: ignore
+            logger.debug("Files to upload: {}", [file.filename for file in files_list])
+            
+            await obj.execute(files_list)
+            self.__response.status_code = obj.status_code
+            logger.debug("Upload completed with status code: {}", self.__response.status_code)
+            return
+        except AttributeError as e:
+            self.__response.status_code = BAD_REQUEST
+            logger.warning("Error when uploading files: {}", e)
+        finally:
+            logger.warning("Upload completed with status code: {}", self.__response.status_code)
     
     async def download(
         self,

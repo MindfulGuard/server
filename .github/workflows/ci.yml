@@ -231,11 +231,6 @@ jobs:
         run: |
           echo "variable=${{ github.repository }}" | tr '[:upper:]' '[:lower:]' >> "$GITHUB_OUTPUT" 
 
-      - name: Get Change log
-        run: |
-          sudo chmod +x .ci/get_changelog.sh
-          ./.ci/get_changelog.sh ${{env.CHANGELOG_FILE}} ${{env.APP_VERSION}} > ${{ env.CHANGELOG_FILE }}.tmp
-
       - name: Get information about the latest version
         run: |
           is_dev=""
