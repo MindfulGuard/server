@@ -4,9 +4,23 @@ on:
   push:
     branches:
       - '*'
+    paths-ignore:
+      - 'LICENSE'
+      - 'README.md'
+      - '.gitignore'
+      - 'client/**'
+      - 'changelog.txt'
+      - 'mindfulguard/api/v1/README.md'
   pull_request:
     branches:
       - '*'
+    paths-ignore:
+      - 'LICENSE'
+      - 'README.md'
+      - '.gitignore'
+      - 'client/**'
+      - 'changelog.txt'
+      - 'mindfulguard/api/v1/README.md'
 
 env:
   CHANGELOG_FILE: changelog.txt
@@ -203,9 +217,15 @@ jobs:
           source ${{env.METAINFO_FILE}}
           echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
           echo "APP_VERSION_RELEASE=${APP_VERSION_RELEASE}" >> $GITHUB_ENV
+          echo "APP_PUBLISH_RELEASE=${APP_PUBLISH_RELEASE}" >> $GITHUB_ENV
         
-      - name: Check release type
-        run:
+      - name: Release Permission Check
+        run: |
+          if [["${{ env.APP_PUBLISH_RELEASE }}" = "false"]]; then
+            echo "Release publication cancellation!";
+            exit 1;
+          fi
+
           if [[ "${{ github.ref }}" = "refs/heads/${{ env.MAIN_BRANCH_NAME }}" && "${{ env.APP_VERSION_RELEASE }}" = "false" ]]; then
             echo "The main branch cannot be used for non-release versions!";
             exit 1;
@@ -265,7 +285,7 @@ jobs:
         sudo chmod +x .ci/get_changelog.sh
         ./.ci/get_changelog.sh ${{env.CHANGELOG_FILE}} ${{env.APP_VERSION}} > ${{ env.CHANGELOG_FILE }}.tmp
 
-    - name: Get the latest version from the change logs
+    - name: Get the latest version
       run: |
         echo "PRERELEASE=false" >> $GITHUB_ENV
         echo "TAG_NAME=${{ env.APP_VERSION }}" >> $GITHUB_ENV
