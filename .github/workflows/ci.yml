@@ -222,7 +222,7 @@ jobs:
       - name: Release Permission Check
         run: |
           if [[ "${{ env.APP_PUBLISH_RELEASE }}" = "false" ]]; then
-            echo "Release publication cancellation!";
+            echo "The release publication has been canceled!";
             exit 1;
           fi
 
