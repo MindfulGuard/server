@@ -222,17 +222,22 @@ jobs:
       - name: Release Permission Check
         run: |
           if [[ "${{ env.APP_PUBLISH_RELEASE }}" = "false" ]]; then
-            echo "The release publication has been canceled!";
-            exit 1;
+            if [[ "${{ github.ref }}" = "refs/heads/${{ env.MAIN_BRANCH_NAME }}" ]]; then
+              echo "Attention, the code in the ${{ env.MAIN_BRANCH_NAME }} branch must necessarily be published to releases!";
+              exit 1;
+            else
+              echo "The release publication has been canceled!";
+              exit 1;
+            fi
           fi
 
           if [[ "${{ github.ref }}" = "refs/heads/${{ env.MAIN_BRANCH_NAME }}" && "${{ env.APP_VERSION_RELEASE }}" = "false" ]]; then
-            echo "The main branch cannot be used for non-release versions!";
+            echo "The ${{ env.MAIN_BRANCH_NAME }} branch cannot be used for non-release versions!";
             exit 1;
           fi
 
           if [[ "${{ github.ref }}" = "refs/heads/${{ env.DEV_BRANCH_NAME }}" && "${{ env.APP_VERSION_RELEASE }}" = "true" ]]; then
-            echo "Use the main branch for the release build!";
+            echo "Use the ${{ env.MAIN_BRANCH_NAME }} branch for the release build!";
             exit 1;
           fi
 
