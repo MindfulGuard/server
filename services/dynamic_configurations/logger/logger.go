@@ -63,23 +63,3 @@ func NewLogger(logLevel string) {
 
 	Logger.Info("Logger initialized.")
 }
-
-func (l *logger) Info(msg string, fields ...zap.Field) {
-	l.Logger.Info(msg, fields...)
-}
-
-func (l *logger) Debug(msg string, fields ...zap.Field) {
-	l.Logger.Debug(msg, fields...)
-}
-
-func (l *logger) Warn(msg string, fields ...zap.Field) {
-	l.Logger.Warn(msg, fields...)
-}
-
-func (l *logger) Error(msg string, err error, fields ...zap.Field) {
-	l.Logger.Error(msg, append(fields, zap.Error(err))...)
-}
-
-func (l *logger) Fatal(msg string, err error, fields ...zap.Field) {
-	l.Logger.Fatal(msg, append(fields, zap.Error(err))...)
-}

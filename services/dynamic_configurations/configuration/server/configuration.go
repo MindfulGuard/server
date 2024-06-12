@@ -49,7 +49,7 @@ func getEnvConfiguration() *EnvConfiguration {
 	)
 
 	if errorMsg != "" {
-		logger.Logger.Fatal("Error getting environment variables.", errors.New(errorMsg))
+		logger.Logger.Fatal("Error getting environment variables.", zap.Error(errors.New(errorMsg)))
 	}
 
 	logger.Logger.Info("Values of environment variables successfully obtained.")

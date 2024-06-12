@@ -17,7 +17,8 @@ message PutRequest {
 message PutResponse {
     int64 requestID = 1;
     string timestamp = 2;
-    string message = 3;
+    float executionTime = 3;
+    string message = 4;
 }
 
 message GetRequest {
@@ -27,6 +28,7 @@ message GetRequest {
 message GetResponse {
     int64 requestID = 1;
     string timestamp = 2;
-    string message = 3;
-    bytes value = 4;
+    float executionTime = 3;
+    string message = 4;
+    bytes value = 5;
 }
