@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type DynamicConfigurationsClient interface {
 	Put(ctx context.Context, in *PutRequest, opts ...grpc.CallOption) (*PutResponse, error)
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 }
 
 type dynamicConfigurationsClient struct {
@@ -52,12 +53,22 @@ func (c *dynamicConfigurationsClient) Get(ctx context.Context, in *GetRequest, o
 	return out, nil
 }
 
+func (c *dynamicConfigurationsClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+	out := new(DeleteResponse)
+	err := c.cc.Invoke(ctx, "/dynamic_configurations.DynamicConfigurations/Delete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DynamicConfigurationsServer is the server API for DynamicConfigurations service.
 // All implementations must embed UnimplementedDynamicConfigurationsServer
 // for forward compatibility
 type DynamicConfigurationsServer interface {
 	Put(context.Context, *PutRequest) (*PutResponse, error)
 	Get(context.Context, *GetRequest) (*GetResponse, error)
+	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	mustEmbedUnimplementedDynamicConfigurationsServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedDynamicConfigurationsServer) Put(context.Context, *PutRequest
 }
 func (UnimplementedDynamicConfigurationsServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedDynamicConfigurationsServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedDynamicConfigurationsServer) mustEmbedUnimplementedDynamicConfigurationsServer() {}
 
@@ -120,6 +134,24 @@ func _DynamicConfigurations_Get_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DynamicConfigurations_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DynamicConfigurationsServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dynamic_configurations.DynamicConfigurations/Delete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DynamicConfigurationsServer).Delete(ctx, req.(*DeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DynamicConfigurations_ServiceDesc is the grpc.ServiceDesc for DynamicConfigurations service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var DynamicConfigurations_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _DynamicConfigurations_Get_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _DynamicConfigurations_Delete_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
