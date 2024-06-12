@@ -10,7 +10,7 @@ test:
 	$(GO) test -coverpkg=./... ./...
 
 PROTO-GEN-OUT-PATH = grpc/gen
-PROTO-FILES-DIR = services/configuration/grpc
+PROTO-FILES-DIR = services/configuration/grpc/$(PROJECT-NAME)
 
 ifeq ($(OS),Windows_NT)
 	ROOT_DIR = $(shell powershell -Command "(Get-Location).Path | Split-Path -Parent | Split-Path -Parent")
