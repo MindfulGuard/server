@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 
-	//server_configuration "github.com/mindfulguard/server/dynamic_configurations/configuration/server"
 	"github.com/mindfulguard/server/dynamic_configurations/logger"
 )
 
@@ -24,6 +23,4 @@ func main() {
 	flag.Parse()
 
 	logger.NewLogger(*logLevel)
-
-	//serv_cfg := server_configuration.NewServerConfiguration()
 }

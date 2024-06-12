@@ -6,12 +6,12 @@ import (
 	"github.com/mindfulguard/server/dynamic_configurations/logger"
 )
 
-type consul struct {
+type Consul struct {
 	conf   *server_configuration.EnvConfiguration
-	client *consul_api.Client
+	Client *consul_api.Client
 }
 
-func NewConsul(envConfig *server_configuration.EnvConfiguration) *consul {
+func NewConsul(envConfig *server_configuration.EnvConfiguration) *Consul {
 	logger.Logger.Info("Consul client initialization...")
 
 	config := consul_api.DefaultConfig()
@@ -25,8 +25,8 @@ func NewConsul(envConfig *server_configuration.EnvConfiguration) *consul {
 
 	logger.Logger.Info("Consul client successfully initialized.")
 
-	return &consul{
+	return &Consul{
 		conf:   envConfig,
-		client: client,
+		Client: client,
 	}
 }
