@@ -224,10 +224,8 @@ jobs:
 
       - name: Install Consul CLI
         run: |
-          mkdir -p $HOME/bin
-          export PATH="$HOME/bin:$PATH"
           curl -Lo consul.zip https://releases.hashicorp.com/consul/1.18.0/consul_1.18.0_linux_amd64.zip
-          unzip consul.zip -d $HOME/bin
+          unzip consul.zip -d /usr/local/bin
           consul --version
 
       - name: Install jq
