@@ -59,7 +59,7 @@ jobs:
       continue-on-error: true
 
   test:
-    name: Test Branches (main & dev)
+    name: Test of the main branches (main & dev)
     if: ${{(startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/dev'))}}
     runs-on: ubuntu-latest
 
