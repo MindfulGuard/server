@@ -55,7 +55,8 @@ jobs:
       continue-on-error: true
 
   test:
-    name: Test
+    name: Test Branches (main & dev)
+    if: ${{(startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/dev'))}}
     runs-on: ubuntu-latest
 
     env:
@@ -202,6 +203,63 @@ jobs:
           name: test-logs
           path: test_logs
 
+  test_service_dynamic_configurations:
+    name: Test Service "Dynamic configurations"
+    if: ${{startsWith(github.ref, 'refs/heads/service/dynamic_configurations')}}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.20', '1.21', '1.22']
+      
+    env:
+      SERVICE_NAME: dynamic_configurations
+      SERVICE_PATH: services/dynamic_configurations
+      DYNAMIC_CONFIGURATIONS_CONSUL_HOST: localhost:8500
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Consul CLI
+        run: |
+          mkdir -p $HOME/bin
+          export PATH="$HOME/bin:$PATH"
+          curl -Lo consul.zip https://releases.hashicorp.com/consul/1.18.0/consul_1.18.0_linux_amd64.zip
+          unzip consul.zip -d $HOME/bin
+          consul --version
+
+      - name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          jq --version
+
+      - name: Generate and store Consul SecretID
+        env:
+          CONSUL_HTTP_ADDR: http://${{env.DYNAMIC_CONFIGURATIONS_CONSUL_HOST}}
+        run: |
+          export CONSUL_HTTP_ADDR="http://${{env.DYNAMIC_CONFIGURATIONS_CONSUL_HOST}}"
+          secretID=$(consul acl token create -policy-name <policy-name> | jq -r '.SecretID')
+          echo "DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID=$secretID" >> $GITHUB_ENV
+          echo "DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID stored in GITHUB_ENV."
+          echo "DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID: $DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID"
+
+      - name: Setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Change Directory
+        run: cd ${{env.SERVICE_PATH}}
+
+      - name: Unit Test
+        run: make test
+
+      - name: Server Test
+        run: |
+          make build
+          make test-grpc
+  
   docker:
     name: Docker
     needs: test
