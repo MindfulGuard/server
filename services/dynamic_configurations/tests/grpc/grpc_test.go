@@ -16,65 +16,53 @@ const (
 	address = "localhost:9002"
 )
 
-func TestDynamicConfigurationsServicePut(t *testing.T) {
-	// Set up a connection to the server
+func TestDynamicConfigurationsServicePutAndGet(t *testing.T) {
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		t.Fatalf("Failed to dial server: %v", err)
 	}
 	defer conn.Close()
 
-	// Create a client instance
 	client := pb.NewDynamicConfigurationsClient(conn)
 
-	// Prepare Put request
-	req := &pb.PutRequest{
-		Key:   "test_key",
-		Value: []byte("test_value"),
+	// Test data
+	key := "test_key"
+	value := []byte("test_value")
+
+	// Put request
+	putReq := &pb.PutRequest{
+		Key:   key,
+		Value: value,
 	}
 
-	// Call Put RPC
+	// Context with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	resp, err := client.Put(ctx, req)
+	// Put operation
+	_, err = client.Put(ctx, putReq)
 	if err != nil {
 		t.Fatalf("Put failed: %v", err)
 	}
 
-	// Assert on response if needed
-	if resp.Timestamp == "" || resp.ExecutionTimeMilliseconds <= 0 {
-		t.Errorf("Unexpected response: %v", resp)
-	}
-}
-
-func TestDynamicConfigurationsServiceGet(t *testing.T) {
-	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		t.Fatalf("Failed to dial server: %v", err)
-	}
-	defer conn.Close()
-
-	client := pb.NewDynamicConfigurationsClient(conn)
-
-	req := &pb.GetRequest{
-		Key: "test_key",
+	// Get request
+	getReq := &pb.GetRequest{
+		Key: key,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	resp, err := client.Get(ctx, req)
+	// Get operation
+	getResp, err := client.Get(ctx, getReq)
 	if err != nil {
 		t.Fatalf("Get failed: %v", err)
 	}
 
-	if resp.Timestamp == "" || resp.ExecutionTimeMilliseconds <= 0 || len(resp.Value) == 0 {
-		t.Errorf("Unexpected response: %v", resp)
+	// Assert on retrieved value
+	if string(getResp.Value) != string(value) {
+		t.Errorf("Expected value %s, got %s", value, getResp.Value)
 	}
 }
 
-func TestDynamicConfigurationsServiceGetList(t *testing.T) {
+func TestDynamicConfigurationsServiceDeleteAndGet(t *testing.T) {
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		t.Fatalf("Failed to dial server: %v", err)
@@ -83,74 +71,71 @@ func TestDynamicConfigurationsServiceGetList(t *testing.T) {
 
 	client := pb.NewDynamicConfigurationsClient(conn)
 
-	req := &pb.GetListRequest{
-		Prefix: "test_prefix_that_does_not_exist",
+	// Test data
+	key := "test_key"
+	value := []byte("test_value")
+
+	// Put request
+	putReq := &pb.PutRequest{
+		Key:   key,
+		Value: value,
 	}
 
+	// Context with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	resp, err := client.GetList(ctx, req)
+	// Put operation
+	_, err = client.Put(ctx, putReq)
 	if err != nil {
-		t.Fatalf("GetList failed: %v", err)
+		t.Fatalf("Put failed: %v", err)
 	}
 
-	if resp.Timestamp == "" || resp.ExecutionTimeMilliseconds <= 0 {
-		t.Errorf("Unexpected response: %v", resp)
+	// Delete request
+	delReq := &pb.DeleteRequest{
+		Key: key,
 	}
 
-	// Check if the list is empty or not
-	if len(resp.List) == 0 {
-		fmt.Println("No items found with the prefix:", req.Prefix)
-	} else {
-		fmt.Printf("Received list: %v\n", resp.List)
-	}
-}
-
-func TestDynamicConfigurationsServiceDelete(t *testing.T) {
-	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		t.Fatalf("Failed to dial server: %v", err)
-	}
-	defer conn.Close()
-
-	client := pb.NewDynamicConfigurationsClient(conn)
-
-	req := &pb.DeleteRequest{
-		Key: "test_key",
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	resp, err := client.Delete(ctx, req)
+	// Delete operation
+	_, err = client.Delete(ctx, delReq)
 	if err != nil {
 		t.Fatalf("Delete failed: %v", err)
 	}
 
-	if resp.Timestamp == "" || resp.ExecutionTimeMilliseconds <= 0 {
-		t.Errorf("Unexpected response: %v", resp)
+	// Get request
+	getReq := &pb.GetRequest{
+		Key: key,
+	}
+
+	// Get operation
+	_, err = client.Get(ctx, getReq)
+	if err == nil {
+		t.Errorf("Expected error when getting deleted key, but got nil")
+	} else {
+		fmt.Printf("Expected error occurred: %v\n", err)
 	}
 }
 
-func TestDynamicConfigurationsServiceDeleteTree(t *testing.T) {
-	// Set up a connection to the server
+func TestDynamicConfigurationsServiceGetListWithPrefix(t *testing.T) {
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		t.Fatalf("Failed to dial server: %v", err)
 	}
 	defer conn.Close()
 
-	// Create a client instance
 	client := pb.NewDynamicConfigurationsClient(conn)
 
-	// Prepare data by putting some keys with the specified prefix
-	for i := 1; i <= 5; i++ {
-		key := fmt.Sprintf("test_prefix_%d", i)
-		value := fmt.Sprintf("value_%d", i)
+	// Test data
+	prefix := "test_prefix"
+
+	// Put multiple keys with the prefix
+	for i := 1; i <= 3; i++ {
+		key := fmt.Sprintf("%s_%d", prefix, i)
+		value := []byte(fmt.Sprintf("value_%d", i))
+
 		putReq := &pb.PutRequest{
 			Key:   key,
-			Value: []byte(value),
+			Value: value,
 		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -162,20 +147,92 @@ func TestDynamicConfigurationsServiceDeleteTree(t *testing.T) {
 		}
 	}
 
-	// Delete keys with the specified prefix
-	req := &pb.DeleteTreeRequest{
-		Prefix: "test_prefix",
+	// GetList request
+	getListReq := &pb.GetListRequest{
+		Prefix: prefix,
 	}
 
+	// Context with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	resp, err := client.DeleteTree(ctx, req)
+	// GetList operation
+	getListResp, err := client.GetList(ctx, getListReq)
+	if err != nil {
+		t.Fatalf("GetList failed: %v", err)
+	}
+
+	// Assert on the received list
+	expectedNumItems := 3
+	if len(getListResp.List) != expectedNumItems {
+		t.Errorf("Expected %d items with prefix %s, but got %d", expectedNumItems, prefix, len(getListResp.List))
+	}
+}
+
+func TestDynamicConfigurationsServiceDeleteTreeWithPrefix(t *testing.T) {
+	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		t.Fatalf("Failed to dial server: %v", err)
+	}
+	defer conn.Close()
+
+	client := pb.NewDynamicConfigurationsClient(conn)
+
+	// Test data
+	prefix := "test_prefix"
+
+	// Put multiple keys with the prefix
+	for i := 1; i <= 3; i++ {
+		key := fmt.Sprintf("%s_%d", prefix, i)
+		value := []byte(fmt.Sprintf("value_%d", i))
+
+		putReq := &pb.PutRequest{
+			Key:   key,
+			Value: value,
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		_, err := client.Put(ctx, putReq)
+		if err != nil {
+			t.Fatalf("Put failed: %v", err)
+		}
+	}
+
+	// DeleteTree request
+	delTreeReq := &pb.DeleteTreeRequest{
+		Prefix: prefix,
+	}
+
+	// Context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	// DeleteTree operation
+	delTreeResp, err := client.DeleteTree(ctx, delTreeReq)
 	if err != nil {
 		t.Fatalf("DeleteTree failed: %v", err)
 	}
 
-	if resp.Timestamp == "" || resp.ExecutionTimeMilliseconds <= 0 || resp.Deleted <= 0 {
-		t.Errorf("Unexpected response: %v", resp)
+	// Assert on the number of deleted items
+	expectedDeleted := 3
+	if delTreeResp.Deleted != int32(expectedDeleted) {
+		t.Errorf("Expected %d items to be deleted with prefix %s, but got %d", expectedDeleted, prefix, delTreeResp.Deleted)
+	}
+
+	// Verify that keys with the prefix no longer exist
+	verifyKeys := []string{fmt.Sprintf("%s_1", prefix), fmt.Sprintf("%s_2", prefix), fmt.Sprintf("%s_3", prefix)}
+	for _, key := range verifyKeys {
+		getReq := &pb.GetRequest{
+			Key: key,
+		}
+
+		_, err := client.Get(ctx, getReq)
+		if err == nil {
+			t.Errorf("Expected error when getting deleted key %s, but got nil", key)
+		} else {
+			fmt.Printf("Expected error occurred for key %s: %v\n", key, err)
+		}
 	}
 }
