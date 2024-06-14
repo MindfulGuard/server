@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - '*'
+      - 'service/**'
     paths-ignore:
       - 'LICENSE'
       - 'README.md'
@@ -14,6 +15,7 @@ on:
   pull_request:
     branches:
       - '*'
+      - 'service/**'
     paths-ignore:
       - 'LICENSE'
       - 'README.md'
