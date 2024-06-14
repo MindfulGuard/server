@@ -1,13 +1,42 @@
 GO = go
 PROJECT-NAME = dynamic_configurations
 
+BUILD-DIR = build/
+
+ifeq ($(OS),Windows_NT)
+	OUTPUT-FILE = $(PROJECT-NAME).exe
+else
+	OUTPUT-FILE = $(PROJECT-NAME)
+endif
+
 .PHONY: build
 build:
-	$(GO) build -o $(PROJECT-NAME)
+	$(GO) build -o $(BUILD-DIR)$(OUTPUT-FILE)
 
 .PHONY: test
 test:
-	$(GO) test -coverpkg=./... ./...
+	$(GO) test -v -tags unittests -coverpkg=./... ./...
+
+SERVER-PORT = 9002
+
+ifeq ($(OS),Windows_NT)
+    START_SERVER := powershell -Command "Start-Process -NoNewWindow -FilePath .\$(BUILD-DIR)$(OUTPUT-FILE) -ArgumentList '-LOG-LEVEL','DEBUG','-PORT','$(SERVER-PORT)'; Start-Sleep -Seconds 1"
+    STOP_SERVER := powershell -Command "Stop-Process -Name $(PROJECT-NAME) -Force"
+    RUN_TESTS := powershell -Command "& { $(GO) test -v -tags servertests -coverpkg=./... ./...; if ($$LASTEXITCODE -ne 0) { $(STOP_SERVER); exit 1 } }; $(STOP_SERVER)"
+else
+    START_SERVER := ./$(BUILD-DIR)$(OUTPUT-FILE) -LOG-LEVEL DEBUG -PORT $(SERVER-PORT) &
+    STOP_SERVER := pkill -f $(PROJECT-NAME)
+    DELAY := sleep 1
+    RUN_TESTS := $(GO) test -v -tags servertests -coverpkg=./... ./... ; TEST_RESULT=$$?; $(STOP_SERVER); exit $$TEST_RESULT
+endif
+
+.PHONY: test-grpc
+test-grpc:
+	@echo "Starting server..."
+	@$(START_SERVER)
+	$(DELAY)
+	@echo "Running tests..."
+	@$(RUN_TESTS)
 
 PROTO-GEN-OUT-PATH = grpc/gen
 PROTO-FILES-DIR = services/configuration/grpc/$(PROJECT-NAME)

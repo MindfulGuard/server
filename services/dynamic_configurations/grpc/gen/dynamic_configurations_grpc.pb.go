@@ -24,7 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 type DynamicConfigurationsClient interface {
 	Put(ctx context.Context, in *PutRequest, opts ...grpc.CallOption) (*PutResponse, error)
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
+	GetList(ctx context.Context, in *GetListRequest, opts ...grpc.CallOption) (*GetListResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	DeleteTree(ctx context.Context, in *DeleteTreeRequest, opts ...grpc.CallOption) (*DeleteTreeResponse, error)
 }
 
 type dynamicConfigurationsClient struct {
@@ -53,9 +55,27 @@ func (c *dynamicConfigurationsClient) Get(ctx context.Context, in *GetRequest, o
 	return out, nil
 }
 
+func (c *dynamicConfigurationsClient) GetList(ctx context.Context, in *GetListRequest, opts ...grpc.CallOption) (*GetListResponse, error) {
+	out := new(GetListResponse)
+	err := c.cc.Invoke(ctx, "/dynamic_configurations.DynamicConfigurations/GetList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dynamicConfigurationsClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
 	out := new(DeleteResponse)
 	err := c.cc.Invoke(ctx, "/dynamic_configurations.DynamicConfigurations/Delete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dynamicConfigurationsClient) DeleteTree(ctx context.Context, in *DeleteTreeRequest, opts ...grpc.CallOption) (*DeleteTreeResponse, error) {
+	out := new(DeleteTreeResponse)
+	err := c.cc.Invoke(ctx, "/dynamic_configurations.DynamicConfigurations/DeleteTree", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +88,9 @@ func (c *dynamicConfigurationsClient) Delete(ctx context.Context, in *DeleteRequ
 type DynamicConfigurationsServer interface {
 	Put(context.Context, *PutRequest) (*PutResponse, error)
 	Get(context.Context, *GetRequest) (*GetResponse, error)
+	GetList(context.Context, *GetListRequest) (*GetListResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	DeleteTree(context.Context, *DeleteTreeRequest) (*DeleteTreeResponse, error)
 	mustEmbedUnimplementedDynamicConfigurationsServer()
 }
 
@@ -82,8 +104,14 @@ func (UnimplementedDynamicConfigurationsServer) Put(context.Context, *PutRequest
 func (UnimplementedDynamicConfigurationsServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
+func (UnimplementedDynamicConfigurationsServer) GetList(context.Context, *GetListRequest) (*GetListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetList not implemented")
+}
 func (UnimplementedDynamicConfigurationsServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedDynamicConfigurationsServer) DeleteTree(context.Context, *DeleteTreeRequest) (*DeleteTreeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTree not implemented")
 }
 func (UnimplementedDynamicConfigurationsServer) mustEmbedUnimplementedDynamicConfigurationsServer() {}
 
@@ -134,6 +162,24 @@ func _DynamicConfigurations_Get_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DynamicConfigurations_GetList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DynamicConfigurationsServer).GetList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dynamic_configurations.DynamicConfigurations/GetList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DynamicConfigurationsServer).GetList(ctx, req.(*GetListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DynamicConfigurations_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
@@ -148,6 +194,24 @@ func _DynamicConfigurations_Delete_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DynamicConfigurationsServer).Delete(ctx, req.(*DeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DynamicConfigurations_DeleteTree_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTreeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DynamicConfigurationsServer).DeleteTree(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/dynamic_configurations.DynamicConfigurations/DeleteTree",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DynamicConfigurationsServer).DeleteTree(ctx, req.(*DeleteTreeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -168,8 +232,16 @@ var DynamicConfigurations_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _DynamicConfigurations_Get_Handler,
 		},
 		{
+			MethodName: "GetList",
+			Handler:    _DynamicConfigurations_GetList_Handler,
+		},
+		{
 			MethodName: "Delete",
 			Handler:    _DynamicConfigurations_Delete_Handler,
+		},
+		{
+			MethodName: "DeleteTree",
+			Handler:    _DynamicConfigurations_DeleteTree_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

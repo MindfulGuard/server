@@ -3,7 +3,6 @@ package consul
 import (
 	consul_api "github.com/hashicorp/consul/api"
 	server_configuration "github.com/mindfulguard/server/dynamic_configurations/configuration/server"
-	"github.com/mindfulguard/server/dynamic_configurations/logger"
 	"go.uber.org/zap"
 )
 
@@ -13,7 +12,7 @@ type Consul struct {
 }
 
 func NewConsul(envConfig *server_configuration.EnvConfiguration) *Consul {
-	logger.Logger.Info("Consul client initialization...")
+	zap.L().Info("Consul client initialization...")
 
 	config := consul_api.DefaultConfig()
 	config.Address = envConfig.Host
@@ -21,10 +20,10 @@ func NewConsul(envConfig *server_configuration.EnvConfiguration) *Consul {
 
 	client, err := consul_api.NewClient(config)
 	if err != nil {
-		logger.Logger.Error("Failed to initialize the client for Consul.", zap.Error(err))
+		zap.L().Error("Failed to initialize the client for Consul.", zap.Error(err))
 	}
 
-	logger.Logger.Info("Consul client successfully initialized.")
+	zap.L().Info("Consul client successfully initialized.")
 
 	return &Consul{
 		conf:   envConfig,

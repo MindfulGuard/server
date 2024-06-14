@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package dynamic_configurations;
+
+option go_package = "dynamic_configurations.v1;v1";
+
+service DynamicConfigurations {
+    rpc Put(PutRequest) returns (PutResponse) {}
+    rpc Get(GetRequest) returns (GetResponse) {}
+    rpc GetList(GetListRequest) returns (GetListResponse) {}
+    rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+    rpc DeleteTree(DeleteTreeRequest) returns (DeleteTreeResponse) {}
+}
+
+message PutRequest {
+    string key = 1;
+    bytes value = 2;
+}
+
+message PutResponse {
+    string timestamp = 1;
+    int64 executionTimeMilliseconds = 2;
+}
+
+message GetRequest {
+    string key = 1;
+}
+
+message GetResponse {
+    string timestamp = 1;
+    int64 executionTimeMilliseconds = 2;
+    bytes value = 3;
+}
+
+message GetListRequest {
+    string prefix = 1;
+}
+
+message GetListResponse {
+    string timestamp = 1;
+    int64 executionTimeMilliseconds = 2;
+    repeated string list = 3;
+}
+
+message DeleteRequest {
+    string key = 1;
+}
+
+message DeleteResponse {
+    string timestamp = 1;
+    int64 executionTimeMilliseconds = 2;
+}
+
+message DeleteTreeRequest {
+    string prefix = 1;
+}
+
+message DeleteTreeResponse {
+    string timestamp = 1;
+    int64 executionTimeMilliseconds = 2;
+    int32 deleted = 3;
+}

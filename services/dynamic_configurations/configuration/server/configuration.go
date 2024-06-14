@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mindfulguard/server/dynamic_configurations/logger"
 	"go.uber.org/zap"
 )
 
 const (
-	envSecretIDName string = "CONSUL_SECRET_ID"
-	envHostName     string = "CONSUL_HOST"
+	envSecretIDName string = "DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID"
+	envHostName     string = "DYNAMIC_CONFIGURATIONS_CONSUL_HOST"
 )
 
 type EnvConfiguration struct {
@@ -23,47 +22,52 @@ type ServerConfiguration struct {
 	Env *EnvConfiguration
 }
 
-func getEnvConfiguration() *EnvConfiguration {
-	logger.Logger.Info("Getting values of environment variables...")
+func getEnvConfiguration() (*EnvConfiguration, error) {
+	zap.L().Info("Getting values of environment variables...")
 
-	var secretID string = ""
-	var host string = ""
-	var errorMsg string = ""
+	var secretID string
+	var host string
+	var errorMsg string
 
 	if val := os.Getenv(envSecretIDName); val == "" {
-		errorMsg += fmt.Sprintf("Missing %s in environment variables!\n", envSecretIDName)
+		errorMsg += fmt.Sprintf("Missing %s in environment variables!", envSecretIDName)
 	} else {
 		secretID = val
 	}
 
 	if val := os.Getenv(envHostName); val == "" {
-		errorMsg += fmt.Sprintf("Missing %s in environment variables!\n", envHostName)
+		errorMsg += fmt.Sprintf(" Missing %s in environment variables!", envHostName)
 	} else {
 		host = val
 	}
 
-	logger.Logger.Debug(
+	zap.L().Debug(
 		"Environment variables data.",
 		zap.String(envSecretIDName, secretID),
 		zap.String(envHostName, host),
 	)
 
 	if errorMsg != "" {
-		logger.Logger.Fatal("Error getting environment variables.", zap.Error(errors.New(errorMsg)))
+		return nil, errors.New(errorMsg)
 	}
 
-	logger.Logger.Info("Values of environment variables successfully obtained.")
+	zap.L().Info("Values of environment variables successfully obtained.")
 
 	return &EnvConfiguration{
 		SecretID: secretID,
 		Host:     host,
-	}
+	}, nil
 }
 
-func NewServerConfiguration() *ServerConfiguration {
-	logger.Logger.Info("Initializing the server configuration...")
+func NewServerConfiguration() (*ServerConfiguration, error) {
+	zap.L().Info("Initializing the server configuration...")
+
+	envConfig, err := getEnvConfiguration()
+	if err != nil {
+		return nil, err
+	}
 
 	return &ServerConfiguration{
-		Env: getEnvConfiguration(),
-	}
+		Env: envConfig,
+	}, nil
 }

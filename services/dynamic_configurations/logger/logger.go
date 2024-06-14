@@ -7,10 +7,6 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type logger struct {
-	*zap.Logger
-}
-
 const (
 	LOG_LEVEL_DEBUG   string = "DEBUG"
 	LOG_LEVEL_INFO    string = "INFO"
@@ -19,12 +15,8 @@ const (
 	LOG_LEVEL_FATAL   string = "FATAL"
 )
 
-var (
-	Logger *logger
-)
-
-func NewLogger(logLevel string) {
-	var level zapcore.Level = zapcore.DebugLevel
+func NewLogger(logLevel string, production bool) {
+	var level zapcore.Level
 
 	switch logLevel {
 	case LOG_LEVEL_DEBUG:
@@ -49,7 +41,14 @@ func NewLogger(logLevel string) {
 		))
 	}
 
-	config := zap.NewDevelopmentConfig()
+	var config zap.Config
+	switch production {
+	case true:
+		config = zap.NewProductionConfig()
+	case false:
+		config = zap.NewDevelopmentConfig()
+	}
+
 	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	config.Level = zap.NewAtomicLevelAt(level)
@@ -59,7 +58,7 @@ func NewLogger(logLevel string) {
 		panic(err)
 	}
 
-	Logger = &logger{logger_}
+	zap.ReplaceGlobals(logger_)
 
-	Logger.Info("Logger initialized.")
+	zap.L().Info("Logger initialized.")
 }
