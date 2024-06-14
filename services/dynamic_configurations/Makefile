@@ -21,22 +21,26 @@ SERVER-PORT = 9002
 
 ifeq ($(OS),Windows_NT)
     START_SERVER := powershell -Command "Start-Process -NoNewWindow -FilePath .\$(BUILD-DIR)$(OUTPUT-FILE) -ArgumentList '-LOG-LEVEL','DEBUG','-PORT','$(SERVER-PORT)'; Start-Sleep -Seconds 1"
-    STOP_SERVER := powershell -Command "Stop-Process -Name $(PROJECT-NAME) -Force"
-    RUN_TESTS := powershell -Command "& { $(GO) test -v -tags servertests -coverpkg=./... ./...; if ($$LASTEXITCODE -ne 0) { $(STOP_SERVER); exit 1 } }; $(STOP_SERVER)"
+    STOP_SERVER := powershell -Command "if (Get-Process -Name $(PROJECT-NAME) -ErrorAction SilentlyContinue) { Stop-Process -Name $(PROJECT-NAME) -Force }"
+    RUN_TESTS := powershell -Command "& { $(GO) test -v -tags servertests -coverpkg=./... ./...; if ($$LASTEXITCODE -ne 0) { if (Get-Process -Name $(PROJECT-NAME) -ErrorAction SilentlyContinue) { Stop-Process -Name $(PROJECT-NAME) -Force } exit 1 } }; if (Get-Process -Name $(PROJECT-NAME) -ErrorAction SilentlyContinue) { Stop-Process -Name $(PROJECT-NAME) -Force }"
 else
-    START_SERVER := ./$(BUILD-DIR)$(OUTPUT-FILE) -LOG-LEVEL DEBUG -PORT $(SERVER-PORT) &
+    START_SERVER := ./$(BUILD-DIR)$(OUTPUT-FILE) -LOG-LEVEL DEBUG -PORT $(SERVER-PORT)
     STOP_SERVER := pkill -f $(PROJECT-NAME)
-    DELAY := sleep 1
-    RUN_TESTS := $(GO) test -v -tags servertests -coverpkg=./... ./... ; TEST_RESULT=$$?; $(STOP_SERVER); exit $$TEST_RESULT
+    RUN_TESTS := $(GO) test -v -tags servertests -coverpkg=./... ./...
 endif
 
 .PHONY: test-grpc
 test-grpc:
 	@echo "Starting server..."
-	@$(START_SERVER)
-	$(DELAY)
+	$(START_SERVER) &
+	@echo "Server started."
 	@echo "Running tests..."
-	@$(RUN_TESTS)
+	$(RUN_TESTS)
+	@echo "Tests completed."
+	@echo "Stopping server..."
+	-$(STOP_SERVER)
+	@echo "Server stopped."
+
 
 PROTO-GEN-OUT-PATH = grpc/gen
 PROTO-FILES-DIR = services/configuration/grpc/$(PROJECT-NAME)

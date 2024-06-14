@@ -259,7 +259,6 @@ jobs:
         env:
           DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID: "NONE"
           DYNAMIC_CONFIGURATIONS_CONSUL_HOST: ${{env.DYNAMIC_CONFIGURATIONS_CONSUL_HOST}}
-        timeout-minutes: 2
   
   docker:
     name: Docker
