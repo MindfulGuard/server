@@ -238,13 +238,6 @@ jobs:
         run: |
           consul agent -dev -bind=127.0.0.1 &
 
-      - name: Generate and store Consul Token
-        run: |
-          export CONSUL_HTTP_ADDR="http://localhost:8500"
-          token=$(consul acl token create -description "GitHub Actions temporary token" -policy-name service_access | jq -r '.SecretID')
-          echo "DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID=$token" >> $GITHUB_ENV
-          echo "Consul token stored in GitHub environment."
-
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5
         with:
@@ -255,7 +248,7 @@ jobs:
           cd ${{env.SERVICE_PATH}}
           make test
         env:
-          DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID: ${{env.DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID}}
+          DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID: "NONE"
           DYNAMIC_CONFIGURATIONS_CONSUL_HOST: ${{env.DYNAMIC_CONFIGURATIONS_CONSUL_HOST}}
 
       - name: Server Test
