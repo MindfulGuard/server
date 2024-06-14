@@ -252,14 +252,14 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Change Directory
-        run: cd ${{env.SERVICE_PATH}}
-
       - name: Unit Test
-        run: make test
+        run: |
+          cd ${{env.SERVICE_PATH}}
+          make test
 
       - name: Server Test
         run: |
+          cd ${{env.SERVICE_PATH}}
           make build
           make test-grpc
   
