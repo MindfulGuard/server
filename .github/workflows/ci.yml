@@ -236,15 +236,16 @@ jobs:
           sudo apt-get install -y jq
           jq --version
 
-      - name: Generate and store Consul SecretID
-        env:
-          CONSUL_HTTP_ADDR: http://${{env.DYNAMIC_CONFIGURATIONS_CONSUL_HOST}}
+      - name: Start Consul dev server
         run: |
-          export CONSUL_HTTP_ADDR="http://${{env.DYNAMIC_CONFIGURATIONS_CONSUL_HOST}}"
-          secretID=$(consul acl token create -policy-name <policy-name> | jq -r '.SecretID')
-          echo "DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID=$secretID" >> $GITHUB_ENV
-          echo "DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID stored in GITHUB_ENV."
-          echo "DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID: $DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID"
+          consul agent -dev -bind=127.0.0.1 &
+
+      - name: Generate and store Consul Token
+        run: |
+          export CONSUL_HTTP_ADDR="http://localhost:8500"
+          token=$(consul acl token create -description "GitHub Actions temporary token" -policy-name service_access | jq -r '.SecretID')
+          echo "DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID=$token" >> $GITHUB_ENV
+          echo "Consul token stored in GitHub environment."
 
       - name: Setup Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5
