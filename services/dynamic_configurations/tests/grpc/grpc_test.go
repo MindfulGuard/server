@@ -1,3 +1,5 @@
+// +build servertests
+
 package grpctest
 
 import (
