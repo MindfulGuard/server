@@ -4,3 +4,4 @@ docker/
 build/
 .github/
 .ci/
+services/configuration/
