@@ -25,7 +25,7 @@ func (s *server) Put(ctx context.Context, in *pb.PutRequest) (*pb.PutResponse, e
 
 	if strings.IsEmptyString(in.Key) {
 		duration := time.Since(start).Milliseconds()
-		zap.L().Warn("Empty key provided",
+		zap.L().Debug("Empty key provided",
 			zap.String("key", in.Key),
 			zap.Int64("execution_time_ms", duration))
 		return &pb.PutResponse{

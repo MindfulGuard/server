@@ -5,6 +5,7 @@ import (
 	"time"
 
 	pb "github.com/mindfulguard/server/dynamic_configurations/grpc/gen"
+	"github.com/mindfulguard/server/dynamic_configurations/lib/strings"
 	"github.com/mindfulguard/server/dynamic_configurations/service"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -20,6 +21,17 @@ func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteRe
 
 	ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
+
+	if strings.IsEmptyString(in.Key) {
+		duration := time.Since(start).Milliseconds()
+		zap.L().Debug("Empty key provided",
+			zap.String("key", in.Key),
+			zap.Int64("execution_time_ms", duration))
+		return &pb.DeleteResponse{
+			Timestamp:                 timestamp,
+			ExecutionTimeMilliseconds: duration,
+		}, status.Error(codes.InvalidArgument, codes.InvalidArgument.String())
+	}
 
 	serviceResult, err := service.NewService(s.envConfig).Delete(ctxWithTimeout, in.Key)
 	duration := time.Since(start).Milliseconds()
