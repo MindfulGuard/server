@@ -3,7 +3,7 @@
 ## Download
 
   ```bash
-  wget https://github.com/MindfulGuard/server/releases/download/main/build-release.tar.gz
+  wget https://github.com/MindfulGuard/server/releases/download/<version>/build-release.tar.gz
   ```
 
   ```bash
