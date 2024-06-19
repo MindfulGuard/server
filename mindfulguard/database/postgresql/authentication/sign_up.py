@@ -24,20 +24,21 @@ class PostgreSqlSignUp(PostgreSqlQueriesBase):
         self.__model_user: ModelUser = model_user
         self.__model_code: ModelCode = model_code
     
-    async def execute(self) -> None:
+    async def execute(self, registration_allowed: bool) -> None:
         start_time = time.time()
         logger.debug("Executing SQL query to sign up user...")
 
         try:
             value: int = await self._connection.connection.fetchval('''
-            SELECT sign_up($1, $2, $3, $4, $5,$6)
+            SELECT sign_up($1, $2, $3, $4, $5, $6, $7)
             ''',
             self.__model_user.login,
             self.__model_user.secret_string,
             self.__model_user.reg_ip,
             self.__model_user.confirm,
             self.__model_code.secret_code,
-            self.__model_code.backup_codes
+            self.__model_code.backup_codes,
+            registration_allowed
             )
 
             if value == 0 or value == 1 or value == 2:

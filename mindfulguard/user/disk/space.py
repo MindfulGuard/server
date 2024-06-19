@@ -25,10 +25,10 @@ class UserDiskSpace(UserBase):
             db = self._pgsql_user.get_information(self._model_token)
             await self._connection.open()
             await db.execute()
-            await self._settings.execute()
+            settings = await self._settings.get()
 
             logger.info("Retrieving disk space settings...")
-            self.__total_disk_space = self._settings.response['disk_space_per_user']
+            self.__total_disk_space = settings['disk_space_per_user']
             self._s3.set_bucket_name(db.response.login)
             logger.info("Calculating user disk space...")
             self.__user_disk_space = self._s3.bucket().get_size

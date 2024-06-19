@@ -66,47 +66,66 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      CONFIG_ENV_FILE: docker/.SERVER.env
+      DYNAMIC_CONFIGURATIONS_SERVICE_PATH: services/dynamic_configurations
+
       admin_login: UserADmin12345_-
       admin_password: AdminPassword_-4234__-43223
-      MINIO_HOSTNAME: http://localhost:9000
-      minio_root_access_key: rootuser123
-      minio_root_secret_key: rootpassword123
-      MINIO_USER_ACCESS_KEY: useruser123
-      MINIO_USER_SECRET_KEY: userpassword123
       POSTGRES_PORT: 5432
       POSTGRES_HOST: localhost
-      POSTGRES_USER: mindfulguard
       POSTGRES_DB: mindfulguard_production
-      POSTGRES_PASSWORD: mindfulguard_password
+      POSTGRES_USER: mindfulguard
+      POSTGRES_PASSWORD: root_password
+      MINIO_HOSTNAME: http://localhost:9000
+      MINIO_ROOT_USER: rootuser123
+      MINIO_ROOT_PASSWORD: rootpassword123
+      MINIO_USER_ACCESS_KEY: useruser123
+      MINIO_USER_SECRET_KEY: userpassword123
+      REDIS_PASSWORD: userpassword
+      REDIS_ARGS: --loglevel warning --requirepass ${REDIS_PASSWORD}
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       REDIS_USERNAME: default
-      REDIS_PASSWORD: userpassword
       REDIS_LD: 0
-
-    services:
-      postgresql:
-        image: postgres:15.4
-        env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+      MINDFULGUARD_ARGS: --LOG-LEVEL TRACE --LOG-TO-CONSOLE
+      SERVICE_DYNAMIC_CONFIGURATIONS_HOST: localhost:9001
+      DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID: NONE
+      DYNAMIC_CONFIGURATIONS_CONSUL_HOST: localhost:8500
       
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run MinIO Server
-        run: docker run -d --name minio -p 9000:9000 -v ~/minio/data:/data -e MINIO_ACCESS_KEY=${{env.minio_root_access_key}} -e MINIO_SECRET_KEY=${{env.minio_root_secret_key}} quay.io/minio/minio server /data --console-address ":9090"
+      - name: Writing variables to a file
+        run: |
+          echo "" > ${{env.CONFIG_ENV_FILE}}
 
-      - name: Run Redis Server
-        run: docker run -d --name redis -p 6379:6379 -v cache:/data -e REDIS_ARGS="--loglevel warning --requirepass ${{env.REDIS_PASSWORD}}" redis/redis-stack:latest
+          cat <<EOF > docker/.SERVER.env
+          POSTGRES_PORT=${{env.POSTGRES_PORT}}
+          POSTGRES_HOST=${{env.POSTGRES_HOST}}
+          POSTGRES_DB=${{env.POSTGRES_DB}}
+          POSTGRES_USER=${{env.POSTGRES_USER}}
+          POSTGRES_PASSWORD=${{env.POSTGRES_PASSWORD}}
+          MINIO_HOSTNAME=${{env.MINIO_HOSTNAME}}
+          MINIO_ROOT_USER=${{env.MINIO_ROOT_USER}}
+          MINIO_ROOT_PASSWORD=${{env.MINIO_ROOT_PASSWORD}}
+          MINIO_USER_ACCESS_KEY=${{env.MINIO_USER_ACCESS_KEY}}
+          MINIO_USER_SECRET_KEY=${{env.MINIO_USER_SECRET_KEY}}
+          REDIS_PASSWORD=${{env.REDIS_PASSWORD}}
+          REDIS_ARGS="${{env.REDIS_ARGS}}"
+          REDIS_HOST=${{env.REDIS_HOST}}
+          REDIS_PORT=${{env.REDIS_PORT}}
+          REDIS_USERNAME=${{env.REDIS_USERNAME}}
+          REDIS_LD=${{env.REDIS_LD}}
+          MINDFULGUARD_ARGS="${{env.MINDFULGUARD_ARGS}}"
+          SERVICE_DYNAMIC_CONFIGURATIONS_HOST=${{env.SERVICE_DYNAMIC_CONFIGURATIONS_HOST}}
+          DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID=${{env.DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID}}
+          DYNAMIC_CONFIGURATIONS_CONSUL_HOST=${{env.DYNAMIC_CONFIGURATIONS_CONSUL_HOST}}
+          EOF
+
+      - name: Run Services
+        run: | 
+          docker-compose -f ./docker/docker-compose-dev.yml up -d
+          sleep 30
 
       - name: Install Migrate
         run: |
@@ -129,22 +148,12 @@ jobs:
         with:
           python-version: '3.10'
           architecture: 'x64'
+      - run: python -c "import sys; print(sys.version)"
 
-      - name: Display Python version
-        run: python -c "import sys; print(sys.version)"
-
-      - name: Show Environment Variables
-        run: |
-          echo $admin_login
-          echo $admin_password
-          echo $MINIO_HOSTNAME
-          echo $minio_root_access_key
-          echo $minio_root_secret_key
-          echo $MINIO_USER_ACCESS_KEY
-          echo $MINIO_USER_SECRET_KEY
-          echo $DATABASE_PORT
-          echo $DATABASE_USER
-          echo $DATABASE_PASSWORD
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+      - run: go version
 
       - name: Installing dependencies
         run: |
@@ -165,22 +174,30 @@ jobs:
             exit 1
           fi
 
-      - name: Initializing the administrator
-        run: make -f build/Makefile init admin_login="${{env.admin_login}}" admin_password="${{env.admin_password}}" database_host="localhost" database_name=${{env.POSTGRES_DB}}"" database_port="5432" database_user="${{env.POSTGRES_USER}}" database_password="${{env.POSTGRES_PASSWORD}}" minio_hostname="${{env.MINIO_HOSTNAME}}" minio_root_access_key="${{env.minio_root_access_key}}" minio_root_secret_key="${{env.minio_root_secret_key}}" minio_user_access_key="${{env.MINIO_USER_ACCESS_KEY}}" minio_user_secret_key="${{env.MINIO_USER_SECRET_KEY}}"
-
-      - name: Setup service "routines"
+      - name: Initialize the administrator
         run: |
-          sudo chmod +x routines/setup_service.sh
-          sudo ./routines/setup_service.sh
-        env:
-          POSTGRES_HOST: ${{env.POSTGRES_HOST}}
-          POSTGRES_PORT: ${{env.POSTGRES_PORT}}
-          POSTGRES_DB: ${{env.POSTGRES_DB}}
-          POSTGRES_USER: ${{env.POSTGRES_USER}}
-          POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
+          make -f build/Makefile init \
+            admin_login="${{ env.admin_login }}" \
+            admin_password="${{ env.admin_password }}" \
+            database_host="${{env.POSTGRES_HOST}}" \
+            database_name="${{ env.POSTGRES_DB }}" \
+            database_port="${{env.POSTGRES_PORT}}" \
+            database_user="${{ env.POSTGRES_USER }}" \
+            database_password="${{ env.POSTGRES_PASSWORD }}" \
+            minio_hostname="${{ env.MINIO_HOSTNAME }}" \
+            minio_root_access_key="${{ env.MINIO_ROOT_USER }}" \
+            minio_root_secret_key="${{ env.MINIO_ROOT_PASSWORD }}" \
+            minio_user_access_key="${{ env.MINIO_USER_ACCESS_KEY }}" \
+            minio_user_secret_key="${{ env.MINIO_USER_SECRET_KEY }}"
+      
+      - name: Build service "Dynamic configurations"
+        run: |
+          cd ${{env.DYNAMIC_CONFIGURATIONS_SERVICE_PATH}}
+          make build
 
       - name: Running Tests
         run: |
+          ./${{env.DYNAMIC_CONFIGURATIONS_SERVICE_PATH}}/build/dynamic_configurations -LOG-LEVEL DEBUG &
           make test
         env:
           POSTGRES_HOST: ${{env.POSTGRES_HOST}}
@@ -198,6 +215,10 @@ jobs:
           REDIS_PORT: ${{env.REDIS_PORT}}
           REDIS_USERNAME: ${{env.REDIS_USERNAME}}
           REDIS_LD: ${{env.REDIS_LD}}
+          MINDFULGUARD_ARGS: ${{env.MINDFULGUARD_ARGS}}
+          SERVICE_DYNAMIC_CONFIGURATIONS_HOST: ${{env.SERVICE_DYNAMIC_CONFIGURATIONS_HOST}}
+          DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID: ${{env.DYNAMIC_CONFIGURATIONS_CONSUL_SECRET_ID}}
+          DYNAMIC_CONFIGURATIONS_CONSUL_HOST: ${{env.DYNAMIC_CONFIGURATIONS_CONSUL_HOST}}
       
       - name: Copying logs
         run: |

@@ -23,7 +23,8 @@ class DbTestsAuthenticationSignUp:
         secret_code: str,
         backup_codes: list[int],
         reg_ip: str = '127.0.0.1',
-        confirm: bool = False
+        confirm: bool = False,
+        registration_allowed: bool = True
     ) -> int:
         try:
             self.__model_user.login = login
@@ -35,7 +36,7 @@ class DbTestsAuthenticationSignUp:
 
             db = self.__pgsql_auth.sign_up(self.__model_user, self.__model_code)
             await self.__connection.open()
-            await db.execute()
+            await db.execute(registration_allowed)
             self.__secret_code_hashed = self.__model_user.secret_string
             return db.status_code
         finally:
@@ -48,7 +49,8 @@ class DbTestsAuthenticationSignUp:
         secret_code: str,
         backup_codes: list[int],
         reg_ip: str = '127.0.0.1',
-        confirm: bool = False
+        confirm: bool = False,
+        registration_allowed: bool = True
     ) -> int:
         try:
             self.__model_user.login = login
@@ -60,7 +62,7 @@ class DbTestsAuthenticationSignUp:
 
             db = self.__pgsql_auth.sign_up(self.__model_user, self.__model_code)
             await self.__connection.open()
-            await db.execute()
+            await db.execute(registration_allowed)
             return db.status_code
         except ValueError:
             return BAD_REQUEST

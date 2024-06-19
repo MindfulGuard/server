@@ -24,8 +24,9 @@ class Fields(AsyncValidationModelMixin, BaseModel):
     @async_field_validator("type")
     async def type_in_types(self, value)-> None:
         model_record_settings = ModelRecordSettings()
-        await model_record_settings.settings.execute()
-        if value not in model_record_settings.settings.response['item_types']:
+        settings = await model_record_settings.settings.get()
+
+        if value not in settings['item_types']:
             raise ValueError(f"'{value}' is not an acceptable type")
 
 class Sections(AsyncValidationModelMixin, BaseModel):
@@ -63,9 +64,9 @@ class Item(AsyncValidationModelMixin, BaseModel):
     @async_field_validator("category")
     async def category_in_categories(self, value)-> None:
         model_record_settings = ModelRecordSettings()
-        await model_record_settings.settings.execute()
+        settings = await model_record_settings.settings.get()
         if (
-            value not in model_record_settings.settings.response['item_categories']
+            value not in settings['item_categories']
             or len(value.replace(' ', '')) == 0
         ):
             raise ValueError(f"'{value}' is not an acceptable category")

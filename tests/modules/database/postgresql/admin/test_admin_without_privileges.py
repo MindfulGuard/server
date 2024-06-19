@@ -2,7 +2,6 @@ from http.client import FORBIDDEN, OK, UNAUTHORIZED
 import pytest
 from tests.modules.database.postgresql.admin.classes.get_by_page import DbTestAdminGetByPage
 from tests.modules.database.postgresql.admin.classes.search_users import DbTestAdminSearchUsers
-from tests.modules.database.postgresql.admin.classes.update_configuration import DbTestAdminUpdateConfig
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_in import DbTestsAuthenticationSignIn
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_up import DbTestsAuthenticationSignUp
 from tests.logger import logger
@@ -51,16 +50,4 @@ async def test_admin_without_privileges():
     assert await search_user.execute(
         token,
         '1c9035de-eccd-48d7-8dbc-489a4e636115'
-    ) == FORBIDDEN
-
-    udpate_config = DbTestAdminUpdateConfig()
-    assert await udpate_config.execute(
-        'Bearer Dn8QQDRNpWo3PAbk3GtsDXntoq6AK10uyn2JgTYNJ1unHBF67ZZ4ROsyp5ke4tlph9UnWSV6v0dfowahxiEgjj8BEhLRhUC2utZKLbgjEcXceH9AXnrcWe296ME3t8oD',
-        'registration',
-        'true'
-    ) == UNAUTHORIZED
-    assert await udpate_config.execute(
-        token,
-        'registration',
-        'true'
     ) == FORBIDDEN

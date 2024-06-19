@@ -141,7 +141,7 @@ def test_content_api():
             safe_id
         ).status_code == OK
 
-    for i in range(len(FILE_NAMES) + 1, len(FILE_NAMES)):
+    for i in range(len(FILE_NAMES)):
         content_file: dict[str, BufferedReader] = {'files': open(f'{PATH_TO_FILES}/{FILE_NAMES[i]}', 'rb')}
         assert content_upload.execute(
             with_token_OK(token, 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'),

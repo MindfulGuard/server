@@ -48,6 +48,13 @@ migration-up:
 migration-down:
 	$(MIGRATION-DOWN)
 
+PROTO-GEN-OUT-PATH = $(PATH-TO-SOURCE)grpc/gen
+PROTO-FILES-DIR-DYNAMIC-CONFIGURATIONS = services/configuration/grpc/dynamic_configurations
+
+.PHONY: gen-proto
+gen-proto:
+	python -m grpc_tools.protoc -I $(PROTO-FILES-DIR-DYNAMIC-CONFIGURATIONS) --python_out=$(PROTO-GEN-OUT-PATH) --pyi_out=$(PROTO-GEN-OUT-PATH) --grpc_python_out=$(PROTO-GEN-OUT-PATH) $(PROTO-FILES-DIR-DYNAMIC-CONFIGURATIONS)/*.proto
+
 clean:
 	$(RM) $(INFO)
 	$(RM) $(VENV)

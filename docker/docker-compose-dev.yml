@@ -11,22 +11,6 @@ services:
     ports:
       - 5432:5432
     networks:
-     - app-network
-
-  mindfulguard_server:
-    image: server_temp:latest
-    container_name: mindfulguard_server
-    restart: always
-    env_file:
-      - .SERVER.env
-    ports:
-      - 80:80
-      - 443:443
-    depends_on:
-      - cacheredis
-      - postgresql
-      - minio
-    networks:
       - app-network
 
   cacheredis:
@@ -34,9 +18,9 @@ services:
     restart: always
     ports:
       - '6379:6379'
-    env_file: 
+    env_file:
       - .SERVER.env
-    volumes: 
+    volumes:
       - cache:/data
     networks:
       - app-network
@@ -55,11 +39,28 @@ services:
     networks:
       - app-network
 
+  consul:
+    image: hashicorp/consul:1.18
+    restart: always
+    container_name: consul
+    command: sh -c "consul agent -server -bootstrap -client 0.0.0.0 -ui -data-dir=/consul/data & sleep 10 && consul kv import @/tmp/init-data-consul.json && tail -f /dev/null"
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    volumes:
+      - ./data/init-data-consul.json:/tmp/init-data-consul.json
+      - consul-data:/consul/data
+      - consul-config:/consul/config
+    networks:
+      - app-network
+
 networks:
- app-network:
-   driver: bridge
+  app-network:
+    driver: bridge
 
 volumes:
-  minio:
   pgdata:
   cache:
+  minio:
+  consul-data:
+  consul-config:

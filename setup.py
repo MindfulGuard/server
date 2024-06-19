@@ -15,6 +15,8 @@ setup(
         'cryptography',
         'minio',
         'redis[hiredis]',
-        'loguru'
+        'loguru',
+        'grpcio',
+        'grpcio-tools'
     ],
 )

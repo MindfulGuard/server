@@ -1,8 +1,8 @@
 FROM python:3.10 AS python
 
-WORKDIR /home/mindfulguard/server
+WORKDIR /mindfulguard/server
 
-COPY . /home/mindfulguard/server
+COPY . /mindfulguard/server
 
 RUN apt-get update && apt-get upgrade -y
 

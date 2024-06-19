@@ -44,9 +44,9 @@ class Upload(FilesBase):
                 return
 
             self._s3.set_bucket_name(db_info.response.login)
-            await self._settings.execute()
+            settings = await self._settings.get()
             fds: bool = self.__free_disk_space(
-                self._settings.response,
+                settings,
                 sum([file.size for file in files]) # type: ignore
             )
             if fds == False:

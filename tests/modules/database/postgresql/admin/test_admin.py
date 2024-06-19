@@ -3,7 +3,6 @@ import pytest
 from mindfulguard.classes.database import DataBase
 from tests.modules.database.postgresql.admin.classes.get_by_page import DbTestAdminGetByPage
 from tests.modules.database.postgresql.admin.classes.search_users import DbTestAdminSearchUsers
-from tests.modules.database.postgresql.admin.classes.update_configuration import DbTestAdminUpdateConfig
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_in import DbTestsAuthenticationSignIn
 from tests.modules.database.postgresql.authentication.classes.db_authentication_sign_up import DbTestsAuthenticationSignUp
 
@@ -61,10 +60,3 @@ async def test_admin():
         token,
         '1c9035de-eccd-48d7-8dbc-489a4e636115'
     ) == NOT_FOUND
-
-    udpate_config = DbTestAdminUpdateConfig()
-    assert await udpate_config.execute(
-        token,
-        'registration',
-        'true'
-    ) == OK
