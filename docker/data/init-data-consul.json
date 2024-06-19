@@ -3,7 +3,7 @@
     {"key": "v1/server/settings/disk_space_per_user", "value": "MTA3Mzc0MTgyNA=="},
     {"key": "v1/server/settings/item_categories", "value": "WyJMT0dJTiIsIlBBU1NXT1JEIiwiQVBJX0NSRURFTlRJQUwiLCJTRVJWRVIiLCJEQVRBQkFTRSIsIkNSRURJVF9DQVJEIiwiTUVNQkVSU0hJUCIsIlBBU1NQT1JUIiwiU09GVFdBUkVfTElDRU5TRSIsIk9VVERPT1JfTElDRU5TRSIsIlNFQ1VSRV9OT1RFIiwiV0lSRUxFU1NfUk9VVEVSIiwiQkFOS19BQ0NPVU5UIiwiRFJJVkVSX0xJQ0VOU0UiLCJJREVOVElUWSIsIlJFV0FSRF9QUk9HUkFNIiwiRE9DVU1FTlQiLCJFTUFJTF9BQ0NPVU5UIiwiU09DSUFMX1NFQ1VSSVRZX05VTUJFUiIsIk1FRElDQUxfUkVDT1JEIiwiU1NIX0tFWSIsIk9USEVSIl0="},
     {"key": "v1/server/settings/item_types", "value": "WyJTVFJJTkciLCJQQVNTV09SRCIsIkVNQUlMIiwiQ09OQ0VBTEVEIiwiVVJMIiwiT1RQIiwiREFURSIsIk1PTlRIX1lFQVIiLCJNRU5VIiwiRklMRSJd"},
-    {"key": "v1/server/settings/password_rule", "value": "Xig/PS4qW0EtWl0pKD89LipbYS16XSkoPz0uKlxcZCkoPz0uKltcXFddKS57OCw2NH0k"},
+    {"key": "v1/server/settings/password_rule", "value": "Xig/PS4qW0EtWl0pKD89LipbYS16XSkoPz0uKlxkKSg/PS4qW1xXXSkuezgsNjR9JA=="},
     {"key": "v1/server/settings/registration", "value": "dHJ1ZQ=="},
     {"key": "v1/server/settings/scan_time_routines_tokens", "value": "NjA="},
     {"key": "v1/server/settings/scan_time_routines_users", "value": "NjA="}
