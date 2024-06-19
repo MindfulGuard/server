@@ -103,27 +103,6 @@ class Db:
             if connection:
                 await connection.close()
 
-    async def get_settings(self)->dict:
-        connection = None
-        try:
-            connection = await Connection().connect()
-            values = await connection.fetch('''
-            SELECT st_id, st_key, st_value
-            FROM st_settings
-            ''')
-
-            settings_dict = {}
-            for row in values:
-                key, value = row['st_key'], row['st_value']
-                settings_dict[key] = value
-            return settings_dict
-        except asyncpg.exceptions.ConnectionDoesNotExistError as e:
-            logging.fatal(e)
-            return {}
-        finally:
-            if connection:
-                await connection.close()
-
 NUMBER_OF_BACKUP_CODES = 6
 class Totp:
     def __init__(self,secret_code:str):
@@ -199,16 +178,10 @@ class Run:
             Can only be present: hyphen, underscore, Latin characters only
             """
             return bool(re.compile(r'^[A-Za-z0-9_-]{2,50}$').match(login))
-
-        def validate_password(reg:str,password:str)->bool:
-            return bool(re.compile(reg).match(password))
-
-        get_settings = await self.__db.get_settings()
-        password_rule:str = get_settings['password_rule']
         
         return (
             validate_login(login) == True
-            and validate_password(password_rule,secret_string) == True
+            and True
         )
 
 def write_to_file(
