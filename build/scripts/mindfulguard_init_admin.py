@@ -55,7 +55,7 @@ class Db:
         connection = None
         try:
             connection = await Connection().connect()
-            value:int = await connection.fetchval('SELECT sign_up($1, $2, $3, $4, $5,$6)',login, secret_string, "127.0.0.1", True, secret_code,backup_codes)
+            value:int = await connection.fetchval('SELECT sign_up($1, $2, $3, $4, $5, $6, $7)',login, secret_string, "127.0.0.1", True, secret_code,backup_codes, True)
             if value == 0 or value == 1 or value == 2:
                 return 0
             return value
